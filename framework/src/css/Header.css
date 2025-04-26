@@ -49,19 +49,8 @@ nav a{
 
 .login-button{
     height: 40px;
-    background-color: #0A0593;
-    color: white;
     padding: 8px 20px;
-    border-radius: 5px;
     font-size: 1.2rem;
-    font-weight: 400;
-    border: none;
-    cursor: pointer;
 }
 
-.login-button:hover{
-    background-color: #2576ee;
-    font-weight: 500;
-    transition: 0.3s;
-}
 
