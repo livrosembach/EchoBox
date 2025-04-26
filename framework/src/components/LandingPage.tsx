@@ -3,7 +3,7 @@ import startPeople from "../assets/startPeople.png";
 
 const LandingPage: React.FC<{}> = ({}) => {
     return (
-        <div className="start-container">
+        <div className="container">
             <div className="text">
                 <div className="bold-phrase">
                     Dê voz às suas ideias.<br />
@@ -15,7 +15,7 @@ const LandingPage: React.FC<{}> = ({}) => {
                     Receba respostas, promova melhorias e fortaleça a comunicação entre equipes ou comunidades.
                 </div>
                 <div className="button-start-now">
-                    <button>Comece agora!</button>
+                    <button onClick={() => { window.location.href = '/login'; }}>Comece agora!</button>
                 </div>
             </div>
             <div className="image">
