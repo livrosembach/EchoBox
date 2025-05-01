@@ -2,6 +2,7 @@
 @import url('Header.css');
 @import url('LandingPage.css');
 @import url('Login.css');
+@import url('Home.css');
 
 body{
     margin: 0;

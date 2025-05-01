@@ -4,6 +4,7 @@ import Header from './components/Header';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 import Register from './components/Register';
+import Home from './components/Home'
 import './css/App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
       </div>
     </Router>
