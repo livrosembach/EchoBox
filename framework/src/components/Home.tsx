@@ -1,13 +1,14 @@
 import React from "react";
 
 const Home: React.FC<{}> = ({}) => {
+    
     return (
-        <div className="container">
+        <div className="start-container">
             <div className="bar">
                 <div className="search-bar-container">
                     <input type="text" placeholder="Buscar feedbacks" className="search-bar" />
                     <span className="search-icon">
-                        🔍
+                    <i className="fa-solid fa-magnifying-glass"></i>
                     </span>
                 </div>
 
@@ -28,7 +29,7 @@ const Home: React.FC<{}> = ({}) => {
 
             <div className="home-container">
                 <div className="feedback">
-                    <h2 className="feedback-title">📧 Titulo</h2>
+                    <h2 className="feedback-title"><i className="fa-solid fa-envelope"></i> Titulo</h2>
                     <div className="feedback-tags">
                         <span className="tag entretenimento">Entretenimento</span>
                         <span className="tag respondida">Respondida</span>
@@ -39,7 +40,7 @@ const Home: React.FC<{}> = ({}) => {
                 </div>
 
                 <div className="feedback">
-                    <h2 className="feedback-title">📧 Titulo</h2>
+                    <h2 className="feedback-title"><i className="fa-solid fa-envelope"></i> Titulo</h2>
                     <div className="feedback-tags">
                         <span className="tag educacao">Educação</span>
                         <span className="tag respondida">Respondida</span>
