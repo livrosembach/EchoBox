@@ -24,6 +24,7 @@ form{
     flex-direction: column;
     border: 1px solid black;
     border-radius: 10px;
+    padding: 0 5px;
 }
 
 .form-group label{
@@ -39,4 +40,8 @@ form{
 p{
     font-size: 18px;
     color: #6B6A6A;
+}
+
+p a{
+    color:#0A0593;
 }

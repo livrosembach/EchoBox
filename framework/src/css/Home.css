@@ -20,7 +20,6 @@
 
 .search-bar-container {
     position: relative;
-    /* border: solid 2px yellow; */
     width: 40%;
 }
 
@@ -65,7 +64,7 @@
     border-color: #007BFF; 
 }
 
-.home-container {
+.feedback-container {
     margin-top: 15%;
     padding: 0 5%;
     display: flex;
@@ -103,15 +102,15 @@
     color: white;
 }
 
-.tag.entretenimento {
+.tag.entertainment {
     background-color: orange;
 }
 
-.tag.educacao {
+.tag.education {
     background-color: green;
 }
 
-.tag.respondida {
+.tag.answered {
     background-color: #007bff;
 }
 
