@@ -1,0 +1,124 @@
+.start-container{
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bar {
+    width: auto;
+    height: 20px;
+    /* border: solid 2px red; */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    top: 20%;
+    left: 0;
+    margin-left: 3%;
+    right: 0;
+}
+
+.search-bar-container {
+    position: relative;
+    /* border: solid 2px yellow; */
+    width: 40%;
+}
+
+.search-bar {
+    width: 100%;
+    height: 40px;
+    border-radius: 12px;
+    border: 2px solid black;
+    padding: 0 40px 0 10px; 
+    box-sizing: border-box;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px; 
+    pointer-events: none; 
+}
+
+.filters {
+    display: flex;
+    gap: 40px; 
+    align-items: center;
+    margin-right: 5%;
+}
+
+.filter-dropdown {
+    width: auto;
+    height: 40px;
+    border-radius: 12px;
+    border: 2px solid black;
+    padding: 0 10px;
+    font-size: 14px;
+    background-color: white;
+    appearance: none;
+    cursor: pointer;
+}
+
+.filter-dropdown:focus {
+    outline: none;
+    border-color: #007BFF; 
+}
+
+.home-container {
+    margin-top: 10%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.feedback {
+    border-radius: 12px;
+    padding: 15px;
+    width: 50%;
+}
+
+.feedback-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feedback-tags {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tag {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.tag.entretenimento {
+    background-color: orange;
+}
+
+.tag.educacao {
+    background-color: green;
+}
+
+.tag.respondida {
+    background-color: #007bff;
+}
+
+.feedback-description {
+    font-size: 14px;
+    color: #000000;
+    line-height: 1.5;
+}

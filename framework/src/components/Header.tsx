@@ -10,7 +10,7 @@ const Header: React.FC<{}> = ({}) => {
             </div>
             <nav>
                 <ul>
-                    <li><a href="#home">Home</a></li>
+                    <li><a href="/home">Home</a></li>
                     <li><a href="#about">Enviar Feedback</a></li>
                     <li><a href="#services">Ver Feedbacks</a></li>
                     <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Login</button></li>
