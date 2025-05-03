@@ -1,4 +1,5 @@
 import React from "react";
+import '../css/Login.css';
 
 const Register: React.FC<{}> = ({}) => {
     return (

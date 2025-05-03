@@ -1,5 +1,6 @@
 import React from "react";
 import logo from '../assets/logo.svg';
+import '../css/Header.css';
 
 const Header: React.FC<{}> = ({}) => {
         return (
@@ -11,8 +12,7 @@ const Header: React.FC<{}> = ({}) => {
             <nav>
                 <ul>
                     <li><a href="/home">Home</a></li>
-                    <li><a href="#about">Enviar Feedback</a></li>
-                    <li><a href="#services">Ver Feedbacks</a></li>
+                    <li><a href="/send_feedback">Enviar Feedback</a></li>
                     <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Login</button></li>
                 </ul>
             </nav>

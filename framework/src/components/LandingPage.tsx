@@ -1,5 +1,6 @@
 import React from "react";
 import startPeople from "../assets/startPeople.png";
+import '../css/LandingPage.css';
 
 const LandingPage: React.FC<{}> = ({}) => {
     return (
