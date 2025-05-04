@@ -11,7 +11,7 @@ BEGIN
 END;
 $$;
 
--- tables are created here some of them have "" around them, thats because they are reserved keywords
+-- tables are created here, some table names them have "" around them, thats because they are reserved keywords
 
 CREATE TABLE "user" (
     idUser SERIAL PRIMARY KEY NOT NULL,
