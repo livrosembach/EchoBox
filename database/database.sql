@@ -21,7 +21,7 @@ CREATE TABLE "user" (
 
 CREATE TABLE company (
     idCompany SERIAL PRIMARY KEY NOT NULL,
-    nameCompanyh VARHCAR(255) NOT NULl,
+    nameCompanyh VARCHAR(255) NOT NULl,
     emailCompany VARCHAR(255) NOT NULL,
     CNPJCompany VARCHAR(14) NOT NULL
 );
