@@ -25,7 +25,7 @@
     color: #6B6A6A;
 }
 
-select {
+select, input {
     height: 50px;
     background-color: transparent;
     border: 1px solid #000;

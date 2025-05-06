@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import SendFeedback from './components/SendFeedbacks';
+import RegisterCompany from './components/RegisterCompany';
 import './css/App.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/send_feedback" element={<SendFeedback />} />
+          <Route path="/register_company" element={<RegisterCompany />} />
         </Routes>
       </div>
     </Router>

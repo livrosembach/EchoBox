@@ -10,7 +10,11 @@ const SendFeedback: React.FC<{}> = ({}) => {
             <div className="title">Feedback</div>
                 <form action="">
                     <div className="form-group-feedback">
-                        <label htmlFor="chose">Escolha para quem é o feedback</label>
+                        <label htmlFor="chose">Título</label>
+                        <input type="text" />
+                    </div>
+                    <div className="form-group-feedback">
+                        <label htmlFor="chose">Empresa</label>
                         <select name="chose" id="chose">
                             <option value="1"></option>
                             <option value="2">fulano</option>
