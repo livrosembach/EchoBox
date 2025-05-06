@@ -5,7 +5,7 @@ TRUNCATE TABLE "user" CASCADE;
 TRUNCATE TABLE company CASCADE;
 TRUNCATE TABLE category CASCADE;
 
--- Reset sequences for SERIAL columns after TRUNCATE (optional but good practice for predictable IDs)
+-- Reset sequences for SERIAL columns after TRUNCATE 
 ALTER SEQUENCE category_idcategory_seq RESTART WITH 1;
 ALTER SEQUENCE company_idcompany_seq RESTART WITH 1;
 ALTER SEQUENCE user_iduser_seq RESTART WITH 1;
