@@ -13,17 +13,20 @@ $$;
 
 -- tables are created here, some table names them have "" around them, thats because they are reserved keywords
 
-CREATE TABLE "user" (
-    idUser SERIAL PRIMARY KEY NOT NULL,
-    emailUser VARCHAR(255) NOT NULL,
-    passwordUser VARCHAR(32) NOT NULL
-);
-
 CREATE TABLE company (
     idCompany SERIAL PRIMARY KEY NOT NULL,
     nameCompanyh VARCHAR(255) NOT NULl,
     emailCompany VARCHAR(255) NOT NULL,
     CNPJCompany VARCHAR(14) NOT NULL
+);
+
+CREATE TABLE "user" (
+    idUser SERIAL PRIMARY KEY NOT NULL,
+    emailUser VARCHAR(255) NOT NULL,
+    passwordUser VARCHAR(32) NOT NULL,
+    fk_user_idCompany INT,
+
+    CONSTRAINT fk_user_company FOREIGN KEY (fk_user_idCompany) REFERENCES company(idCompany)
 );
 
 CREATE table category (
