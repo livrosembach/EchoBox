@@ -8,6 +8,10 @@ const Register: React.FC<{}> = ({}) => {
                 <div className="title">Junte-se a nós! Cadastre-se agora.</div>
                 <form>
                     <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input type="username" name="username" id="username" />
+                    </div>
+                    <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input type="email" name="email" id="email" />
                     </div>
