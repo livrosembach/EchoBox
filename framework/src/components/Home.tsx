@@ -1,9 +1,9 @@
-import React from "react";
 import '../css/Home.css';
-import FeedbackTicket from './FeedbackTicket'
+// import FeedbackTicket from './FeedbackTicket'
+import FeedbackList from "../controller/feedback/FeedbackList";
 
 const Home: React.FC<{}> = ({}) => {
-    
+
     return (
         <div className="start-container">
             <div className="bar">
@@ -30,8 +30,7 @@ const Home: React.FC<{}> = ({}) => {
             </div>
 
             <div className="feedback-container">
-                <FeedbackTicket />
-                <FeedbackTicket />
+                <FeedbackList />
             </div>
         </div>
     );
