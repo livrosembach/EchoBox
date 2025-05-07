@@ -8,7 +8,19 @@ app.use(express.json());
 
 app.get('/feedback', async (req, res) => {
   try {
-    const resultado = await pool.query('SELECT * FROM feedback');
+    const query = `
+      SELECT 
+        feedback.idFeedback,
+        feedback.titleFeedback,
+        feedback.reviewFeedback,
+        feedback.ratingFeedback,
+        category.typeCategory AS categoryName,
+        status.typeStatus AS statusName
+      FROM feedback
+      JOIN category ON feedback.fk_feedback_idCategory = category.idCategory
+      JOIN status ON feedback.fk_feedback_idStatus = status.idStatus
+    `;
+    const resultado = await pool.query(query);
     res.json(resultado.rows);
   } catch (err) {
     console.error(err);
