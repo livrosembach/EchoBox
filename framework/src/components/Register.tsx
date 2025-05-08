@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { registerUser } from "../controller/register/register";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { registerUser } from "../controller/register/Register";
 import "../css/Login.css";
 
 const Register: React.FC<{}> = () => {
@@ -8,6 +9,8 @@ const Register: React.FC<{}> = () => {
         password: "",
         confirmPassword: "",
     });
+
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -36,6 +39,8 @@ const Register: React.FC<{}> = () => {
                 password: "",
                 confirmPassword: "",
             });
+
+            navigate("/Login")
         } else {
             alert("Failed to register user.");
         }
