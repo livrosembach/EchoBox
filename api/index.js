@@ -6,6 +6,40 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Route to get the categories
+app.get('/feedback/category', async (req, res) => {
+  try {
+    const query = `
+      SELECT
+        category.idCategory,
+        category.typeCategory
+      FROM category
+    `;
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro a buscar tipos de categoria')
+  }
+});
+
+// Route to get the categories
+app.get('/feedback/status', async (req, res) => {
+  try {
+    const query = `
+      SELECT
+        status.idStatus,
+        status.typeStatus
+      FROM status
+    `;
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro a buscar tipos de status')
+  }
+});
+
 // Route to get the feedvack snippets
 app.get('/feedback', async (req, res) => {
   try {
@@ -15,14 +49,14 @@ app.get('/feedback', async (req, res) => {
         feedback.titleFeedback,
         feedback.reviewFeedback,
         feedback.ratingFeedback,
-        category.typeCategory AS categoryName,
-        status.typeStatus AS statusName
+        category.typeCategory,
+        status.typeStatus
       FROM feedback
       JOIN category ON feedback.fk_feedback_idCategory = category.idCategory
       JOIN status ON feedback.fk_feedback_idStatus = status.idStatus
     `;
-    const resultado = await pool.query(query);
-    res.json(resultado.rows);
+    const result = await pool.query(query);
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao buscar feedback');
@@ -53,6 +87,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Route for login
 app.post('/login', async (req, res) => {
   try{
     const {emailUser, passwordUser} = req.body;

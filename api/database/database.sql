@@ -15,7 +15,7 @@ $$;
 
 CREATE TABLE company (
     idCompany SERIAL PRIMARY KEY NOT NULL,
-    nameCompanyh VARCHAR(255) NOT NULl,
+    nameCompany VARCHAR(255) NOT NULl,
     emailCompany VARCHAR(255) NOT NULL,
     CNPJCompany VARCHAR(14) NOT NULL
 );

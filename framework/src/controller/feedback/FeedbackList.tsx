@@ -28,8 +28,8 @@ const FeedbackList: React.FC = () => {
                     idfeedback={fb.idfeedback}
                     titlefeedback={fb.titlefeedback}
                     reviewfeedback={fb.reviewfeedback}
-                    categoryname={fb.categoryname}
-                    statusname={fb.statusname}
+                    typecategory={fb.typecategory}
+                    typestatus={fb.typestatus}
                 />
             ))}
         </div>
