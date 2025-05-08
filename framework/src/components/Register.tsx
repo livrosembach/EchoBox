@@ -1,30 +1,82 @@
-import React from "react";
-import '../css/Login.css';
+import React, { useState } from "react";
+import { registerUser } from "../controller/register/register";
+import "../css/Login.css";
 
-const Register: React.FC<{}> = ({}) => {
+const Register: React.FC<{}> = () => {
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        const userData = {
+            emailUser: formData.email,
+            passwordUser: formData.password,
+        };
+
+        const result = await registerUser(userData);
+
+        if (result) {
+            alert("User registered successfully!");
+            setFormData({
+                email: "",
+                password: "",
+                confirmPassword: "",
+            });
+        } else {
+            alert("Failed to register user.");
+        }
+    };
+
     return (
         <div className="container">
             <div className="form-container">
                 <div className="title">Junte-se a nós! Cadastre-se agora.</div>
-                <form>
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input type="username" name="username" id="username" />
-                    </div>
+                <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
-                        <input type="email" name="email" id="email" />
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                        />
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">Senha</label>
-                        <input type="password" name="password" id="password" />
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                        />
                     </div>
                     <div className="form-group">
                         <label htmlFor="confirmPassword">Confirme a senha</label>
-                        <input type="confirmPassword" name="confirmPassword" id="confirmPassword" />
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            id="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                        />
                     </div>
-                    
-                    <button type="button" className="btn-login">Cadastre-se</button>
+                    <button type="submit" className="btn-login">Cadastre-se</button>
                     <div className="links">
                         <p>Já tem conta? <a href="/login">Entrar</a></p>
                         <p>É uma empresa? <a href="/register_company">Cadastre ela aqui!</a></p>

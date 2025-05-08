@@ -6,6 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Route to get the feedvack snippets
 app.get('/feedback', async (req, res) => {
   try {
     const query = `
@@ -28,17 +29,32 @@ app.get('/feedback', async (req, res) => {
   }
 });
 
-app.post('/feedback', async (req, res) => {
+// Route to register a user
+app.post('/register', async (req, res) => {
   try {
-    const resultado = await pool.query('SELECT * FROM feedback');
-    res.json(resultado.rows);
+    const { emailUser, passwordUser, fk_user_idCompany } = req.body;
+
+    if (!emailUser || !passwordUser) {
+      return res.status(400).send('Email and password are required');
+    }
+
+    const query = `
+      INSERT INTO "user" (emailUser, passwordUser, fk_user_idCompany)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+    const values = [emailUser, passwordUser, fk_user_idCompany || null];
+    const result = await pool.query(query, values);
+
+    res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Erro ao buscar feedback');
+    res.status(500).send('Erro ao registrar usuário');
   }
 });
 
+
+// App listen shit dont touch
 app.listen(3003, () => {
   console.log('Servidor rodando em http://localhost:3003');
 });
-
