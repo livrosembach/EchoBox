@@ -1,8 +1,8 @@
 import { UserData } from "../../interface/register/UserData";
 
-export const registerUser = async (userData: UserData): Promise<UserData | null> => {
+export const loginUser = async (userData: UserData): Promise<UserData | null> => {
     try {
-        const response = await fetch("http://localhost:3003/register", {
+        const response = await fetch("http://localhost:3003/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -11,14 +11,14 @@ export const registerUser = async (userData: UserData): Promise<UserData | null>
         });
 
         if (!response.ok) {
-            console.error("Failed to register user:", await response.text());
+            console.error("Failed to log in user:", await response.text());
             return null;
         }
 
         const data: UserData = await response.json();
         return data;
     } catch (error) {
-        console.error("Error registering user:", error);
+        console.error("Error logging in user:", error);
         return null;
     }
 };

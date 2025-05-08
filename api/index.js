@@ -53,6 +53,30 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.post('/login', async (req, res) => {
+  try{
+    const {emailUser, passwordUser} = req.body;
+  
+    const query = `SELECT * FROM "user" WHERE emailUser = $1`;
+    const value = [emailUser];
+    const result = await pool.query(query, value);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+    }
+
+    const user = result.rows[0];
+    if (passwordUser === user.passworduser) {
+      res.json({ success: true, message: 'Login bem-sucedido', clientid: user.clientID });
+    } else {
+      res.status(401).json({ success: false, message: 'Senha incorreta' });
+    }
+  } catch(err){
+    console.error(err);
+    res.status(500).send("Erro ao fazer login do usuário");
+  }
+})
+
 
 // App listen shit dont touch
 app.listen(3003, () => {
