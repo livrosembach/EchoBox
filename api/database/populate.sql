@@ -28,7 +28,7 @@ INSERT INTO "status" (typeStatus) VALUES
 ('Paused');
 
 -- Populate the company table (no dependencies)
-INSERT INTO company (nameCompanyh, emailCompany, CNPJCompany) VALUES
+INSERT INTO company (nameCompany, emailCompany, CNPJCompany) VALUES
 ('Tech Solutions Inc.', 'contact@techsolutions.com', '12345678000100'),
 ('Global Innovations Ltd.', 'info@globalinnovations.com', '98765432000199'),
 ('Local Services Co.', 'support@localservices.co', '11223344000155');

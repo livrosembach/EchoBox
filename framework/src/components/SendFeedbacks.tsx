@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {ReactComponent as Star} from "../assets/star.svg"
 import '../css/SendFeedbacks.css';
+import CategorySelect from "../components/CategorySelect";
+import { CategoryData } from "../interface/feedback/CategoryData";
+import { getCategories } from "../controller/feedback/Category";
+import CompanySelect from "./CompanySelect";
+import { CompanyData } from "../interface/register/CompanyData";
+import { getCompanies } from "../controller/feedback/Company";
 
 const SendFeedback: React.FC<{}> = ({}) => {
+    const [categories, setCategories] = useState<CategoryData[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const cat = await getCategories();
+            setCategories(cat);
+        };
+
+        fetchCategories();
+    }, []);
+
+    const [companies, setCompanies] = useState<CompanyData[]>([]);
+
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            const comp = await getCompanies();
+            setCompanies(comp);
+        };
+
+        fetchCompanies();
+    }, []);
     
     return (
         <div className="send-container">
@@ -15,19 +42,11 @@ const SendFeedback: React.FC<{}> = ({}) => {
                     </div>
                     <div className="form-group-feedback">
                         <label htmlFor="chose">Empresa</label>
-                        <select name="chose" id="chose">
-                            <option value="1"></option>
-                            <option value="2">fulano</option>
-                            <option value="3">ciclano</option>
-                        </select>
+                        <CompanySelect companies={companies} />
                     </div>
                     <div className="form-group-feedback">
                         <label htmlFor="category">Categoria</label>
-                        <select name="category" id="category">
-                            <option value="1"></option>
-                            <option value="2">Entretenimento</option>
-                            <option value="3">Educação</option>
-                        </select>
+                        <CategorySelect categories={categories} />
                     </div>
                     <div className="form-group-feedback">
                         <label htmlFor="stars-group">Avaliação</label>

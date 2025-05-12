@@ -63,6 +63,24 @@ app.get('/feedback', async (req, res) => {
   }
 });
 
+//Route to get the companies
+app.get('/feedback/company', async (req, res) => {
+  try {
+    const query = `
+      SELECT
+        company.idcompany,
+        company.namecompany
+      FROM company
+    `;
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro a buscar as empresas')
+  }
+});
+
+
 // Route to register a user
 app.post('/register', async (req, res) => {
   try {

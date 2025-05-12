@@ -1,24 +1,23 @@
 import { CategoryData } from "../../interface/feedback/CategoryData";
 
-export const getCategory = async (statusData: CategoryData): Promise<CategoryData | null> => {
+export const getCategories = async (): Promise<CategoryData[]> => {
     try {
         const response = await fetch("http://localhost:3003/feedback/category", {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(statusData),
         });
 
         if (!response.ok) {
-            console.error("Failed to create status:", await response.text());
-            return null;
+            console.error("Failed to fetch categories:", await response.text());
+            return [];
         }
 
-        const data: CategoryData = await response.json();
+        const data: CategoryData[] = await response.json();
         return data;
     } catch (error) {
-        console.error("Error creating status:", error);
-        return null;
+        console.error("Error fetching categories:", error);
+        return [];
     }
 };
