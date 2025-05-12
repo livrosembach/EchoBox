@@ -6,7 +6,7 @@ import { FeedbackData } from "../interface/feedback/FeedbackData";
 const FeedbackTicket: React.FC<FeedbackData> = ({idfeedback, titlefeedback, reviewfeedback, typecategory, typestatus}) => {   
 
     return (
-        <div className="feedback">
+        <div className="feedback" onClick={() => { window.location.href = '/feedback_detail'; }}>
             <h2 className="feedback-title"><i className="fa-solid fa-envelope"></i> {titlefeedback}</h2>
             <div className="feedback-tags">
                 <span className="tag entertainment">{typecategory}</span>

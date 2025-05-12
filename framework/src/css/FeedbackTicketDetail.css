@@ -1,0 +1,51 @@
+.feedback-detail-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.feedback-data{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin-top: 3%;
+}
+
+.feedback-header{
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-items: flex-start;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    color: #0A0593;
+}
+
+.title{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title-text p{
+    font-size: 40px;
+    color: #0A0593;
+}
+
+.category-status {
+    width: 15%;
+    display: flex;
+    justify-content: space-between
+}
+
+.description {
+    font-size: 24px;
+}
+
+.company-answer {
+    border: 2px solid #0A0593;
+    border-radius: 10px;
+}

@@ -7,6 +7,7 @@ import Register from './components/Register';
 import Home from './components/Home';
 import SendFeedback from './components/SendFeedbacks';
 import RegisterCompany from './components/RegisterCompany';
+import FeedbackTicketDetail from './components/FeedbackTicketDetail';
 import './css/App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/send_feedback" element={<SendFeedback />} />
           <Route path="/register_company" element={<RegisterCompany />} />
+          <Route path='/feedback_detail' element={<FeedbackTicketDetail />} />
         </Routes>
       </div>
     </Router>
