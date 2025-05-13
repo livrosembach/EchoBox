@@ -108,19 +108,15 @@ app.post('/register', async (req, res) => {
 // Route to send feedback
 app.post('/send_feedback', async (req, res) => {
   try {
-    const { titlefeedback, ratingfeedback, reviewfeedback, fk_idUser, fk_idCompany, fk_idCategory, fk_idStatus } = req.body;
+    const { titlefeedback, reviewfeedback, fk_idUser, fk_idCompany, fk_idCategory, fk_idStatus } = req.body;
 
-    if (!titlefeedback || ratingfeedback === undefined || !reviewfeedback || !fk_idUser || !fk_idCompany || !fk_idCategory || !fk_idStatus) {
-      return res.status(400).send("Todos os campos obrigatórios (titlefeedback, ratingfeedback, reviewfeedback, fk_idUser, fk_idCompany, fk_idCategory, fk_idStatus) devem ser preenchidos.");
-    }
-
-    if (typeof ratingfeedback !== 'number' || ratingfeedback < 1 || ratingfeedback > 5) {
-      return res.status(400).send("A avaliação (ratingfeedback) deve ser um número entre 1 e 5.");
+    if (!(titlefeedback, reviewfeedback, fk_idUser, fk_idCompany, fk_idCategory, fk_idStatus)) {
+      return res.status(400).send("Todos os campos devem ser preenchidos.");
     }
 
     const query = `
-    INSERT INTO "feedback" (titleFeedback, reviewFeedback, ratingFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    INSERT INTO "feedback" (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
     `;
 
@@ -128,14 +124,8 @@ app.post('/send_feedback', async (req, res) => {
     const result = await pool.query(query, values);
 
     res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error('Erro ao enviar feedback:');
-    if (err.code === '23503') { 
-        return res.status(400).send("Erro ao enviar feedback: ID de usuário, empresa, categoria ou status inválido.");
-    }
-    if (err.code === '23502') {
-        return res.status(400).send("Erro ao enviar feedback: Um campo obrigatório está faltando.");
-    }
+  } catch(err){
+    console.error(err);
     res.status(500).send("Erro ao enviar feedback");
   }
 });
