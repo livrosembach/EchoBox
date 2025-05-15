@@ -7,8 +7,8 @@ export default function CategorySelect({ categories }: { categories: CategoryDat
         <select name="category" id="category">
             <option value="0"></option>
             {categories.map((cd) => (
-                <option key={cd.idcategory} value={cd.idcategory}>
-                    {cd.typecategory}
+                <option key={cd.idCategory} value={cd.idCategory}>
+                    {cd.typeCategory}
                 </option>
             ))}
         </select>

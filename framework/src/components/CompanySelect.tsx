@@ -7,8 +7,8 @@ export default function CompanySelect({ companies }: { companies: CompanyData[] 
         <select name="company" id="company">
             <option value="0"></option>
             {companies.map((cd) => (
-                <option key={cd.idcompany} value={cd.idcompany}>
-                    {cd.namecompany}
+                <option key={cd.idCompany} value={cd.idCompany}>
+                    {cd.nameCompany}
                 </option>
             ))}
         </select>

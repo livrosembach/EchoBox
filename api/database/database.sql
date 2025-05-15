@@ -43,7 +43,6 @@ CREATE TABLE feedback (
     idFeedback SERIAL PRIMARY KEY NOT NULL,
     titleFeedback VARCHAR(255) NOT NULL,
     reviewFeedback TEXT,
-    ratingFeedback INTEGER NOT NULL CONSTRAINT rating1to5 CHECK (ratingFeedback BETWEEN 1 AND 5),
     fk_feedback_idUser INT NOT NULL,
     fk_feedback_idCompany INT NOT NULL,
     fk_feedback_idCategory INT NOT NULL,

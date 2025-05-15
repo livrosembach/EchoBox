@@ -1,7 +1,7 @@
 export interface CompanyData {
-    idcompany?: number; 
-    namecompany: string;
-    emailcompany: string;
-    cnpjcompany: string;
+    idCompany?: number; 
+    nameCompany: string; 
+    emailCompany: string; 
+    cnpjCompany: string; 
 }
 

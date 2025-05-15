@@ -39,13 +39,13 @@ INSERT INTO "user" (emailUser, passwordUser, fk_user_idCompany) VALUES
 ('alice@techsolutions.com', 'password123', 1), -- Replace with hashed passwords in real app
 ('bob@globalinnovations.com', 'securepass', 2),
 ('charlie@techsolutions.com', 'pass123word', 1),
-('diana@localservices.co', 'anotherpass', 3);
+('diana@localservices.com', 'anotherpass', 3);
 
 -- Populate the feedback table (depends on user, company, category, status)
 -- Assuming user IDs are 1, 2, 3, 4, category IDs are 1, 2, 3, 4, 5, and status IDs are 1, 2, 3 after TRUNCATE and RESTART
-INSERT INTO feedback (titleFeedback, reviewFeedback, ratingFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus) VALUES
-('Great Product!', 'The product exceeded my expectations in terms of quality and features.', 5, 1, 1, 1, 1),
-('Slow Support Response', 'Took several days to get a response from customer support.', 2, 2, 2, 2, 2),
-('Website is confusing', 'I had trouble finding the information I needed on the website.', 3, 3, 1, 3, 3),
-('Fast Delivery', 'Received my order much faster than expected.', 5, 4, 3, 1, 1),
-('Good Value', 'The pricing is very competitive for the features offered.', 4, 1, 1, 2, 2);
+INSERT INTO feedback (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus) VALUES
+('Great Product!', 'The product exceeded my expectations in terms of quality and features.', 1, 1, 1, 1),
+('Slow Support Response', 'Took several days to get a response from customer support.', 2, 2, 2, 2),
+('Website is confusing', 'I had trouble finding the information I needed on the website.', 3, 1, 3, 3),
+('Fast Delivery', 'Received my order much faster than expected.', 4, 3, 1, 1),
+('Good Value', 'The pricing is very competitive for the features offered.', 1, 1, 2, 2);

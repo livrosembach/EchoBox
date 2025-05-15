@@ -1,4 +1,4 @@
 export interface CategoryData {
-    idcategory: number,
-    typecategory: string
+    idCategory: number, 
+    typeCategory: string 
 }

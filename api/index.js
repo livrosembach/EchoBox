@@ -48,7 +48,6 @@ app.get('/feedback', async (req, res) => {
         feedback.idFeedback,
         feedback.titleFeedback,
         feedback.reviewFeedback,
-        feedback.ratingFeedback,
         category.typeCategory,
         status.typeStatus
       FROM feedback
@@ -108,9 +107,9 @@ app.post('/register', async (req, res) => {
 // Route to send feedback
 app.post('/send_feedback', async (req, res) => {
   try {
-    const { titlefeedback, reviewfeedback, fk_idUser, fk_idCompany, fk_idCategory, fk_idStatus } = req.body;
+    const { titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus } = req.body;
 
-    if (!(titlefeedback, reviewfeedback, fk_idUser, fk_idCompany, fk_idCategory, fk_idStatus)) {
+    if (!(titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)) {
       return res.status(400).send("Todos os campos devem ser preenchidos.");
     }
 
@@ -120,7 +119,7 @@ app.post('/send_feedback', async (req, res) => {
     RETURNING *;
     `;
 
-    const values = [titlefeedback, reviewfeedback, ratingfeedback, fk_idUser, fk_idCompany, fk_idCategory, fk_idStatus];
+    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus];
     const result = await pool.query(query, values);
 
     res.status(201).json(result.rows[0]);
