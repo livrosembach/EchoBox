@@ -1,24 +1,24 @@
 import { StatusData } from "../../interface/feedback/StatusData";
 
-export const getStatus = async (statusData: StatusData): Promise<StatusData | null> => {
+export const getStatus = async (): Promise<StatusData[]> => {
     try {
-        const response = await fetch("http://localhost:3003/feedback/status", {
-            method: "POST",
+        const response = await fetch("http://localhost:3003/Status", {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(statusData),
         });
 
         if (!response.ok) {
-            console.error("Failed to create status:", await response.text());
-            return null;
+            console.error("Failed to fetch Statuses:", await response.text());
+            return [];
         }
 
-        const data: StatusData = await response.json();
+        const data: StatusData[] = await response.json();
         return data;
     } catch (error) {
-        console.error("Error creating status:", error);
-        return null;
+        console.error("Error fetching Statuses:", error);
+        return [];
     }
 };
+

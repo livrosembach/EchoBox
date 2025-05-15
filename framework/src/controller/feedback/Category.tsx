@@ -1,8 +1,8 @@
 import { CategoryData } from "../../interface/feedback/CategoryData";
 
-export const getCategories = async (): Promise<CategoryData[]> => {
+export const getCategory = async (): Promise<CategoryData[]> => {
     try {
-        const response = await fetch("http://localhost:3003/feedback/category", {
+        const response = await fetch("http://localhost:3003/category", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -21,3 +21,4 @@ export const getCategories = async (): Promise<CategoryData[]> => {
         return [];
     }
 };
+

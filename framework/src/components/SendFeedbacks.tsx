@@ -3,7 +3,7 @@ import {ReactComponent as Star} from "../assets/star.svg"
 import '../css/SendFeedbacks.css';
 import CategorySelect from "../components/CategorySelect";
 import { CategoryData } from "../interface/feedback/CategoryData";
-import { getCategories } from "../controller/feedback/Category";
+import { getCategory } from "../controller/feedback/Category";
 import CompanySelect from "./CompanySelect";
 import { CompanyData } from "../interface/register/CompanyData";
 import { getCompanies } from "../controller/feedback/Company";
@@ -13,7 +13,7 @@ const SendFeedback: React.FC<{}> = ({}) => {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const cat = await getCategories();
+            const cat = await getCategory();
             setCategories(cat);
         };
 
