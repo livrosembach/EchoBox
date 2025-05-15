@@ -24,6 +24,7 @@ const FeedbackList: React.FC = () => {
         <div>
             {feedbacks.map((fb) => (
                 <FeedbackTicket
+                    idfeedback={fb.idfeedback}
                     titlefeedback={fb.titlefeedback}
                     reviewfeedback={fb.reviewfeedback}
                     typecategory={fb.typecategory}

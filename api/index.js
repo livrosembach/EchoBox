@@ -45,6 +45,7 @@ app.get('/feedback', async (req, res) => {
   try {
     const query = `
       SELECT 
+        idFeedback,
         titleFeedback,
         reviewFeedback,
         typeCategory,
