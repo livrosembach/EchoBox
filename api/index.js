@@ -7,12 +7,12 @@ app.use(cors());
 app.use(express.json());
 
 // Route to get the categories
-app.get('/feedback/category', async (req, res) => {
+app.get('/category', async (req, res) => {
   try {
     const query = `
       SELECT
-        category.idCategory,
-        category.typeCategory
+        idCategory,
+        typeCategory
       FROM category
     `;
     const result = await pool.query(query);
@@ -24,12 +24,12 @@ app.get('/feedback/category', async (req, res) => {
 });
 
 // Route to get the categories
-app.get('/feedback/status', async (req, res) => {
+app.get('/status', async (req, res) => {
   try {
     const query = `
       SELECT
-        status.idStatus,
-        status.typeStatus
+        idStatus,
+        typeStatus
       FROM status
     `;
     const result = await pool.query(query);
@@ -40,20 +40,20 @@ app.get('/feedback/status', async (req, res) => {
   }
 });
 
-// Route to get the feedvack snippets
+// Route to list all feedback tickets
 app.get('/feedback', async (req, res) => {
   try {
     const query = `
       SELECT 
-        feedback.idFeedback,
-        feedback.titleFeedback,
-        feedback.reviewFeedback,
-        category.typeCategory,
-        status.typeStatus
+        titleFeedback,
+        reviewFeedback,
+        typeCategory,
+        typeStatus
       FROM feedback
       JOIN category ON feedback.fk_feedback_idCategory = category.idCategory
       JOIN status ON feedback.fk_feedback_idStatus = status.idStatus
     `;
+    
     const result = await pool.query(query);
     res.json(result.rows);
   } catch (err) {
@@ -62,13 +62,48 @@ app.get('/feedback', async (req, res) => {
   }
 });
 
-//Route to get the companies
-app.get('/feedback/company', async (req, res) => {
+// Route to get a specific feedback ticket by ID
+app.get('/feedback_detail/:id', async (req, res) => {
+  try {
+    const feedbackId = req.params.id;
+    
+    const query = `
+      SELECT 
+        idFeedback,
+        titleFeedback,
+        reviewFeedback,
+        emailUser,
+        nameCompany,
+        typeCategory,
+        typeStatus
+      FROM feedback
+      JOIN "user" ON feedback.fk_feedback_idUser = "user".idUser
+      JOIN company ON feedback.fk_feedback_idCompany = company.idCompany
+      JOIN category ON feedback.fk_feedback_idCategory = category.idCategory
+      JOIN status ON feedback.fk_feedback_idStatus = status.idStatus
+      WHERE idFeedback = $1
+    `;
+    
+    const result = await pool.query(query, [feedbackId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Feedback not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao buscar feedback');
+  }
+});
+
+// Route to get the companies
+app.get('/company', async (req, res) => {
   try {
     const query = `
       SELECT
-        company.idcompany,
-        company.namecompany
+        idCompany,
+        nameCompany
       FROM company
     `;
     const result = await pool.query(query);

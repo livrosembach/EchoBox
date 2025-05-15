@@ -1,5 +1,4 @@
 import '../css/Home.css';
-// import FeedbackTicket from './FeedbackTicket'
 import FeedbackList from "../controller/feedback/FeedbackList";
 
 const Home: React.FC<{}> = ({}) => {
