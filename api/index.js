@@ -104,7 +104,9 @@ app.get('/company', async (req, res) => {
     const query = `
       SELECT
         idCompany,
-        nameCompany
+        nameCompany,
+        emailCompany,
+        cnpjCompany
       FROM company
     `;
     const result = await pool.query(query);
@@ -145,7 +147,7 @@ app.post('/send_feedback', async (req, res) => {
   try {
     const { titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus } = req.body;
 
-    if (!(titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)) {
+    if (!titleFeedback || !reviewFeedback || !fk_feedback_idUser || !fk_feedback_idCompany || !fk_feedback_idCategory || !fk_feedback_idStatus) {
       return res.status(400).send("Todos os campos devem ser preenchidos.");
     }
 
