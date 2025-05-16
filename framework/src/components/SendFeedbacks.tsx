@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {ReactComponent as Star} from "../assets/star.svg"
 import '../css/SendFeedbacks.css';
 import CategorySelect from "../components/CategorySelect";
 import { CategoryData } from "../interface/feedback/CategoryData";

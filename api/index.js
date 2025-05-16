@@ -145,24 +145,25 @@ app.post('/register', async (req, res) => {
 // Route to send feedback
 app.post('/send_feedback', async (req, res) => {
   try {
-    const { titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus } = req.body;
+    const { titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory } = req.body;
 
-    if (!titleFeedback || !reviewFeedback || !fk_feedback_idUser || !fk_feedback_idCompany || !fk_feedback_idCategory || !fk_feedback_idStatus) {
+    if (!titleFeedback || !reviewFeedback || !fk_feedback_idUser || !fk_feedback_idCompany || !fk_feedback_idCategory ) {
       return res.status(400).send("Todos os campos devem ser preenchidos.");
     }
 
     const query = `
     INSERT INTO "feedback" (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    VALUES ($1, $2, $3, $4, $5, 1) -- fk_feedback_idStatus is hardcoded to 1 (In Progress)
     RETURNING *;
     `;
 
-    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus];
+    // The values array should only contain the parameters for $1, $2, $3, $4, $5
+    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory];
     const result = await pool.query(query, values);
 
     res.status(201).json(result.rows[0]);
   } catch(err){
-    console.error(err);
+    console.error('Error in /send_feedback:', err.message, err.stack); // More detailed logging
     res.status(500).send("Erro ao enviar feedback");
   }
 });
