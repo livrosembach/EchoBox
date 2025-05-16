@@ -49,16 +49,6 @@ const SendFeedback: React.FC<{}> = ({}) => {
                         <CategorySelect categories={categories} />
                     </div>
                     <div className="form-group-feedback">
-                        <label htmlFor="stars-group">Avaliação</label>
-                        <div className="stars-group">
-                            <Star className="star" />
-                            <Star className="star" />
-                            <Star className="star" />
-                            <Star className="star" />
-                            <Star className="star" />
-                        </div>
-                    </div>
-                    <div className="form-group-feedback">
                         <label htmlFor="comments">Comentários</label>
                         <textarea name="comments" id="comments"></textarea>
                     </div>

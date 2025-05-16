@@ -2,7 +2,7 @@ import { CompanyData } from "../../interface/register/CompanyData";
 
 export const getCompanies = async (): Promise<CompanyData[]> => {
     try {
-        const response = await fetch("http://localhost:3003/feedback/company", {
+        const response = await fetch("http://localhost:3003/company", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
