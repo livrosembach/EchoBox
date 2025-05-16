@@ -17,7 +17,7 @@ export const getCompanies = async (): Promise<CompanyData[]> => {
         const data: CompanyData[] = await response.json();
         return data;
     } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching companies:", error);
         return [];
     }
 };
