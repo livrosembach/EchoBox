@@ -2,14 +2,24 @@ import React, {useEffect, useState} from "react";
 import { FeedbackData } from "../../interface/feedback/FeedbackData";
 import FeedbackTicket from "../../components/FeedbackTicket";
 
+interface FeedbackListProps {
+    searchTerm: string;
+    selectedCategory: string;
+    selectedStatus: string;
+}
 
-const FeedbackList: React.FC = () => {
+const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategory, selectedStatus }) => {
     const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
 
     useEffect(() => {
         const fetchFeedbacks = async () => {
             try {
-                const response = await fetch("http://localhost:3003/feedback");
+                const queryParams = new URLSearchParams();
+                if (searchTerm) queryParams.append('search', searchTerm);
+                if (selectedCategory && selectedCategory !== 'all-categories') queryParams.append('category', selectedCategory);
+                if (selectedStatus && selectedStatus !== 'all-status') queryParams.append('status', selectedStatus);
+
+                const response = await fetch(`http://localhost:3003/feedback?${queryParams.toString()}`);
                 const data = await response.json();
                 setFeedbacks(data);
             } catch (error) {
@@ -18,7 +28,7 @@ const FeedbackList: React.FC = () => {
         };
 
         fetchFeedbacks();
-    }, []);
+    }, [searchTerm, selectedCategory, selectedStatus]);
 
     return (
         <div>

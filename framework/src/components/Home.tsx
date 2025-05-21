@@ -48,18 +48,12 @@ const Home: React.FC<{}> = ({}) => {
         setSelectedStatus(event.target.value);
     };
 
-    // You can now use searchTerm, selectedCategory, and selectedStatus
-    // to filter your feedback list or perform other actions.
-    // For example:
-    useEffect(() => {
         console.log("Search Term:", searchTerm);
         console.log("Selected Category:", selectedCategory);
         console.log("Selected Status:", selectedStatus);
-        // Add logic here to filter FeedbackList based on these values
-    }, [searchTerm, selectedCategory, selectedStatus]);
 
 
-    return (
+   return (
         <div className="start-container">
             <div className="bar">
                 <div className="search-bar-container">
@@ -83,7 +77,7 @@ const Home: React.FC<{}> = ({}) => {
                     >
                         <option value="all-categories">Todas Categorias</option>
                         {categories.map(category => (
-                            <option key={category.idcategory} value={category.idcategory}>
+                            <option key={category.idcategory} value={category.idcategory.toString()}>
                                 {category.typecategory}
                             </option>
                         ))}
@@ -96,7 +90,7 @@ const Home: React.FC<{}> = ({}) => {
                     >
                         <option value="all-status">Todos Status</option>
                         {statuses.map(status => (
-                            <option key={status.idstatus} value={status.idstatus}>
+                            <option key={status.idstatus} value={status.idstatus.toString()}>
                                 {status.typestatus}
                             </option>
                         ))}
@@ -105,7 +99,11 @@ const Home: React.FC<{}> = ({}) => {
             </div>
 
             <div className="feedback-container">
-                <FeedbackList />
+                <FeedbackList
+                    searchTerm={searchTerm}
+                    selectedCategory={selectedCategory}
+                    selectedStatus={selectedStatus}
+                />
             </div>
         </div>
     );
