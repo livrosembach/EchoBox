@@ -9,6 +9,9 @@ import { StatusData } from '../interface/feedback/StatusData';
 const Home: React.FC<{}> = ({}) => {
     const [categories, setCategories] = useState<CategoryData[]>([]);
     const [statuses, setStatuses] = useState<StatusData[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('all-categories');
+    const [selectedStatus, setSelectedStatus] = useState<string>('all-status');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -33,18 +36,51 @@ const Home: React.FC<{}> = ({}) => {
         fetchStatuses();
     }, []);
 
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedCategory(event.target.value);
+    };
+
+    const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedStatus(event.target.value);
+    };
+
+    // You can now use searchTerm, selectedCategory, and selectedStatus
+    // to filter your feedback list or perform other actions.
+    // For example:
+    useEffect(() => {
+        console.log("Search Term:", searchTerm);
+        console.log("Selected Category:", selectedCategory);
+        console.log("Selected Status:", selectedStatus);
+        // Add logic here to filter FeedbackList based on these values
+    }, [searchTerm, selectedCategory, selectedStatus]);
+
+
     return (
         <div className="start-container">
             <div className="bar">
                 <div className="search-bar-container">
-                    <input type="text" placeholder="Buscar feedbacks" className="search-bar" />
+                    <input
+                        type="text"
+                        placeholder="Buscar feedbacks"
+                        className="search-bar"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                    />
                     <span className="search-icon">
                     <i className="fa-solid fa-magnifying-glass"></i>
                     </span>
                 </div>
 
                 <div className="filters">
-                    <select className="filter-dropdown">
+                    <select
+                        className="filter-dropdown"
+                        value={selectedCategory}
+                        onChange={handleCategoryChange}
+                    >
                         <option value="all-categories">Todas Categorias</option>
                         {categories.map(category => (
                             <option key={category.idcategory} value={category.idcategory}>
@@ -53,7 +89,11 @@ const Home: React.FC<{}> = ({}) => {
                         ))}
                     </select>
 
-                    <select className="filter-dropdown">
+                    <select
+                        className="filter-dropdown"
+                        value={selectedStatus}
+                        onChange={handleStatusChange}
+                    >
                         <option value="all-status">Todos Status</option>
                         {statuses.map(status => (
                             <option key={status.idstatus} value={status.idstatus}>
