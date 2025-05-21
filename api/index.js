@@ -69,13 +69,13 @@ app.get('/feedback', async (req, res) => {
 
     if (category && category !== 'all-categories') {
       conditions.push(`f.fk_feedback_idCategory = $${paramIndex}`);
-      values.push(parseInt(category)); // Ensure category is an integer if it's an ID
+      values.push(parseInt(category));
       paramIndex++;
     }
 
     if (status && status !== 'all-status') {
       conditions.push(`f.fk_feedback_idStatus = $${paramIndex}`);
-      values.push(parseInt(status)); // Ensure status is an integer if it's an ID
+      values.push(parseInt(status));
       paramIndex++;
     }
 

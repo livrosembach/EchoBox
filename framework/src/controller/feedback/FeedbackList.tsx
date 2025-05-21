@@ -1,12 +1,8 @@
 import React, {useEffect, useState} from "react";
 import { FeedbackData } from "../../interface/feedback/FeedbackData";
 import FeedbackTicket from "../../components/FeedbackTicket";
+import { FeedbackListProps } from "../../interface/feedback/FeedbackListProps";
 
-interface FeedbackListProps {
-    searchTerm: string;
-    selectedCategory: string;
-    selectedStatus: string;
-}
 
 const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategory, selectedStatus }) => {
     const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
