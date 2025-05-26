@@ -1,25 +1,23 @@
-import { FeedbackData } from "../../interface/feedback/FeedbackData";
+import { SendFeedbackData } from "../../interface/feedback/SendFeedbackData";
 
-
-export const sendFeedback = async (FeedbackData: FeedbackData): Promise<FeedbackData | null> => {
+export const sendFeedback = async (feedbackData: SendFeedbackData): Promise<boolean> => {
     try {
-        const response = await fetch("http://localhost:3003/send_feedback", {
+        const result = await fetch("http://localhost:3003/send_feedback", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(FeedbackData),
+            body: JSON.stringify(feedbackData),
         });
 
-        if (!response.ok) {
-            console.error("Failed to register user:", await response.text());
-            return null;
+        if (!result.ok) {
+            console.error("Failed to send feedback:", await result.text());
+            return false;
         }
 
-        const data: FeedbackData = await response.json();
-        return data;
+        return true;
     } catch (error) {
         console.error("Error sending feedback:", error);
-        return null;
+        return false;
     }
 };

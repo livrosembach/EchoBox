@@ -5,6 +5,8 @@ import { getCategory } from "../controller/feedback/Category";
 import { CompanyData } from "../interface/register/CompanyData";
 import { getCompanies } from "../controller/feedback/Company";
 import { SendFeedbackData } from "../interface/feedback/SendFeedbackData";
+import { sendFeedback } from "../controller/feedback/SendFeedback";
+
 
 const SendFeedback: React.FC<{}> = ({}) => {
     const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -37,51 +39,45 @@ const SendFeedback: React.FC<{}> = ({}) => {
     }, []);
 
  
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (!title || !selectedCompany || !selectedCategory || !comments) {
-            alert('Todos os campos são obrigatórios!');
-            return;
-        }
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!title || !selectedCompany || !selectedCategory || !comments) {
+        alert('Todos os campos são obrigatórios!');
+        return;
+    }
 
-        setIsSubmitting(true);
-        
-        try {
-            const feedbackData: SendFeedbackData = {
-                titleFeedback: title,
-                reviewFeedback: comments,
-                fk_feedback_idUser: 1, 
-                fk_feedback_idCompany: parseInt(selectedCompany),
-                fk_feedback_idCategory: parseInt(selectedCategory),
-                fk_feedback_idStatus: 1 // Default status
-            };
+    setIsSubmitting(true);
+    
+    try {
+        const feedbackData: SendFeedbackData = {
+            titleFeedback: title,
+            reviewFeedback: comments,
+            fk_feedback_idUser: 1, 
+            fk_feedback_idCompany: parseInt(selectedCompany),
+            fk_feedback_idCategory: parseInt(selectedCategory),
+            fk_feedback_idStatus: 1 // Default value
+        };
 
-            const result = await fetch("http://localhost:3003/send_feedback", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(feedbackData),
-            });
+        const success = await sendFeedback(feedbackData);
 
-            if (result.ok) {
-                alert('Feedback enviado com sucesso!');
-                // Reset form
-                setTitle('');
-                setSelectedCompany('');
-                setSelectedCategory('');
-                setComments('');
-            } else {
-                alert('Erro ao enviar feedback. Tente novamente.');
-            }
-        } catch (error) {
-            console.error('Error sending feedback:', error);
+        if (success) {
+            alert('Feedback enviado com sucesso!');
+            // Reset form
+            setTitle('');
+            setSelectedCompany('');
+            setSelectedCategory('');
+            setComments('');
+        } else {
             alert('Erro ao enviar feedback. Tente novamente.');
-        } finally {
-            setIsSubmitting(false);
         }
-    };
+    } catch (error) {
+        console.error('Error sending feedback:', error);
+        alert('Erro ao enviar feedback. Tente novamente.');
+    } finally {
+        setIsSubmitting(false);
+    }
+};
     
     return (
         <div className="send-container">
