@@ -181,11 +181,11 @@ app.post('/send_feedback', async (req, res) => {
 
     const query = `
     INSERT INTO "feedback" (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)
-    VALUES ($1, $2, $3, $4, $5, 1)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
     `;
 
-    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus];
+    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus || 1];
     const result = await pool.query(query, values);
 
     res.status(201).json(result.rows[0]);

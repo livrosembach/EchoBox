@@ -7,3 +7,4 @@ export interface FeedbackData {
     typecategory: string,
     typestatus: string
 }
+
