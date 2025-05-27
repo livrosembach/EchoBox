@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FeedbackData } from "../interface/feedback/FeedbackData";
+import { getFeedbackDetail } from "../controller/feedback/FeedbackTicketDetail";
 import '../css/FeedbackTicketDetail.css'
 
 const FeedbackTicketDetail: React.FC = () => {
@@ -11,28 +12,31 @@ const FeedbackTicketDetail: React.FC = () => {
 
     useEffect(() => {
         const fetchFeedbackDetail = async () => {
+            if (!id) {
+                setError("No feedback ID provided");
+                setLoading(false);
+                return;
+            }
+
             try {
                 setLoading(true);
-                // You'll need to add this endpoint to your API
-                const response = await fetch(`http://localhost:3003/feedback_detail/${id}`);
+                const data = await getFeedbackDetail(id);
                 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch feedback details');
+                if (data) {
+                    setFeedback(data);
+                    setError(null);
+                } else {
+                    setError("Failed to load feedback details");
                 }
-                
-                const data = await response.json();
-                setFeedback(data);
-                setLoading(false);
             } catch (error) {
                 console.error("Error fetching feedback details:", error);
                 setError("Failed to load feedback details");
+            } finally {
                 setLoading(false);
             }
         };
 
-        if (id) {
-            fetchFeedbackDetail();
-        }
+        fetchFeedbackDetail();
     }, [id]);
 
     if (loading) return <div className="loading">Loading...</div>;

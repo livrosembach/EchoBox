@@ -7,7 +7,7 @@ const FeedbackTicket: React.FC<FeedbackData> = ({ idfeedback, titlefeedback, rev
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate(`/feedback_detail/${idfeedback}`);
+        navigate(`/feedback/${idfeedback}`);
     };
 
     return (

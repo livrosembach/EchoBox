@@ -22,7 +22,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/send_feedback" element={<SendFeedback />} />
           <Route path="/register_company" element={<RegisterCompany />} />
-          <Route path='/feedback_detail/:id' element={<FeedbackTicketDetail />} />
+          <Route path='/feedback/:id' element={<FeedbackTicketDetail />} />
         </Routes>
       </div>
     </Router>
