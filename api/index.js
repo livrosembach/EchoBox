@@ -1,10 +1,20 @@
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db');
+const pool = require('./db')
 const app = express();
+
+// Import routes
+const companyRoutes = require('./routes/companies');
+// const feedbackRoutes = require('./routes/feedbacks');
+// const userRoutes = require('./routes/users');
 
 app.use(cors());
 app.use(express.json());
+
+// Use routes
+app.use('/company', companyRoutes);
+// app.use('/feedback', feedbackRoutes);
+// app.use('/user', userRoutes);
 
 // Route to get the categories
 app.get('/category', async (req, res) => {
@@ -23,7 +33,7 @@ app.get('/category', async (req, res) => {
   }
 });
 
-// Route to get the categories
+// Route to get the statuses
 app.get('/status', async (req, res) => {
   try {
     const query = `
@@ -123,25 +133,6 @@ app.get('/feedback_detail/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao buscar feedback');
-  }
-});
-
-// Route to get the companies
-app.get('/company', async (req, res) => {
-  try {
-    const query = `
-      SELECT
-        idCompany,
-        nameCompany,
-        emailCompany,
-        cnpjCompany
-      FROM company
-    `;
-    const result = await pool.query(query);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro a buscar as empresas')
   }
 });
 

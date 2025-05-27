@@ -26,7 +26,7 @@ CREATE TABLE "user" (
     passwordUser VARCHAR(32) NOT NULL,
     fk_user_idCompany INT,
 
-    CONSTRAINT fk_user_company FOREIGN KEY (fk_user_idCompany) REFERENCES company(idCompany)
+    CONSTRAINT fk_user_company FOREIGN KEY (fk_user_idCompany) REFERENCES company(idCompany) ON DELETE CASCADE
 );
 
 CREATE table category (
@@ -48,8 +48,8 @@ CREATE TABLE feedback (
     fk_feedback_idCategory INT NOT NULL,
     fk_feedback_idStatus INT NOT NULL,
 
-    CONSTRAINT fk_feedback_user FOREIGN KEY (fk_feedback_idUser) REFERENCES "user"(idUser),
-    CONSTRAINT fk_feedback_company FOREIGN KEY (fk_feedback_idCompany) REFERENCES company(idCompany),
+    CONSTRAINT fk_feedback_user FOREIGN KEY (fk_feedback_idUser) REFERENCES "user"(idUser) ON DELETE CASCADE,
+    CONSTRAINT fk_feedback_company FOREIGN KEY (fk_feedback_idCompany) REFERENCES company(idCompany) ON DELETE CASCADE,
     CONSTRAINT fk_feedback_category FOREIGN KEY (fk_feedback_idCategory) REFERENCES category(idCategory),
     CONSTRAINT fk_feedback_status FOREIGN KEY (fk_feedback_idStatus) REFERENCES status(idStatus)
 );
