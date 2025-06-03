@@ -1,8 +1,9 @@
 import { UserData } from "../../interface/register/UserData";
+import { LoginResponse } from "../../interface/register/LoginResponse";
 
-export const loginUser = async (userData: UserData): Promise<UserData | null> => {
+export const loginUser = async (userData: UserData): Promise<LoginResponse | null> => {
     try {
-        const response = await fetch("http://localhost:3003/login", {
+        const response = await fetch("http://localhost:3003/user/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -11,11 +12,22 @@ export const loginUser = async (userData: UserData): Promise<UserData | null> =>
         });
 
         if (!response.ok) {
-            console.error("Failed to log in user:", await response.text());
+            if (response.status === 404) {
+                console.error("User not found");
+            } else if (response.status === 401) {
+                console.error("Invalid password");
+            }
             return null;
         }
 
-        const data: UserData = await response.json();
+        const data: LoginResponse = await response.json();
+        
+        // Not really sure what this is, I think its a cookie 🍪??
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        console.log(data.token)
+        console.log(data.user)
         return data;
     } catch (error) {
         console.error("Error logging in user:", error);

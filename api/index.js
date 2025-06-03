@@ -6,7 +6,7 @@ const app = express();
 // Import routes
 const companyRoutes = require('./routes/companies');
 const feedbackRoutes = require('./routes/feedbacks');
-// const userRoutes = require('./routes/users');
+const userRoutes = require('./routes/users');
 
 app.use(cors());
 app.use(express.json());
@@ -14,7 +14,7 @@ app.use(express.json());
 // Use routes
 app.use('/company', companyRoutes);
 app.use('/feedback', feedbackRoutes);
-// app.use('/user', userRoutes);
+app.use('/user', userRoutes);
 
 // Route to get the categories
 app.get('/category', async (req, res) => {
@@ -50,31 +50,6 @@ app.get('/status', async (req, res) => {
   }
 });
 
-// Route to send feedback
-app.post('/send_feedback', async (req, res) => {
-  try {
-    const { titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus } = req.body;
-
-    if (!titleFeedback || !reviewFeedback || !fk_feedback_idUser || !fk_feedback_idCompany || !fk_feedback_idCategory ) {
-      return res.status(400).send("Todos os campos devem ser preenchidos.");
-    }
-
-    const query = `
-    INSERT INTO "feedback" (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)
-    VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING *;
-    `;
-
-    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus || 1];
-    const result = await pool.query(query, values);
-
-    res.status(201).json(result.rows[0]);
-  } catch(err){
-    console.error(err);
-    res.status(500).send("Erro ao enviar feedback");
-  }
-});
-
 // Route to register a user
 app.post('/register', async (req, res) => {
   try {
@@ -99,30 +74,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Route for login
-app.post('/login', async (req, res) => {
-  try{
-    const {emailUser, passwordUser} = req.body;
-  
-    const query = `SELECT * FROM "user" WHERE emailUser = $1`;
-    const value = [emailUser];
-    const result = await pool.query(query, value);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
-    }
-
-    const user = result.rows[0];
-    if (passwordUser === user.passworduser) {
-      res.json({ success: true, message: 'Login bem-sucedido', clientid: user.clientID });
-    } else {
-      res.status(401).json({ success: false, message: 'Senha incorreta' });
-    }
-  } catch(err){
-    console.error(err);
-    res.status(500).send("Erro ao fazer login do usuário");
-  }
-})
 
 
 // App listen shit dont touch

@@ -2,7 +2,7 @@ import { UserData } from "../../interface/register/UserData";
 
 export const registerUser = async (userData: UserData): Promise<UserData | null> => {
     try {
-        const response = await fetch("http://localhost:3003/register", {
+        const response = await fetch("http://localhost:3003/user/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

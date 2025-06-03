@@ -53,6 +53,32 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+// POST /feedback
+router.post('/', async (req, res) => {
+  try {
+    const { titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus } = req.body;
+
+    if (!titleFeedback || !reviewFeedback || !fk_feedback_idUser || !fk_feedback_idCompany || !fk_feedback_idCategory ) {
+      return res.status(400).send("Todos os campos obrigatórios devem ser preenchidos.");
+    }
+
+    const query = `
+    INSERT INTO "feedback" (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING *;
+    `;
+
+    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus || 1];
+    const result = await pool.query(query, values);
+
+    res.status(201).json(result.rows[0]);
+  } catch(err){
+    console.error(err);
+    res.status(500).send("Erro ao enviar feedback");
+  }
+});
+
 // GET /feedback/:id
 router.get('/:id', async (req, res) => {
   try {
@@ -85,31 +111,6 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao buscar feedback');
-  }
-});
-
-// POST /feedback
-router.post('/', async (req, res) => {
-  try {
-    const { titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus } = req.body;
-
-    if (!titleFeedback || !reviewFeedback || !fk_feedback_idUser || !fk_feedback_idCompany || !fk_feedback_idCategory ) {
-      return res.status(400).send("Todos os campos obrigatórios devem ser preenchidos.");
-    }
-
-    const query = `
-    INSERT INTO "feedback" (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus)
-    VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING *;
-    `;
-
-    const values = [titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus || 1];
-    const result = await pool.query(query, values);
-
-    res.status(201).json(result.rows[0]);
-  } catch(err){
-    console.error(err);
-    res.status(500).send("Erro ao enviar feedback");
   }
 });
 
