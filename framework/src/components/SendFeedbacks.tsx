@@ -6,9 +6,11 @@ import { CompanyData } from "../interface/register/CompanyData";
 import { getCompanies } from "../controller/feedback/Company";
 import { SendFeedbackData } from "../interface/feedback/SendFeedbackData";
 import { sendFeedback } from "../controller/feedback/SendFeedback";
+import { useNavigate } from "react-router-dom";
 
 
 const SendFeedback: React.FC<{}> = ({}) => {
+    const navigate = useNavigate()
     const [categories, setCategories] = useState<CategoryData[]>([]);
     const [companies, setCompanies] = useState<CompanyData[]>([]);
     
@@ -63,11 +65,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         if (success) {
             alert('Feedback enviado com sucesso!');
-            // Reset form
             setTitle('');
             setSelectedCompany('');
             setSelectedCategory('');
             setComments('');
+            navigate('/home')
         } else {
             alert('Erro ao enviar feedback. Tente novamente.');
         }

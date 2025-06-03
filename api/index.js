@@ -50,58 +50,6 @@ app.get('/status', async (req, res) => {
   }
 });
 
-// Route to list all feedback tickets
-app.get('/feedback', async (req, res) => {
-  try {
-    const { search, category, status } = req.query;
-
-    let query = `
-      SELECT 
-        f.idFeedback,
-        f.titleFeedback,
-        f.reviewFeedback,
-        cat.typeCategory,
-        s.typeStatus
-      FROM feedback f
-      JOIN category cat ON f.fk_feedback_idCategory = cat.idCategory
-      JOIN status s ON f.fk_feedback_idStatus = s.idStatus
-    `;
-    
-    const conditions = [];
-    const values = [];
-    let paramIndex = 1;
-
-    if (search) {
-      conditions.push(`(f.titleFeedback ILIKE $${paramIndex} OR f.reviewFeedback ILIKE $${paramIndex})`);
-      values.push(`%${search}%`);
-      paramIndex++;
-    }
-
-    if (category && category !== 'all-categories') {
-      conditions.push(`f.fk_feedback_idCategory = $${paramIndex}`);
-      values.push(parseInt(category));
-      paramIndex++;
-    }
-
-    if (status && status !== 'all-status') {
-      conditions.push(`f.fk_feedback_idStatus = $${paramIndex}`);
-      values.push(parseInt(status));
-      paramIndex++;
-    }
-
-    if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
-    }
-    
-    const result = await pool.query(query, values);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao buscar feedback');
-  }
-});
-
-
 // Route to send feedback
 app.post('/send_feedback', async (req, res) => {
   try {
