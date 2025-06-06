@@ -1,5 +1,5 @@
-import { UserData } from "../../interface/register/UserData";
-import { LoginResponse } from "../../interface/register/LoginResponse";
+import { UserData } from "../../interface/user/UserData";
+import { LoginResponse } from "../../interface/user/LoginResponse";
 
 export const loginUser = async (userData: UserData): Promise<LoginResponse | null> => {
     try {

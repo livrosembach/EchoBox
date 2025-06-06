@@ -1,4 +1,4 @@
-import { CompanyData } from "../../interface/register/CompanyData";
+import { CompanyData } from "../../interface/user/CompanyData";
 
 export const getCompanies = async (): Promise<CompanyData[]> => {
     try {

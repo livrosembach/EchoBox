@@ -1,4 +1,4 @@
-import { UserData } from "../../interface/register/UserData";
+import { UserData } from "../../interface/user/UserData";
 
 export const registerUser = async (userData: UserData): Promise<UserData | null> => {
     try {

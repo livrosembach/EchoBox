@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import '../css/SendFeedbacks.css';
 import { CategoryData } from "../interface/feedback/CategoryData";
 import { getCategory } from "../controller/feedback/Category";
-import { CompanyData } from "../interface/register/CompanyData";
+import { CompanyData } from "../interface/user/CompanyData";
 import { getCompanies } from "../controller/feedback/Company";
 import { SendFeedbackData } from "../interface/feedback/SendFeedbackData";
 import { sendFeedback } from "../controller/feedback/SendFeedback";

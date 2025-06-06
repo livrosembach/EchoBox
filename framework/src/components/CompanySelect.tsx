@@ -1,5 +1,5 @@
 import React from "react";
-import { CompanyData } from "../interface/register/CompanyData";
+import { CompanyData } from "../interface/user/CompanyData";
 import '../css/SendFeedbacks.css';
 
 export default function CompanySelect({ companies }: { companies: CompanyData[] }) {
