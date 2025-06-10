@@ -2,7 +2,7 @@ import { SendFeedbackData } from "../../interface/feedback/SendFeedbackData";
 
 export const sendFeedback = async (feedbackData: SendFeedbackData): Promise<boolean> => {
     try {
-        const result = await fetch("http://localhost:3003/send_feedback", {
+        const result = await fetch("http://localhost:3003/feedback", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
