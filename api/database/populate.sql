@@ -14,18 +14,19 @@ ALTER SEQUENCE feedback_idfeedback_seq RESTART WITH 1;
 ALTER SEQUENCE status_idStatus_seq RESTART WITH 1;
 
 -- Populate the category table (no dependencies)
-INSERT INTO category (typeCategory) VALUES
-('Product Quality'),
-('Customer Service'),
-('Website Usability'),
-('Delivery Speed'),
-('Pricing');
+INSERT INTO category (typeCategory, colorCategory) VALUES
+('Product Quality', '#4CAF50'),      
+('Customer Service', '#2196F3'),
+('Website Usability', '#FF9800'),
+('Delivery Speed', '#9C27B0'),
+('Pricing', '#F44336');
+
 
 -- Populate the status table (no dependencies)
-INSERT INTO "status" (typeStatus) VALUES
-('In Progress'),
-('Solved'),
-('Paused');
+INSERT INTO "status" (typeStatus, colorStatus) VALUES
+('In Progress', '#FF9800'),
+('Solved', '#4CAF50'),
+('Paused', '#F44336');
 
 -- Populate the company table (no dependencies)
 INSERT INTO company (nameCompany, emailCompany, CNPJCompany) VALUES

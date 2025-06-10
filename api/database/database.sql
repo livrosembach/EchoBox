@@ -31,12 +31,14 @@ CREATE TABLE "user" (
 
 CREATE table category (
     idCategory SERIAL PRIMARY KEY NOT NULL,
-    typeCategory VARCHAR(255) NOT NULL
+    typeCategory VARCHAR(255) NOT NULL,
+    colorCategory VARCHAR(255)
 );
 
 CREATE TABLE "status" (
     idStatus SERIAL PRIMARY KEY NOT NULL,
-    typeStatus VARCHAR(255) NOT NULL
+    typeStatus VARCHAR(255) NOT NULL,
+    colorStatus VARCHAR(255)
 );
 
 CREATE TABLE feedback (

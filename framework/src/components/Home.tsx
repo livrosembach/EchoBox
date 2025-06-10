@@ -54,7 +54,7 @@ const Home: React.FC<{}> = ({}) => {
 
 
    return (
-        <div className="start-container">
+        <>
             <div className="bar">
                 <div className="search-bar-container">
                     <input
@@ -105,7 +105,7 @@ const Home: React.FC<{}> = ({}) => {
                     selectedStatus={selectedStatus}
                 />
             </div>
-        </div>
+        </>
     );
 };
 

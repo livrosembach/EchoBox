@@ -30,11 +30,14 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategor
         <div>
             {feedbacks.map((fb) => (
                 <FeedbackTicket
+                    key={fb.idfeedback}
                     idfeedback={fb.idfeedback}
                     titlefeedback={fb.titlefeedback}
                     reviewfeedback={fb.reviewfeedback}
                     typecategory={fb.typecategory}
+                    colorcategory={fb.colorcategory}
                     typestatus={fb.typestatus}
+                    colorstatus={fb.colorstatus}
                 />
             ))}
         </div>

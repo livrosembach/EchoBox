@@ -5,6 +5,8 @@ export interface FeedbackData {
     emailuser?: string,
     namecompany?: string,
     typecategory: string,
-    typestatus: string
+    colorcategory: string,
+    typestatus: string,
+    colorstatus: string
 }
 

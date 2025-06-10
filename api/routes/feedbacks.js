@@ -13,7 +13,9 @@ router.get('/', async (req, res) => {
         f.titleFeedback,
         f.reviewFeedback,
         cat.typeCategory,
-        s.typeStatus
+        cat.colorCategory,
+        s.typeStatus,
+        s.colorStatus
       FROM feedback f
       JOIN category cat ON f.fk_feedback_idCategory = cat.idCategory
       JOIN status s ON f.fk_feedback_idStatus = s.idStatus
@@ -92,7 +94,9 @@ router.get('/:id', async (req, res) => {
         emailUser,
         nameCompany,
         typeCategory,
-        typeStatus
+        colorCategory,
+        typeStatus,
+        colorStatus
       FROM feedback
       JOIN "user" ON feedback.fk_feedback_idUser = "user".idUser
       JOIN company ON feedback.fk_feedback_idCompany = company.idCompany

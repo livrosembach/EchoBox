@@ -55,8 +55,8 @@ const FeedbackTicketDetail: React.FC = () => {
                         <p>{feedback.titlefeedback}</p>
                     </div>
                     <div className="category-status">
-                        <span className="tag entertainment">{feedback.typecategory}</span>
-                        <span className="tag answered">{feedback.typestatus}</span>
+                        <span className="tag" style={{ backgroundColor: feedback.colorcategory || '#CCCCCC' }}>{feedback.typecategory}</span>
+                        <span className="tag" style={{ backgroundColor: feedback.colorstatus || '#007bff' }}>{feedback.typestatus}</span>
                     </div>
                 </div>
                 <div className="description">
