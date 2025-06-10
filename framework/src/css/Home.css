@@ -1,21 +1,18 @@
-.start-container{
-    width: 100%;
+body, #root, .App {
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 .bar {
-    width: auto;
-    height: 20px;
+    width: 100%;
+    height: auto;
+    min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: absolute;
-    top: 20%;
-    left: 0;
-    margin-left: 5%;
-    right: 0;
-
+    padding: 20px 5%;
+    box-sizing: border-box;
 }
 
 .search-bar-container {
@@ -65,19 +62,21 @@
 }
 
 .feedback-container {
-    width: 65%;
-    margin-top: 30%;
-    padding: 0 5%;
+    width: 90%;
     display: flex;
     flex-direction: column;
-    align-self: flex-start;
     gap: 20px;
+    padding: 20px 5%;
+    margin: 0 auto;
+    flex: 1;
 }
 
 .feedback {
     border-radius: 12px;
-    padding: 0 0 15px;
-    width: 77%;
+    padding: 15px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
 }
 
 .feedback-title {
@@ -102,18 +101,6 @@
     font-size: 16px;
     font-weight: bold;
     color: white;
-}
-
-.tag.entertainment {
-    background-color: orange;
-}
-
-.tag.education {
-    background-color: green;
-}
-
-.tag.answered {
-    background-color: #007bff;
 }
 
 .feedback-description {
