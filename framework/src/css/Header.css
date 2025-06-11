@@ -1,4 +1,3 @@
-
 header{
     height: 10vh;
     display: flex;
@@ -52,6 +51,39 @@ nav a{
     height: 40px;
     padding: 8px 20px;
     font-size: 1.2rem;
+}
+
+.logout-button{
+    height: 40px;
+    padding: 8px 20px;
+    font-size: 1.2rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover{
+    background-color: #c82333;
+}
+
+/* User info styling */
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.user-email {
+    color: #0A0593;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 8px 12px;
+    background-color: #f0f0ff;
+    border-radius: 20px;
+    border: 1px solid #e0e0ff;
 }
 
 

@@ -11,6 +11,7 @@ import { getCategory } from '../controller/feedback/Category';
 import { getStatus } from '../controller/feedback/Status';
 import { getUsers } from '../controller/user/User';
 import { getCompanies } from '../controller/feedback/Company';
+import { getCurrentUser } from '../utils/Auth';
 import '../css/CategoryManager.css'; // Reusing base styling
 import '../css/FeedbackManager.css'; // Custom styling for feedback manager
 
@@ -101,12 +102,15 @@ const FeedbackManager: React.FC = () => {
   };
 
   const handleAdd = async () => {
+    // Get current logged-in user
+    const currentUser = getCurrentUser();
+    
     setCurrentFeedback(null);
     setFormData({
       titleFeedback: '',
       reviewFeedback: '',
-      fk_feedback_idUser: '',
-      fk_feedback_idCompany: '',
+      fk_feedback_idUser: currentUser ? currentUser.id : '',
+      fk_feedback_idCompany: currentUser ? currentUser.companyId || '' : '',
       fk_feedback_idCategory: '',
       fk_feedback_idStatus: ''
     });

@@ -30,6 +30,7 @@ INSERT INTO "status" (typeStatus, colorStatus) VALUES
 
 -- Populate the company table (no dependencies)
 INSERT INTO company (nameCompany, emailCompany, CNPJCompany) VALUES
+('EchoBox', 'EchoBox@company.com', '12345677654321'),
 ('Tech Solutions Inc.', 'contact@techsolutions.com', '12345678000100'),
 ('Global Innovations Ltd.', 'info@globalinnovations.com', '98765432000199'),
 ('Local Services Co.', 'support@localservices.co', '11223344000155');
@@ -37,10 +38,11 @@ INSERT INTO company (nameCompany, emailCompany, CNPJCompany) VALUES
 -- Populate the "user" table (depends on company)
 -- Assuming company IDs are 1, 2, 3 after TRUNCATE and RESTART
 INSERT INTO "user" (emailUser, passwordUser, fk_user_idCompany) VALUES
-('alice@techsolutions.com', 'password123', 1), -- Replace with hashed passwords in real app
-('bob@globalinnovations.com', 'securepass', 2),
-('charlie@techsolutions.com', 'pass123word', 1),
-('diana@localservices.com', 'anotherpass', 3);
+('EchoBox@admin.com', 'admin', 1),
+('alice@techsolutions.com', 'password123', 2),
+('bob@globalinnovations.com', 'securepass', 3),
+('charlie@techsolutions.com', 'pass123word', 2),
+('diana@localservices.com', 'anotherpass', 4);
 
 -- Populate the feedback table (depends on user, company, category, status)
 -- Assuming user IDs are 1, 2, 3, 4, category IDs are 1, 2, 3, 4, 5, and status IDs are 1, 2, 3 after TRUNCATE and RESTART

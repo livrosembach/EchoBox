@@ -7,6 +7,7 @@ import { getCompanies } from "../controller/feedback/Company";
 import { SendFeedbackData } from "../interface/feedback/SendFeedbackData";
 import { sendFeedback } from "../controller/feedback/SendFeedback";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser } from "../utils/Auth";
 
 
 const SendFeedback: React.FC<{}> = ({}) => {
@@ -49,13 +50,21 @@ const handleSubmit = async (e: React.FormEvent) => {
         return;
     }
 
+    // Get the current logged-in user
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        alert('Você precisa estar logado para enviar feedback!');
+        navigate('/login');
+        return;
+    }
+
     setIsSubmitting(true);
     
     try {
         const feedbackData: SendFeedbackData = {
             titleFeedback: title,
             reviewFeedback: comments,
-            fk_feedback_idUser: 1, 
+            fk_feedback_idUser: parseInt(currentUser.id), // Use logged-in user ID
             fk_feedback_idCompany: parseInt(selectedCompany),
             fk_feedback_idCategory: parseInt(selectedCategory),
             fk_feedback_idStatus: 1 // Default value

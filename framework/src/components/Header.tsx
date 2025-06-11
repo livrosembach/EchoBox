@@ -1,14 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import logo from '../assets/logo.svg';
 import '../css/Header.css';
 import { logout } from "../utils/Logout";
+import { getCurrentUser, isUserLoggedIn, AUTH_STATE_CHANGED } from "../utils/Auth";
 
 const Header: React.FC<{}> = ({}) => {
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+    useEffect(() => {
+        const checkAuthStatus = () => {
+            const user = getCurrentUser();
+            const loggedIn = isUserLoggedIn();
+            setCurrentUser(user);
+            setIsLoggedIn(loggedIn);
+        };
+
+        // Check auth status on component mount
+        checkAuthStatus();
+        
+        // Listen for custom auth state change events
+        window.addEventListener(AUTH_STATE_CHANGED, checkAuthStatus);
+        
+        // Also listen for storage changes (when user logs in/out in another tab)
+        window.addEventListener('storage', checkAuthStatus);
+        
+        return () => {
+            window.removeEventListener(AUTH_STATE_CHANGED, checkAuthStatus);
+            window.removeEventListener('storage', checkAuthStatus);
+        };
+    }, []);
+
     const handleLogout = () => {
         logout();
+        setCurrentUser(null);
+        setIsLoggedIn(false);
     };
-        return (
-            <header>
+
+    return (
+        <header>
             <div className="logo" onClick={() => { window.location.href = '/'; }}>
                 <img src={logo} className="logo-img" alt="logo" />
                 <div className="logo-text">EchoBox</div>
@@ -18,8 +48,16 @@ const Header: React.FC<{}> = ({}) => {
                     <li><a href="/home">Home</a></li>
                     <li><a href="/send_feedback">Enviar Feedback</a></li>
                     <li><a href="/admin">Admin</a></li>
-                    <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Login</button></li>
-                    <li><button className="login-button" onClick={handleLogout}>Logout</button></li>
+                    {isLoggedIn ? (
+                        <>
+                            <li className="user-info">
+                                <span className="user-email">{currentUser?.email}</span>
+                            </li>
+                            <li><button className="logout-button" onClick={handleLogout}>Logout</button></li>
+                        </>
+                    ) : (
+                        <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Login</button></li>
+                    )}
                 </ul>
             </nav>
         </header>

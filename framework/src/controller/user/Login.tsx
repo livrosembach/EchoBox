@@ -1,5 +1,6 @@
 import { UserData } from "../../interface/user/UserData";
 import { LoginResponse } from "../../interface/user/LoginResponse";
+import { dispatchAuthStateChange } from "../../utils/Auth";
 
 export const loginUser = async (userData: UserData): Promise<LoginResponse | null> => {
     try {
@@ -22,9 +23,12 @@ export const loginUser = async (userData: UserData): Promise<LoginResponse | nul
 
         const data: LoginResponse = await response.json();
         
-        // Not really sure what this is, I think its a cookie 🍪??
+        // Store auth data
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Dispatch auth state change event
+        dispatchAuthStateChange();
         
         console.log(data.token)
         console.log(data.user)
