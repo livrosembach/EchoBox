@@ -4,7 +4,7 @@ TRUNCATE TABLE feedback CASCADE;
 TRUNCATE TABLE "user" CASCADE;
 TRUNCATE TABLE company CASCADE;
 TRUNCATE TABLE category CASCADE;
-TRUNCATE TABLE status CASCADE;
+TRUNCATE TABLE "status" CASCADE;
 
 -- Reset sequences for SERIAL columns after TRUNCATE 
 ALTER SEQUENCE category_idcategory_seq RESTART WITH 1;
@@ -36,12 +36,11 @@ INSERT INTO company (nameCompany, emailCompany, CNPJCompany) VALUES
 ('Local Services Co.', 'support@localservices.co', '11223344000155');
 
 -- Populate the "user" table (depends on company)
--- Assuming company IDs are 1, 2, 3 after TRUNCATE and RESTART
+-- Assuming company IDs are 1, 2, 3, 4 after TRUNCATE and RESTART
 INSERT INTO "user" (emailUser, passwordUser, fk_user_idCompany) VALUES
 ('EchoBox@admin.com', 'admin', 1),
 ('alice@techsolutions.com', 'password123', 2),
 ('bob@globalinnovations.com', 'securepass', 3),
-('charlie@techsolutions.com', 'pass123word', 2),
 ('diana@localservices.com', 'anotherpass', 4);
 
 -- Populate the feedback table (depends on user, company, category, status)
