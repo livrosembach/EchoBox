@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { CategoryData } from '../interface/feedback/CategoryData';
 import { getCategory, createCategory, updateCategory, deleteCategory } from '../controller/feedback/Category';
+import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css';
 
 const CategoryManager: React.FC = () => {
+  const { isAuthorized, isLoading } = useAdminGuard();
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,8 +18,18 @@ const CategoryManager: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    if (isAuthorized) {
+      fetchCategories();
+    }
+  }, [isAuthorized]);
+
+  if (isLoading) {
+    return <div className="loading">Checking permissions...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null; // Component will be redirected by the hook
+  }
 
   const fetchCategories = async () => {
     try {

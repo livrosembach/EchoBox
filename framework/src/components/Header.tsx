@@ -47,7 +47,10 @@ const Header: React.FC<{}> = ({}) => {
                 <ul>
                     <li><a href="/home">Home</a></li>
                     <li><a href="/send_feedback">Enviar Feedback</a></li>
-                    <li><a href="/admin">Admin</a></li>
+                    {/* Only show Admin link for EchoBox company users (company ID 1) */}
+                    {isLoggedIn && currentUser?.companyId === 1 && (
+                        <li><a href="/admin">Admin</a></li>
+                    )}
                     {isLoggedIn ? (
                         <>
                             <li className="user-info">

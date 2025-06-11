@@ -1,8 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/AdminPanel.css';
 
 const AdminPanel: React.FC = () => {
+  const { isAuthorized, isLoading } = useAdminGuard();
+
+  if (isLoading) {
+    return <div className="loading">Checking permissions...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null; // Component will be redirected by the hook
+  }
+
   return (
     <div className="admin-panel">
       <h1 className="admin-title">Admin Dashboard</h1>

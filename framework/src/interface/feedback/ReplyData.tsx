@@ -6,4 +6,5 @@ export interface ReplyData {
     fk_reply_iduser: number;
     emailuser?: string;
     namecompany?: string;
+    createdat?: string;
 }

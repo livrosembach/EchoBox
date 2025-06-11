@@ -4,6 +4,7 @@ import { UserData } from '../interface/user/UserData';
 import { CompanyData } from '../interface/user/CompanyData';
 import { getUsers, createUser, updateUser, deleteUser } from '../controller/user/User';
 import { getCompanies } from '../controller/feedback/Company';
+import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing the same styling
 
 interface UserWithCompany extends UserData {
@@ -11,6 +12,7 @@ interface UserWithCompany extends UserData {
 }
 
 const UserManager: React.FC = () => {
+  const { isAuthorized, isLoading } = useAdminGuard();
   const [users, setUsers] = useState<UserWithCompany[]>([]);
   const [companies, setCompanies] = useState<CompanyData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,9 +27,19 @@ const UserManager: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchUsers();
-    fetchCompanies();
-  }, []);
+    if (isAuthorized) {
+      fetchUsers();
+      fetchCompanies();
+    }
+  }, [isAuthorized]);
+
+  if (isLoading) {
+    return <div className="loading">Checking permissions...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null; // Component will be redirected by the hook
+  }
 
   const fetchUsers = async () => {
     try {

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { CompanyData } from '../interface/user/CompanyData';
 import { getCompanies, createCompany, updateCompany, deleteCompany } from '../controller/feedback/Company';
+import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing the same styling
 
 const CompanyManager: React.FC = () => {
+  const { isAuthorized, isLoading: authLoading } = useAdminGuard();
   const [companies, setCompanies] = useState<CompanyData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,8 +19,10 @@ const CompanyManager: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchCompanies();
-  }, []);
+    if (isAuthorized) {
+      fetchCompanies();
+    }
+  }, [isAuthorized]);
 
   const fetchCompanies = async () => {
     try {
@@ -138,6 +142,14 @@ const CompanyManager: React.FC = () => {
       width: '30%'
     }
   ];
+
+  if (authLoading) {
+    return <div className="loading">Checking permissions...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null; // Component will be redirected by the hook
+  }
 
   return (
     <div className="category-manager">

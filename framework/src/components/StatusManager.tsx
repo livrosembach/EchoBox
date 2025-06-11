@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { StatusData } from '../interface/feedback/StatusData';
 import { getStatus, createStatus, updateStatus, deleteStatus } from '../controller/feedback/Status';
+import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing the same styling
 
 const StatusManager: React.FC = () => {
+  const { isAuthorized, isLoading } = useAdminGuard();
   const [statuses, setStatuses] = useState<StatusData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,8 +18,18 @@ const StatusManager: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchStatuses();
-  }, []);
+    if (isAuthorized) {
+      fetchStatuses();
+    }
+  }, [isAuthorized]);
+
+  if (isLoading) {
+    return <div className="loading">Checking permissions...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null; // Component will be redirected by the hook
+  }
 
   const fetchStatuses = async () => {
     try {

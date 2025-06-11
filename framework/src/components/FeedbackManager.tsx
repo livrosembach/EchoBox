@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { FeedbackData } from '../interface/feedback/FeedbackData';
-import { FeedbackDetailData } from '../interface/feedback/FeedbackDetailData';
 import { CategoryData } from '../interface/feedback/CategoryData';
 import { StatusData } from '../interface/feedback/StatusData';
 import { UserData } from '../interface/user/UserData';
@@ -12,6 +11,7 @@ import { getStatus } from '../controller/feedback/Status';
 import { getUsers } from '../controller/user/User';
 import { getCompanies } from '../controller/feedback/Company';
 import { getCurrentUser } from '../utils/Auth';
+import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing base styling
 import '../css/FeedbackManager.css'; // Custom styling for feedback manager
 
@@ -25,6 +25,7 @@ interface FeedbackFormData {
 }
 
 const FeedbackManager: React.FC = () => {
+  const { isAuthorized, isLoading: authLoading } = useAdminGuard();
   const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [statuses, setStatuses] = useState<StatusData[]>([]);
@@ -44,12 +45,14 @@ const FeedbackManager: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchFeedbacks();
-    fetchCategories();
-    fetchStatuses();
-    fetchUsers();
-    fetchCompanies();
-  }, []);
+    if (isAuthorized) {
+      fetchFeedbacks();
+      fetchCategories();
+      fetchStatuses();
+      fetchUsers();
+      fetchCompanies();
+    }
+  }, [isAuthorized]);
 
   const fetchFeedbacks = async () => {
     try {
@@ -278,6 +281,14 @@ const FeedbackManager: React.FC = () => {
       )
     }
   ];
+
+  if (authLoading) {
+    return <div className="loading">Checking permissions...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null; // Component will be redirected by the hook
+  }
 
   return (
     <div className="category-manager">

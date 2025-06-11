@@ -62,7 +62,7 @@ CREATE TABLE reply (
     reviewReply TEXT NOT NULL,
     fk_reply_idFeedback INT NOT NULL,
     fk_reply_idUser INT NOT NULL,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_reply_feedback FOREIGN KEY (fk_reply_idFeedback) REFERENCES feedback (idFeedback) ON DELETE CASCADE,
     CONSTRAINT fk_reply_user FOREIGN KEY (fk_reply_idUser) REFERENCES "user" (idUser) ON DELETE CASCADE

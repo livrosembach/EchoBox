@@ -100,6 +100,15 @@ const FeedbackTicketDetail: React.FC = () => {
     if (error) return <div className="error">{error}</div>;
     if (!feedback) return <div className="error">Feedback not found</div>;
 
+    // Determine if current user can reply
+    const currentUser = getCurrentUser();
+    const canReply = currentUser && (
+        // User can reply to their own feedback
+        parseInt(currentUser.id) === feedback.fk_feedback_iduser ||
+        // Company users can reply to feedback about their company
+        (currentUser.companyId && currentUser.companyId === feedback.fk_feedback_idcompany)
+    );
+
     return (
         <div className="feedback-detail-container">
             <div className="feedback-data">
@@ -148,90 +157,65 @@ const FeedbackTicketDetail: React.FC = () => {
                     )}
                 </div>
                 
-                {/* Reply Form */}
-                <div className="reply-form-section">
-                    {!showReplyForm ? (
-                        <button 
-                            className="add-reply-btn"
-                            onClick={() => setShowReplyForm(true)}
-                        >
-                            Add Reply
-                        </button>
-                    ) : (
-                        <form onSubmit={handleReplySubmit} className="reply-form">
-                            <h3>Add a Reply</h3>
-                            <div className="form-group">
-                                <label htmlFor="replyTitle">Reply Title:</label>
-                                <input
-                                    type="text"
-                                    id="replyTitle"
-                                    value={replyTitle}
-                                    onChange={(e) => setReplyTitle(e.target.value)}
-                                    placeholder="Enter reply title..."
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="replyContent">Reply Content:</label>
-                                <textarea
-                                    id="replyContent"
-                                    value={replyContent}
-                                    onChange={(e) => setReplyContent(e.target.value)}
-                                    placeholder="Enter your reply..."
-                                    rows={4}
-                                    required
-                                />
-                            </div>
-                            <div className="form-buttons">
-                                <button 
-                                    type="button" 
-                                    onClick={() => {
-                                        setShowReplyForm(false);
-                                        setReplyTitle('');
-                                        setReplyContent('');
-                                    }}
-                                    className="cancel-btn"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    disabled={submittingReply}
-                                    className="submit-btn"
-                                >
-                                    {submittingReply ? 'Submitting...' : 'Submit Reply'}
-                                </button>
-                            </div>
-                        </form>
-                    )}
-                </div>
-            </div>
-            <div className="reply-form-container">
-                <h3>Leave a Reply</h3>
-                <form className="reply-form" onSubmit={handleReplySubmit}>
-                    <div className="form-group">
-                        <label htmlFor="replyTitle">Title</label>
-                        <input
-                            type="text"
-                            id="replyTitle"
-                            value={replyTitle}
-                            onChange={(e) => setReplyTitle(e.target.value)}
-                            disabled={submittingReply}
-                        />
+                {/* Reply Form - Only show if user can reply */}
+                {canReply && (
+                    <div className="reply-form-section">
+                        {!showReplyForm ? (
+                            <button 
+                                className="add-reply-btn"
+                                onClick={() => setShowReplyForm(true)}
+                            >
+                                Add Reply
+                            </button>
+                        ) : (
+                            <form onSubmit={handleReplySubmit} className="reply-form">
+                                <h3>Add a Reply</h3>
+                                <div className="form-group">
+                                    <label htmlFor="replyTitle">Reply Title:</label>
+                                    <input
+                                        type="text"
+                                        id="replyTitle"
+                                        value={replyTitle}
+                                        onChange={(e) => setReplyTitle(e.target.value)}
+                                        placeholder="Enter reply title..."
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="replyContent">Reply Content:</label>
+                                    <textarea
+                                        id="replyContent"
+                                        value={replyContent}
+                                        onChange={(e) => setReplyContent(e.target.value)}
+                                        placeholder="Enter your reply..."
+                                        rows={4}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-buttons">
+                                    <button 
+                                        type="button" 
+                                        onClick={() => {
+                                            setShowReplyForm(false);
+                                            setReplyTitle('');
+                                            setReplyContent('');
+                                        }}
+                                        className="cancel-btn"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={submittingReply}
+                                        className="submit-btn"
+                                    >
+                                        {submittingReply ? 'Submitting...' : 'Submit Reply'}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="replyContent">Content</label>
-                        <textarea
-                            id="replyContent"
-                            value={replyContent}
-                            onChange={(e) => setReplyContent(e.target.value)}
-                            disabled={submittingReply}
-                        ></textarea>
-                    </div>
-                    <button type="submit" className="btn" disabled={submittingReply}>
-                        {submittingReply ? 'Submitting...' : 'Submit Reply'}
-                    </button>
-                </form>
+                )}
             </div>
         </div>
     );
