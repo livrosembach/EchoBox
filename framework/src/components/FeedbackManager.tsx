@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { FeedbackData } from '../interface/feedback/FeedbackData';
+import { FeedbackDetailData } from '../interface/feedback/FeedbackDetailData';
 import { CategoryData } from '../interface/feedback/CategoryData';
 import { StatusData } from '../interface/feedback/StatusData';
 import { UserData } from '../interface/user/UserData';
 import { CompanyData } from '../interface/user/CompanyData';
+import { getFeedbacks, getFeedbackById, createFeedback, updateFeedback, deleteFeedback } from '../controller/feedback/Feedback';
+import { getCategory } from '../controller/feedback/Category';
+import { getStatus } from '../controller/feedback/Status';
+import { getUsers } from '../controller/user/User';
+import { getCompanies } from '../controller/feedback/Company';
 import '../css/CategoryManager.css'; // Reusing base styling
 import '../css/FeedbackManager.css'; // Custom styling for feedback manager
 
@@ -47,13 +53,7 @@ const FeedbackManager: React.FC = () => {
   const fetchFeedbacks = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3003/feedback');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await getFeedbacks();
       setFeedbacks(data);
       setError(null);
     } catch (error) {
@@ -66,13 +66,7 @@ const FeedbackManager: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:3003/category');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await getCategory();
       setCategories(data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -81,13 +75,7 @@ const FeedbackManager: React.FC = () => {
 
   const fetchStatuses = async () => {
     try {
-      const response = await fetch('http://localhost:3003/status');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await getStatus();
       setStatuses(data);
     } catch (error) {
       console.error('Error fetching statuses:', error);
@@ -96,13 +84,7 @@ const FeedbackManager: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3003/user');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await getUsers();
       setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -111,20 +93,14 @@ const FeedbackManager: React.FC = () => {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('http://localhost:3003/company');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await getCompanies();
       setCompanies(data);
     } catch (error) {
       console.error('Error fetching companies:', error);
     }
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     setCurrentFeedback(null);
     setFormData({
       titleFeedback: '',
@@ -134,25 +110,45 @@ const FeedbackManager: React.FC = () => {
       fk_feedback_idCategory: '',
       fk_feedback_idStatus: ''
     });
+    
+    // Only refresh user and company data when adding new feedback
+    await Promise.all([
+      fetchUsers(),
+      fetchCompanies(),
+      fetchCategories(),
+      fetchStatuses()
+    ]);
+    
     setIsModalOpen(true);
   };
 
   const handleEdit = (feedback: FeedbackData) => {
     // Find the full feedback object from API to get foreign keys
-    fetch(`http://localhost:3003/feedback/${feedback.idfeedback}`)
-      .then(res => res.json())
+    getFeedbackById(feedback.idfeedback)
       .then(data => {
-        setCurrentFeedback(feedback);
-        // The API might return data with different case, handle both formats
-        setFormData({
-          titleFeedback: data.titlefeedback || data.titleFeedback || '',
-          reviewFeedback: data.reviewfeedback || data.reviewFeedback || '',
-          fk_feedback_idUser: data.fk_feedback_iduser?.toString() || data.fk_feedback_idUser?.toString() || '',
-          fk_feedback_idCompany: data.fk_feedback_idcompany?.toString() || data.fk_feedback_idCompany?.toString() || '',
-          fk_feedback_idCategory: data.fk_feedback_idcategory?.toString() || data.fk_feedback_idCategory?.toString() || '',
-          fk_feedback_idStatus: data.fk_feedback_idstatus?.toString() || data.fk_feedback_idStatus?.toString() || ''
-        });
-        setIsModalOpen(true);
+        if (data) {
+          setCurrentFeedback(feedback);
+          setFormData({
+            titleFeedback: data.titlefeedback || '',
+            reviewFeedback: data.reviewfeedback || '',
+            fk_feedback_idUser: data.fk_feedback_iduser ? data.fk_feedback_iduser.toString() : '',
+            fk_feedback_idCompany: data.fk_feedback_idcompany ? data.fk_feedback_idcompany.toString() : '',
+            fk_feedback_idCategory: data.fk_feedback_idcategory ? data.fk_feedback_idcategory.toString() : '',
+            fk_feedback_idStatus: data.fk_feedback_idstatus ? data.fk_feedback_idstatus.toString() : ''
+          });
+
+          // Only refresh categories and statuses for editing (user/company are readonly)
+          Promise.all([
+            fetchCategories(),
+            fetchStatuses(),
+            fetchUsers(), // Still needed for displaying readonly user info
+            fetchCompanies() // Still needed for displaying readonly company info
+          ]).then(() => {
+            setIsModalOpen(true);
+          });
+        } else {
+          setError("Failed to load feedback details for editing");
+        }
       })
       .catch(err => {
         console.error("Error fetching feedback details:", err);
@@ -162,16 +158,13 @@ const FeedbackManager: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3003/feedback/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      const success = await deleteFeedback(id);
+      if (success) {
+        setFeedbacks(feedbacks.filter(feedback => feedback.idfeedback !== id));
+        setError(null);
+      } else {
+        setError('Failed to delete feedback. Please try again.');
       }
-      
-      // Update local state after successful deletion
-      setFeedbacks(feedbacks.filter(feedback => feedback.idfeedback !== id));
     } catch (error) {
       console.error('Error deleting feedback:', error);
       setError('Failed to delete feedback. Please try again.');
@@ -190,52 +183,45 @@ const FeedbackManager: React.FC = () => {
     e.preventDefault();
     
     try {
-      const feedbackData = {
-        titleFeedback: formData.titleFeedback,
-        reviewFeedback: formData.reviewFeedback,
-        fk_feedback_idUser: parseInt(formData.fk_feedback_idUser),
-        fk_feedback_idCompany: parseInt(formData.fk_feedback_idCompany),
-        fk_feedback_idCategory: parseInt(formData.fk_feedback_idCategory),
-        fk_feedback_idStatus: parseInt(formData.fk_feedback_idStatus)
-      };
-      
       if (currentFeedback) {
-        // Update existing feedback
-        const response = await fetch(`http://localhost:3003/feedback/${currentFeedback.idfeedback}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(feedbackData)
-        });
+        // Update existing feedback - only send editable fields
+        const feedbackData = {
+          titleFeedback: formData.titleFeedback,
+          reviewFeedback: formData.reviewFeedback,
+          fk_feedback_idCategory: parseInt(formData.fk_feedback_idCategory),
+          fk_feedback_idStatus: parseInt(formData.fk_feedback_idStatus)
+        };
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        const updatedFeedback = await updateFeedback(currentFeedback.idfeedback, feedbackData);
+        if (updatedFeedback) {
+          // Refresh the data after successful update
+          fetchFeedbacks();
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to update feedback. Please try again.');
         }
-        
-        // After successful update, refresh the data
-        fetchFeedbacks();
       } else {
-        // Create new feedback
-        const response = await fetch('http://localhost:3003/feedback', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(feedbackData)
-        });
+        // Create new feedback - include all fields
+        const feedbackData = {
+          titleFeedback: formData.titleFeedback,
+          reviewFeedback: formData.reviewFeedback,
+          fk_feedback_idUser: parseInt(formData.fk_feedback_idUser),
+          fk_feedback_idCompany: parseInt(formData.fk_feedback_idCompany),
+          fk_feedback_idCategory: parseInt(formData.fk_feedback_idCategory),
+          fk_feedback_idStatus: parseInt(formData.fk_feedback_idStatus)
+        };
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        const newFeedback = await createFeedback(feedbackData);
+        if (newFeedback) {
+          // Refresh the data after successful creation
+          fetchFeedbacks();
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to create feedback. Please try again.');
         }
-        
-        // After successful creation, refresh the data
-        fetchFeedbacks();
       }
-      
-      // Close modal after successful operation
-      setIsModalOpen(false);
-      setError(null);
     } catch (error) {
       console.error('Error saving feedback:', error);
       setError('Failed to save feedback. Please try again.');
@@ -329,41 +315,65 @@ const FeedbackManager: React.FC = () => {
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="fk_feedback_idUser">User:</label>
-                <select
-                  id="fk_feedback_idUser"
-                  name="fk_feedback_idUser"
-                  value={formData.fk_feedback_idUser}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select a user</option>
-                  {users.map(user => (
-                    <option key={user.idUser} value={user.idUser}>
-                      {user.emailUser}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* Only show user and company selection when creating new feedback */}
+              {!currentFeedback && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="fk_feedback_idUser">User:</label>
+                    <select
+                      id="fk_feedback_idUser"
+                      name="fk_feedback_idUser"
+                      value={formData.fk_feedback_idUser}
+                      onChange={handleInputChange}
+                      required={!currentFeedback}
+                    >
+                      <option value="">Select a user</option>
+                      {users.map(user => (
+                        <option key={user.idUser} value={user.idUser}>
+                          {user.emailUser}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="form-group">
-                <label htmlFor="fk_feedback_idCompany">Company:</label>
-                <select
-                  id="fk_feedback_idCompany"
-                  name="fk_feedback_idCompany"
-                  value={formData.fk_feedback_idCompany}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select a company</option>
-                  {companies.map(company => (
-                    <option key={company.idcompany} value={company.idcompany}>
-                      {company.namecompany}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  <div className="form-group">
+                    <label htmlFor="fk_feedback_idCompany">Company:</label>
+                    <select
+                      id="fk_feedback_idCompany"
+                      name="fk_feedback_idCompany"
+                      value={formData.fk_feedback_idCompany}
+                      onChange={handleInputChange}
+                      required={!currentFeedback}
+                    >
+                      <option value="">Select a company</option>
+                      {companies.map(company => (
+                        <option key={company.idcompany} value={company.idcompany}>
+                          {company.namecompany}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {/* Show read-only user and company info when editing */}
+              {currentFeedback && (
+                <>
+                  <div className="form-group">
+                    <label>User:</label>
+                    <div className="readonly-field">
+                      {users.find(u => u.idUser?.toString() === formData.fk_feedback_idUser)?.emailUser || 'Loading...'}
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Company:</label>
+                    <div className="readonly-field">
+                      {companies.find(c => c.idcompany?.toString() === formData.fk_feedback_idCompany)?.namecompany || 'Loading...'}
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="form-group">
                 <label htmlFor="fk_feedback_idCategory">Category:</label>

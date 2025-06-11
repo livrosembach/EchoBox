@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'your-secret-key-here';
 
 // Route to register a user
-router.post('/register', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { emailUser, passwordUser, fk_user_idCompany } = req.body;
 
@@ -78,6 +78,7 @@ router.get('/', async (req, res) => {
       SELECT 
         u.idUser,
         u.emailUser,
+        u.fk_user_idCompany,
         c.nameCompany
       FROM "user" u
       LEFT JOIN company c ON u.fk_user_idCompany = c.idCompany
@@ -90,7 +91,6 @@ router.get('/', async (req, res) => {
     res.status(500).send('Erro ao buscar usuários');
   }
 });
-
 
 // Get specific user by ID
 router.get('/:id', async (req, res) => {

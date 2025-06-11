@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { CategoryData } from '../interface/feedback/CategoryData';
-import { getCategory } from '../controller/feedback/Category';
+import { getCategory, createCategory, updateCategory, deleteCategory } from '../controller/feedback/Category';
 import '../css/CategoryManager.css';
 
 const CategoryManager: React.FC = () => {
@@ -53,13 +53,13 @@ const CategoryManager: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      // Add your API call to delete a category
-      await fetch(`http://localhost:3003/category/${id}`, {
-        method: 'DELETE'
-      });
-      
-      // Update local state after successful deletion
-      setCategories(categories.filter(category => category.idcategory !== id));
+      const success = await deleteCategory(id);
+      if (success) {
+        setCategories(categories.filter(category => category.idcategory !== id));
+        setError(null);
+      } else {
+        setError('Failed to delete category. It may be in use by existing feedback.');
+      }
     } catch (error) {
       console.error('Error deleting category:', error);
       setError('Failed to delete category. Please try again.');
@@ -80,52 +80,35 @@ const CategoryManager: React.FC = () => {
     try {
       if (currentCategory) {
         // Update existing category
-        const response = await fetch(`http://localhost:3003/category/${currentCategory.idcategory}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            typeCategory: formData.typeCategory,
-            colorCategory: formData.colorCategory
-          })
+        const updatedCategory = await updateCategory(currentCategory.idcategory, {
+          typecategory: formData.typeCategory,
+          colorcategory: formData.colorCategory
         });
         
-        const updatedCategory = await response.json();
-        
-        // Update local state
-        setCategories(categories.map(category => 
-          category.idcategory === currentCategory.idcategory ? 
-          { ...updatedCategory, 
-            typecategory: updatedCategory.typeCategory || updatedCategory.typecategory,
-            colorcategory: updatedCategory.colorCategory || updatedCategory.colorcategory
-          } : category
-        ));
+        if (updatedCategory) {
+          setCategories(categories.map(category => 
+            category.idcategory === currentCategory.idcategory ? updatedCategory : category
+          ));
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to update category. Please try again.');
+        }
       } else {
         // Create new category
-        const response = await fetch('http://localhost:3003/category', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            typeCategory: formData.typeCategory,
-            colorCategory: formData.colorCategory
-          })
+        const newCategory = await createCategory({
+          typecategory: formData.typeCategory,
+          colorcategory: formData.colorCategory
         });
         
-        const newCategory = await response.json();
-        
-        // Add to local state with correct property names
-        setCategories([...categories, { 
-          idcategory: newCategory.idCategory || newCategory.idcategory,
-          typecategory: newCategory.typeCategory || newCategory.typecategory,
-          colorcategory: newCategory.colorCategory || newCategory.colorcategory
-        }]);
+        if (newCategory) {
+          setCategories([...categories, newCategory]);
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to create category. Please try again.');
+        }
       }
-      
-      // Close modal after successful operation
-      setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving category:', error);
       setError('Failed to save category. Please try again.');

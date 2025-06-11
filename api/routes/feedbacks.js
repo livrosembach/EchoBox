@@ -88,21 +88,25 @@ router.get('/:id', async (req, res) => {
     
     const query = `
       SELECT 
-        idFeedback,
-        titleFeedback,
-        reviewFeedback,
-        emailUser,
-        nameCompany,
-        typeCategory,
-        colorCategory,
-        typeStatus,
-        colorStatus
+        feedback.idFeedback,
+        feedback.titleFeedback,
+        feedback.reviewFeedback,
+        feedback.fk_feedback_idUser,
+        feedback.fk_feedback_idCompany,
+        feedback.fk_feedback_idCategory,
+        feedback.fk_feedback_idStatus,
+        "user".emailUser,
+        company.nameCompany,
+        category.typeCategory,
+        category.colorCategory,
+        status.typeStatus,
+        status.colorStatus
       FROM feedback
       JOIN "user" ON feedback.fk_feedback_idUser = "user".idUser
       JOIN company ON feedback.fk_feedback_idCompany = company.idCompany
       JOIN category ON feedback.fk_feedback_idCategory = category.idCategory
       JOIN status ON feedback.fk_feedback_idStatus = status.idStatus
-      WHERE idFeedback = $1
+      WHERE feedback.idFeedback = $1
     `;
     
     const result = await pool.query(query, [feedbackId]);

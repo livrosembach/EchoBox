@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import { FeedbackData } from "../../interface/feedback/FeedbackData";
 import FeedbackTicket from "../../components/FeedbackTicket";
 import { FeedbackListProps } from "../../interface/feedback/FeedbackListProps";
+import { getFeedbacks } from "./Feedback";
 
 
 const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategory, selectedStatus }) => {
@@ -10,16 +11,14 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategor
     useEffect(() => {
         const fetchFeedbacks = async () => {
             try {
-                const queryParams = new URLSearchParams();
-                if (searchTerm) queryParams.append('search', searchTerm);
-                if (selectedCategory && selectedCategory !== 'all-categories') queryParams.append('category', selectedCategory);
-                if (selectedStatus && selectedStatus !== 'all-status') queryParams.append('status', selectedStatus);
-
-                const response = await fetch(`http://localhost:3003/feedback?${queryParams.toString()}`);
-                const data = await response.json();
+                const data = await getFeedbacks({
+                    search: searchTerm,
+                    category: selectedCategory,
+                    status: selectedStatus
+                });
                 setFeedbacks(data);
             } catch (error) {
-                console.error("Erro ao buscar feedbacks:", error);
+                console.error("Error fetching feedbacks:", error);
             }
         };
 

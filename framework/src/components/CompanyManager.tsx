@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { CompanyData } from '../interface/user/CompanyData';
+import { getCompanies, createCompany, updateCompany, deleteCompany } from '../controller/feedback/Company';
 import '../css/CategoryManager.css'; // Reusing the same styling
 
 const CompanyManager: React.FC = () => {
@@ -22,13 +23,7 @@ const CompanyManager: React.FC = () => {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3003/company');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await getCompanies();
       setCompanies(data);
       setError(null);
     } catch (error) {
@@ -61,16 +56,13 @@ const CompanyManager: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3003/company/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      const success = await deleteCompany(id);
+      if (success) {
+        setCompanies(companies.filter(company => company.idcompany !== id));
+        setError(null);
+      } else {
+        setError('Failed to delete company. Please try again.');
       }
-      
-      // Update local state after successful deletion
-      setCompanies(companies.filter(company => company.idcompany !== id));
     } catch (error) {
       console.error('Error deleting company:', error);
       setError('Failed to delete company. Please try again.');
@@ -90,54 +82,34 @@ const CompanyManager: React.FC = () => {
     
     try {
       const companyData = {
-        nameCompany: formData.nameCompany,
-        emailCompany: formData.emailCompany,
-        cnpjCompany: formData.cnpjCompany
+        namecompany: formData.nameCompany,
+        emailcompany: formData.emailCompany,
+        cnpjcompany: formData.cnpjCompany
       };
       
-      if (currentCompany) {
+      if (currentCompany && currentCompany.idcompany) {
         // Update existing company
-        const response = await fetch(`http://localhost:3003/company/${currentCompany.idcompany}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(companyData)
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        const updatedCompany = await updateCompany(currentCompany.idcompany, companyData);
+        if (updatedCompany) {
+          setCompanies(companies.map(company => 
+            company.idcompany === currentCompany.idcompany ? updatedCompany : company
+          ));
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to update company. Please try again.');
         }
-        
-        const updatedCompany = await response.json();
-        
-        // Update local state
-        setCompanies(companies.map(company => 
-          company.idcompany === currentCompany.idcompany ? updatedCompany : company
-        ));
       } else {
         // Create new company
-        const response = await fetch('http://localhost:3003/company', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(companyData)
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        const newCompany = await createCompany(companyData);
+        if (newCompany) {
+          setCompanies([...companies, newCompany]);
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to create company. Please try again.');
         }
-        
-        const newCompany = await response.json();
-        
-        // Add to local state
-        setCompanies([...companies, newCompany]);
       }
-      
-      // Close modal after successful operation
-      setIsModalOpen(false);
-      setError(null);
     } catch (error) {
       console.error('Error saving company:', error);
       setError('Failed to save company. Please try again.');

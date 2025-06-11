@@ -3,4 +3,5 @@ export interface UserData {
     emailUser: string;
     passwordUser: string;
     fk_user_idCompany?: number;
+    nameCompany?: string;
 }

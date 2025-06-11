@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { UserData } from '../interface/user/UserData';
 import { CompanyData } from '../interface/user/CompanyData';
+import { getUsers, createUser, updateUser, deleteUser } from '../controller/user/User';
+import { getCompanies } from '../controller/feedback/Company';
 import '../css/CategoryManager.css'; // Reusing the same styling
 
 interface UserWithCompany extends UserData {
@@ -30,19 +32,14 @@ const UserManager: React.FC = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3003/user');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      // Transform the data to match our interface
+      const data = await getUsers();
+      // The data now comes properly formatted from the controller
       const transformedData = data.map((user: any) => ({
-        idUser: user.iduser,
-        emailUser: user.emailuser,
-        companyname: user.namecompany,
-        fk_user_idCompany: user.fk_user_idcompany
+        idUser: user.idUser,
+        emailUser: user.emailUser,
+        passwordUser: user.passwordUser || '', // Already handled in controller
+        companyname: user.nameCompany,
+        fk_user_idCompany: user.fk_user_idCompany
       }));
       setUsers(transformedData);
       setError(null);
@@ -56,13 +53,7 @@ const UserManager: React.FC = () => {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('http://localhost:3003/company');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await getCompanies();
       setCompanies(data);
     } catch (error) {
       console.error('Error fetching companies:', error);
@@ -94,16 +85,14 @@ const UserManager: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`http://localhost:3003/user/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      const success = await deleteUser(id);
+      if (success) {
+        // Refresh the user list from server
+        await fetchUsers();
+        setError(null);
+      } else {
+        setError('Failed to delete user. Please try again.');
       }
-      
-      // Update local state after successful deletion
-      setUsers(users.filter(user => user.idUser !== id));
     } catch (error) {
       console.error('Error deleting user:', error);
       setError('Failed to delete user. Please try again.');
@@ -132,7 +121,7 @@ const UserManager: React.FC = () => {
       const userData = {
         emailUser: formData.emailUser,
         passwordUser: formData.passwordUser,
-        fk_user_idCompany: formData.fk_user_idCompany ? parseInt(formData.fk_user_idCompany) : null
+        fk_user_idCompany: formData.fk_user_idCompany ? parseInt(formData.fk_user_idCompany) : undefined
       };
       
       if (currentUser) {
@@ -142,31 +131,16 @@ const UserManager: React.FC = () => {
           userData : 
           { emailUser: userData.emailUser, fk_user_idCompany: userData.fk_user_idCompany };
         
-        const response = await fetch(`http://localhost:3003/user/${currentUser.idUser}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(updateData)
-        });
+        const updatedUser = await updateUser(currentUser.idUser!, updateData);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        if (updatedUser) {
+          // Refresh the user list from server to get updated data
+          await fetchUsers();
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to update user. Please try again.');
         }
-        
-        const updatedUser = await response.json();
-        
-        // Find company name for the updated user
-        const company = companies.find(c => c.idcompany === parseInt(formData.fk_user_idCompany));
-        
-        // Update local state
-        setUsers(users.map(user => 
-          user.idUser === currentUser.idUser ? 
-          { 
-            ...updatedUser,
-            companyname: company?.namecompany
-          } : user
-        ));
       } else {
         // Create new user - password is required for new users
         if (!formData.passwordUser) {
@@ -174,33 +148,17 @@ const UserManager: React.FC = () => {
           return;
         }
         
-        const response = await fetch('http://localhost:3003/user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(userData)
-        });
+        const newUser = await createUser(userData);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        if (newUser) {
+          // Refresh the user list from server to get updated data
+          await fetchUsers();
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to create user. Please try again.');
         }
-        
-        const newUser = await response.json();
-        
-        // Find company name for the new user
-        const company = companies.find(c => c.idcompany === parseInt(formData.fk_user_idCompany));
-        
-        // Add to local state
-        setUsers([...users, { 
-          ...newUser, 
-          companyname: company?.namecompany
-        }]);
       }
-      
-      // Close modal after successful operation
-      setIsModalOpen(false);
-      setError(null);
     } catch (error) {
       console.error('Error saving user:', error);
       setError('Failed to save user. Please try again.');

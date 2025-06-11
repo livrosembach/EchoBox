@@ -42,3 +42,16 @@
   max-height: 60px;
   overflow: hidden;
 }
+
+/* Readonly field styling */
+.readonly-field {
+  padding: 8px;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #666;
+  font-style: italic;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+}

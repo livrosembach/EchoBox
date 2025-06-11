@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CrudTable from './CrudTable';
 import { StatusData } from '../interface/feedback/StatusData';
-import { getStatus } from '../controller/feedback/Status';
+import { getStatus, createStatus, updateStatus, deleteStatus } from '../controller/feedback/Status';
 import '../css/CategoryManager.css'; // Reusing the same styling
 
 const StatusManager: React.FC = () => {
@@ -53,11 +53,13 @@ const StatusManager: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://localhost:3003/status/${id}`, {
-        method: 'DELETE'
-      });
-      
-      setStatuses(statuses.filter(status => status.idstatus !== id));
+      const success = await deleteStatus(id);
+      if (success) {
+        setStatuses(statuses.filter(status => status.idstatus !== id));
+        setError(null);
+      } else {
+        setError('Failed to delete status. It may be in use by existing feedback.');
+      }
     } catch (error) {
       console.error('Error deleting status:', error);
       setError('Failed to delete status. Please try again.');
@@ -78,52 +80,35 @@ const StatusManager: React.FC = () => {
     try {
       if (currentStatus) {
         // Update existing status
-        const response = await fetch(`http://localhost:3003/status/${currentStatus.idstatus}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            typeStatus: formData.typeStatus,
-            colorStatus: formData.colorStatus
-          })
+        const updatedStatus = await updateStatus(currentStatus.idstatus, {
+          typestatus: formData.typeStatus,
+          colorstatus: formData.colorStatus
         });
         
-        const updatedStatus = await response.json();
-        
-        // Update local state
-        setStatuses(statuses.map(status => 
-          status.idstatus === currentStatus.idstatus ? 
-          { ...updatedStatus, 
-            typestatus: updatedStatus.typeStatus || updatedStatus.typestatus,
-            colorstatus: updatedStatus.colorStatus || updatedStatus.colorstatus
-          } : status
-        ));
+        if (updatedStatus) {
+          setStatuses(statuses.map(status => 
+            status.idstatus === currentStatus.idstatus ? updatedStatus : status
+          ));
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to update status. Please try again.');
+        }
       } else {
         // Create new status
-        const response = await fetch('http://localhost:3003/status', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            typeStatus: formData.typeStatus,
-            colorStatus: formData.colorStatus
-          })
+        const newStatus = await createStatus({
+          typestatus: formData.typeStatus,
+          colorstatus: formData.colorStatus
         });
         
-        const newStatus = await response.json();
-        
-        // Add to local state with correct property names
-        setStatuses([...statuses, { 
-          idstatus: newStatus.idStatus || newStatus.idstatus,
-          typestatus: newStatus.typeStatus || newStatus.typestatus,
-          colorstatus: newStatus.colorStatus || newStatus.colorstatus
-        }]);
+        if (newStatus) {
+          setStatuses([...statuses, newStatus]);
+          setIsModalOpen(false);
+          setError(null);
+        } else {
+          setError('Failed to create status. Please try again.');
+        }
       }
-      
-      // Close modal after successful operation
-      setIsModalOpen(false);
     } catch (error) {
       console.error('Error saving status:', error);
       setError('Failed to save status. Please try again.');
