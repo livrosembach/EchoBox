@@ -4,6 +4,7 @@ import { FeedbackDetailData } from "../interface/feedback/FeedbackDetailData";
 import { getFeedbackDetail } from "../controller/feedback/FeedbackTicketDetail";
 import { createReply } from "../controller/feedback/Reply";
 import { getCurrentUser } from "../utils/Auth";
+import UserAvatar from "./UserAvatar";
 import '../css/FeedbackTicketDetail.css'
 
 const FeedbackTicketDetail: React.FC = () => {
@@ -113,7 +114,11 @@ const FeedbackTicketDetail: React.FC = () => {
         <div className="feedback-detail-container">
             <div className="feedback-data">
                 <div className="feedback-header">
-                    <i className="fa-solid fa-circle-user fa-lg"></i>
+                    <UserAvatar 
+                        pictureUrl={feedback.pictureuser} 
+                        email={feedback.emailuser} 
+                        size="lg" 
+                    />
                     <span>{feedback.emailuser || "Username"}</span>
                 </div>
                 <div className="title">
@@ -140,7 +145,11 @@ const FeedbackTicketDetail: React.FC = () => {
                             <div key={reply.idreply} className="reply-item">
                                 <div className="reply-header">
                                     <div className="reply-author">
-                                        <i className="fa-solid fa-circle-user fa-sm"></i>
+                                        <UserAvatar 
+                                            pictureUrl={reply.pictureuser} 
+                                            email={reply.emailuser} 
+                                            size="sm" 
+                                        />
                                         <span>{reply.emailuser || reply.namecompany || "Unknown"}</span>
                                     </div>
                                     <h4 className="reply-title">{reply.titlereply}</h4>

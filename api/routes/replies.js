@@ -16,6 +16,7 @@ router.get('/feedback/:feedbackId', async (req, res) => {
         reply.fk_reply_idUser,
         reply.createdDate,
         "user".emailUser,
+        "user".pictureUser,
         company.nameCompany
       FROM reply
       JOIN "user" ON reply.fk_reply_idUser = "user".idUser

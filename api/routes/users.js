@@ -82,6 +82,7 @@ router.get('/', async (req, res) => {
       SELECT 
         u.idUser,
         u.emailUser,
+        u.pictureUser,
         u.fk_user_idCompany,
         c.nameCompany
       FROM "user" u
@@ -105,6 +106,7 @@ router.get('/:id', async (req, res) => {
       SELECT 
         u.idUser,
         u.emailUser,
+        u.pictureUser,
         c.nameCompany,
         c.idCompany
       FROM "user" u

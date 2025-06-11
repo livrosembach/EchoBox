@@ -1,0 +1,37 @@
+/* UserAvatar Component Styles */
+
+.user-avatar {
+  display: inline-block;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(10, 5, 147, 0.3);
+}
+
+/* Specific styles for different contexts */
+.feedback-header .user-avatar {
+  margin-right: 8px;
+}
+
+.reply-author .user-avatar {
+  margin-right: 6px;
+}
+
+.user-info .user-avatar {
+  margin-right: 4px;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .user-avatar {
+    transform: none;
+  }
+  
+  .user-avatar:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}

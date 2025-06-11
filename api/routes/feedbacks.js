@@ -102,6 +102,7 @@ router.get('/:id', async (req, res) => {
         feedback.fk_feedback_idCategory,
         feedback.fk_feedback_idStatus,
         "user".emailUser,
+        "user".pictureUser,
         company.nameCompany,
         category.typeCategory,
         category.colorCategory,

@@ -3,6 +3,7 @@ import logo from '../assets/logo.svg';
 import '../css/Header.css';
 import { logout } from "../utils/Logout";
 import { getCurrentUser, isUserLoggedIn, AUTH_STATE_CHANGED } from "../utils/Auth";
+import UserAvatar from './UserAvatar';
 
 const Header: React.FC<{}> = ({}) => {
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -54,6 +55,11 @@ const Header: React.FC<{}> = ({}) => {
                     {isLoggedIn ? (
                         <>
                             <li className="user-info">
+                                <UserAvatar 
+                                    pictureUrl={currentUser?.pictureUser} 
+                                    email={currentUser?.email} 
+                                    size="sm" 
+                                />
                                 <span className="user-email">{currentUser?.email}</span>
                             </li>
                             <li><button className="logout-button" onClick={handleLogout}>Logout</button></li>

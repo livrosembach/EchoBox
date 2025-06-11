@@ -9,6 +9,7 @@ export interface FeedbackDetailData {
     fk_feedback_idcategory: number;
     fk_feedback_idstatus: number;
     emailuser?: string;
+    pictureuser?: string;
     namecompany?: string;
     typecategory?: string;
     colorcategory?: string;

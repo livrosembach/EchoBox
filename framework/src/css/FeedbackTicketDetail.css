@@ -18,7 +18,7 @@
     display: flex;
     justify-items: flex-start;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-size: 20px;
     color: #0A0593;
 }
@@ -200,4 +200,14 @@
 .submit-btn:disabled {
     background-color: #6c757d;
     cursor: not-allowed;
+}
+
+/* User Avatar Styling */
+.user-avatar {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
 }

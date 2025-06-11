@@ -5,6 +5,7 @@ import { CompanyData } from '../interface/user/CompanyData';
 import { getUsers, createUser, updateUser, deleteUser } from '../controller/user/User';
 import { getCompanies } from '../controller/feedback/Company';
 import { useAdminGuard } from '../utils/AdminGuard';
+import UserAvatar from './UserAvatar';
 import '../css/CategoryManager.css'; // Reusing the same styling
 
 interface UserWithCompany extends UserData {
@@ -184,8 +185,18 @@ const UserManager: React.FC = () => {
       width: '80px'
     },
     {
-      header: 'Email',
-      accessor: 'emailUser'
+      header: 'User',
+      accessor: 'emailUser',
+      cell: (value: string, row: UserWithCompany) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <UserAvatar 
+            pictureUrl={row.pictureUser} 
+            email={row.emailUser} 
+            size="sm" 
+          />
+          <span>{value}</span>
+        </div>
+      )
     },
     {
       header: 'Company',
