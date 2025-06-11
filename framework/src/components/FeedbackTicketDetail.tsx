@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FeedbackData } from "../interface/feedback/FeedbackData";
+import { FeedbackDetailData } from "../interface/feedback/FeedbackDetailData";
 import { getFeedbackDetail } from "../controller/feedback/FeedbackTicketDetail";
+import { createReply } from "../controller/feedback/Reply";
+import { getCurrentUser } from "../utils/Auth";
 import '../css/FeedbackTicketDetail.css'
 
 const FeedbackTicketDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const [feedback, setFeedback] = useState<FeedbackData | null>(null);
+    const [feedback, setFeedback] = useState<FeedbackDetailData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
+    const [replyTitle, setReplyTitle] = useState<string>('');
+    const [replyContent, setReplyContent] = useState<string>('');
+    const [submittingReply, setSubmittingReply] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchFeedbackDetail = async () => {
@@ -39,6 +45,57 @@ const FeedbackTicketDetail: React.FC = () => {
         fetchFeedbackDetail();
     }, [id]);
 
+    const handleReplySubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!replyTitle.trim() || !replyContent.trim()) {
+            alert('Please fill in both title and content for the reply.');
+            return;
+        }
+
+        const currentUser = getCurrentUser();
+        if (!currentUser) {
+            alert('You must be logged in to reply.');
+            return;
+        }
+
+        if (!feedback) return;
+
+        setSubmittingReply(true);
+
+        try {
+            const replyData = {
+                titleReply: replyTitle,
+                reviewReply: replyContent,
+                fk_reply_idFeedback: feedback.idfeedback,
+                fk_reply_idUser: parseInt(currentUser.id)
+            };
+
+            const newReply = await createReply(replyData);
+            
+            if (newReply) {
+                // Refresh the feedback data to show the new reply
+                const updatedFeedback = await getFeedbackDetail(id!);
+                if (updatedFeedback) {
+                    setFeedback(updatedFeedback);
+                }
+                
+                // Reset form
+                setReplyTitle('');
+                setReplyContent('');
+                setShowReplyForm(false);
+                setError(null);
+            } else {
+                setError('Failed to submit reply. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error submitting reply:', error);
+            setError('Failed to submit reply. Please try again.');
+        } finally {
+            setSubmittingReply(false);
+        }
+    };
+
     if (loading) return <div className="loading">Loading...</div>;
     if (error) return <div className="error">{error}</div>;
     if (!feedback) return <div className="error">Feedback not found</div>;
@@ -65,13 +122,116 @@ const FeedbackTicketDetail: React.FC = () => {
             </div>
             <div id="company-answer" className="feedback-data company-answer">
                 <div className="feedback-header">
-                    <i className="fa-solid fa-circle-user fa-lg"></i>
-                    <span>{feedback.namecompany || "Empresa"}</span>
+                    <i className="fa-solid fa-building fa-lg"></i>
+                    <span>{feedback.namecompany || "Company"}</span>
                 </div>
-                <div className="description">
-                    {/* This would be filled with company response data when available */}
-                    No response from company yet.
+                <div className="replies-section">
+                    {feedback.replies && feedback.replies.length > 0 ? (
+                        feedback.replies.map((reply) => (
+                            <div key={reply.idreply} className="reply-item">
+                                <div className="reply-header">
+                                    <div className="reply-author">
+                                        <i className="fa-solid fa-circle-user fa-sm"></i>
+                                        <span>{reply.emailuser || reply.namecompany || "Unknown"}</span>
+                                    </div>
+                                    <h4 className="reply-title">{reply.titlereply}</h4>
+                                </div>
+                                <div className="reply-content">
+                                    {reply.reviewreply}
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="no-replies">
+                            <p>No response from company yet.</p>
+                        </div>
+                    )}
                 </div>
+                
+                {/* Reply Form */}
+                <div className="reply-form-section">
+                    {!showReplyForm ? (
+                        <button 
+                            className="add-reply-btn"
+                            onClick={() => setShowReplyForm(true)}
+                        >
+                            Add Reply
+                        </button>
+                    ) : (
+                        <form onSubmit={handleReplySubmit} className="reply-form">
+                            <h3>Add a Reply</h3>
+                            <div className="form-group">
+                                <label htmlFor="replyTitle">Reply Title:</label>
+                                <input
+                                    type="text"
+                                    id="replyTitle"
+                                    value={replyTitle}
+                                    onChange={(e) => setReplyTitle(e.target.value)}
+                                    placeholder="Enter reply title..."
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="replyContent">Reply Content:</label>
+                                <textarea
+                                    id="replyContent"
+                                    value={replyContent}
+                                    onChange={(e) => setReplyContent(e.target.value)}
+                                    placeholder="Enter your reply..."
+                                    rows={4}
+                                    required
+                                />
+                            </div>
+                            <div className="form-buttons">
+                                <button 
+                                    type="button" 
+                                    onClick={() => {
+                                        setShowReplyForm(false);
+                                        setReplyTitle('');
+                                        setReplyContent('');
+                                    }}
+                                    className="cancel-btn"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={submittingReply}
+                                    className="submit-btn"
+                                >
+                                    {submittingReply ? 'Submitting...' : 'Submit Reply'}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+                </div>
+            </div>
+            <div className="reply-form-container">
+                <h3>Leave a Reply</h3>
+                <form className="reply-form" onSubmit={handleReplySubmit}>
+                    <div className="form-group">
+                        <label htmlFor="replyTitle">Title</label>
+                        <input
+                            type="text"
+                            id="replyTitle"
+                            value={replyTitle}
+                            onChange={(e) => setReplyTitle(e.target.value)}
+                            disabled={submittingReply}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="replyContent">Content</label>
+                        <textarea
+                            id="replyContent"
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                            disabled={submittingReply}
+                        ></textarea>
+                    </div>
+                    <button type="submit" className="btn" disabled={submittingReply}>
+                        {submittingReply ? 'Submitting...' : 'Submit Reply'}
+                    </button>
+                </form>
             </div>
         </div>
     );

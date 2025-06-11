@@ -1,3 +1,5 @@
+import { ReplyData } from "./ReplyData";
+
 export interface FeedbackDetailData {
     idfeedback: number;
     titlefeedback: string;
@@ -12,4 +14,5 @@ export interface FeedbackDetailData {
     colorcategory?: string;
     typestatus?: string;
     colorstatus?: string;
+    replies?: ReplyData[];
 }

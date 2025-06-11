@@ -44,7 +44,7 @@ CREATE TABLE "status" (
 CREATE TABLE feedback (
     idFeedback SERIAL PRIMARY KEY NOT NULL,
     titleFeedback VARCHAR(255) NOT NULL,
-    reviewFeedback TEXT,
+    reviewFeedback TEXT NOT NULL,
     fk_feedback_idUser INT NOT NULL,
     fk_feedback_idCompany INT NOT NULL,
     fk_feedback_idCategory INT NOT NULL,
@@ -54,4 +54,16 @@ CREATE TABLE feedback (
     CONSTRAINT fk_feedback_company FOREIGN KEY (fk_feedback_idCompany) REFERENCES company(idCompany) ON DELETE CASCADE,
     CONSTRAINT fk_feedback_category FOREIGN KEY (fk_feedback_idCategory) REFERENCES category(idCategory),
     CONSTRAINT fk_feedback_status FOREIGN KEY (fk_feedback_idStatus) REFERENCES status(idStatus)
+);
+
+CREATE TABLE reply (
+    idReply SERIAL PRIMARY KEY NOT NULL,
+    titleReply VARCHAR(255) NOT NULL,
+    reviewReply TEXT NOT NULL,
+    fk_reply_idFeedback INT NOT NULL,
+    fk_reply_idUser INT NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_reply_feedback FOREIGN KEY (fk_reply_idFeedback) REFERENCES feedback (idFeedback) ON DELETE CASCADE,
+    CONSTRAINT fk_reply_user FOREIGN KEY (fk_reply_idUser) REFERENCES "user" (idUser) ON DELETE CASCADE
 );

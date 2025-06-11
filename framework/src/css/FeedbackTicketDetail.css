@@ -49,3 +49,155 @@
     border: 2px solid #0A0593;
     border-radius: 10px;
 }
+
+/* Replies section styling */
+.replies-section {
+    padding: 15px 0;
+}
+
+.reply-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #0A0593;
+}
+
+.reply-header {
+    margin-bottom: 10px;
+}
+
+.reply-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.reply-title {
+    font-size: 18px;
+    color: #0A0593;
+    margin: 0;
+    font-weight: 600;
+}
+
+.reply-content {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.no-replies {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    font-style: italic;
+}
+
+.no-replies p {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* Reply form styling */
+.reply-form-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.add-reply-btn {
+    background-color: #0A0593;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-reply-btn:hover {
+    background-color: #0800ff;
+}
+
+.reply-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.reply-form h3 {
+    color: #0A0593;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.reply-form .form-group {
+    margin-bottom: 15px;
+}
+
+.reply-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.reply-form input,
+.reply-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.reply-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+.submit-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.submit-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}

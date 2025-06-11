@@ -1,6 +1,7 @@
-import { FeedbackData } from "../../interface/feedback/FeedbackData";
+import { FeedbackDetailData } from "../../interface/feedback/FeedbackDetailData";
+import { getRepliesForFeedback } from "./Reply";
 
-export const getFeedbackDetail = async (id: string): Promise<FeedbackData | null> => {
+export const getFeedbackDetail = async (id: string): Promise<FeedbackDetailData | null> => {
     try {
         const response = await fetch(`http://localhost:3003/feedback/${id}`, {
             method: "GET",
@@ -14,8 +15,13 @@ export const getFeedbackDetail = async (id: string): Promise<FeedbackData | null
             return null;
         }
 
-        const data: FeedbackData = await response.json();
-        return data;
+        const feedbackData: FeedbackDetailData = await response.json();
+        
+        // Fetch replies for this feedback
+        const replies = await getRepliesForFeedback(id);
+        feedbackData.replies = replies;
+        
+        return feedbackData;
     } catch (error) {
         console.error("Error fetching feedback detail:", error);
         return null;

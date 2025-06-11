@@ -9,6 +9,7 @@ const feedbackRoutes = require('./routes/feedbacks');
 const userRoutes = require('./routes/users');
 const categoryRoutes = require('./routes/categories');
 const statusRoutes = require('./routes/statuses');
+const replyRoutes = require('./routes/replies');
 
 app.use(cors());
 app.use(express.json());
@@ -19,6 +20,7 @@ app.use('/feedback', feedbackRoutes);
 app.use('/user', userRoutes);
 app.use('/category', categoryRoutes);
 app.use('/status', statusRoutes);
+app.use('/replies', replyRoutes);
 
 // App listen shit dont touch
 app.listen(3003, () => {
