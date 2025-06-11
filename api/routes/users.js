@@ -15,12 +15,15 @@ router.post('/', async (req, res) => {
       return res.status(400).send('Email and password are required');
     }
 
+    // Generate profile picture URL
+    const pictureUser = `https://placehold.co/250?text=${encodeURIComponent(emailUser)}`;
+
     const query = `
-      INSERT INTO "user" (emailUser, passwordUser, fk_user_idCompany)
-      VALUES ($1, $2, $3)
-      RETURNING *;
+      INSERT INTO "user" (emailUser, passwordUser, pictureUser, fk_user_idCompany)
+      VALUES ($1, encode(digest($2, 'sha256'), 'hex'), $3, $4)
+      RETURNING idUser, emailUser, pictureUser, fk_user_idCompany;
     `;
-    const values = [emailUser, passwordUser, fk_user_idCompany || null];
+    const values = [emailUser, passwordUser, pictureUser, fk_user_idCompany || null];
     const result = await pool.query(query, values);
 
     res.status(201).json(result.rows[0]);
@@ -35,37 +38,38 @@ router.post('/login', async (req, res) => {
   try{
     const {emailUser, passwordUser} = req.body;
   
-    const query = `SELECT * FROM "user" WHERE emailUser = $1`;
-    const value = [emailUser];
-    const result = await pool.query(query, value);
+    const query = `
+      SELECT idUser, emailUser, fk_user_idCompany, pictureUser, passwordUser
+      FROM "user" 
+      WHERE emailUser = $1 AND passwordUser = encode(digest($2, 'sha256'), 'hex')
+    `;
+    const values = [emailUser, passwordUser];
+    const result = await pool.query(query, values);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
+      return res.status(404).json({ message: 'Usuário não encontrado ou senha incorreta' });
     }
 
     const user = result.rows[0];
-    if (passwordUser === user.passworduser) {
-      const token = jwt.sign(
-        { 
-          userId: user.iduser, 
-          email: user.emailuser,
-          companyId: user.fk_user_idcompany 
-        },
-        JWT_SECRET,
-        { expiresIn: '24h' }
-      );
+    const token = jwt.sign(
+      { 
+        userId: user.iduser, 
+        email: user.emailuser,
+        companyId: user.fk_user_idcompany 
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
 
-      res.status(201).json({ 
-        token: token,
-        user: {
-          id: user.iduser,
-          email: user.emailuser,
-          companyId: user.fk_user_idcompany
-        }
-      });
-    } else {
-      res.status(401).json({ message: 'Senha incorreta' });
-    }
+    res.status(201).json({ 
+      token: token,
+      user: {
+        id: user.iduser,
+        email: user.emailuser,
+        companyId: user.fk_user_idcompany,
+        pictureUser: user.pictureuser
+      }
+    });
   } catch(err){
     console.error(err);
     res.status(500).json({ message: "Erro ao fazer login do usuário" });
@@ -168,6 +172,26 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const userId = req.params.id;
+    const authHeader = req.headers.authorization;
+
+    // Check if authorization header exists
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Token de autorização necessário' });
+    }
+
+    // Extract and verify JWT token
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    let currentUser;
+    try {
+      currentUser = jwt.verify(token, JWT_SECRET);
+    } catch (jwtError) {
+      return res.status(401).json({ message: 'Token inválido' });
+    }
+
+    // Prevent user from deleting themselves
+    if (parseInt(currentUser.userId) === parseInt(userId)) {
+      return res.status(403).json({ message: 'Você não pode deletar sua própria conta' });
+    }
 
     const query = `DELETE FROM "user" WHERE idUser = $1 RETURNING *;`;
     const result = await pool.query(query, [userId]);

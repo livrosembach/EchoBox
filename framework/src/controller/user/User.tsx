@@ -88,15 +88,25 @@ export const updateUser = async (id: number, userData: {
 
 export const deleteUser = async (id: number): Promise<boolean> => {
     try {
+        const token = localStorage.getItem('authToken');
+        
         const response = await fetch(`http://localhost:3003/user/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
+                ...(token && { "Authorization": `Bearer ${token}` })
             },
         });
 
         if (!response.ok) {
-            console.error("Failed to delete user:", await response.text());
+            const errorData = await response.json();
+            console.error("Failed to delete user:", errorData.message || await response.text());
+            
+            // Show user-friendly error message for self-deletion attempt
+            if (response.status === 403) {
+                alert(errorData.message || "Você não pode deletar sua própria conta");
+            }
+            
             return false;
         }
 

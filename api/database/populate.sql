@@ -1,3 +1,5 @@
+-- This is using pgCrypto so using your PM of choice install "postgresql contrib"
+
 -- Truncate tables in reverse order of dependencies to avoid constraint issues
 -- Start with tables that are referenced by others
 TRUNCATE TABLE reply CASCADE;
@@ -45,19 +47,17 @@ INSERT INTO company (nameCompany, emailCompany, CNPJCompany) VALUES
 ('Customer First Corp', 'support@customerfirst.com', '33445566000177');
 
 -- Populate the "user" table (depends on company)
--- Assuming company IDs are 1, 2, 3, 4, 5, 6 after TRUNCATE and RESTART
-INSERT INTO "user" (emailUser, passwordUser, fk_user_idCompany) VALUES
-('admin@echobox.com', 'admin123', 1),
-('alice@techinnovations.com', 'password123', 2),
-('bob@globalservices.com', 'securepass', 3),
-('diana@localbusiness.com', 'userpass', 4),
-('charlie@digitalsolutions.com', 'mypassword', 5),
-('eva@customerfirst.com', 'strongpass', 6),
-('john@echobox.com', 'testpass', 1),
-('sarah@techinnovations.com', 'devpass', 2);
+INSERT INTO "user" (emailUser, passwordUser, pictureUser, fk_user_idCompany) VALUES
+('admin@echobox.com', encode(digest('admin123', 'sha256'), 'hex'), 'https://placehold.co/250?text=admin@echobox.com', 1),
+('alice@techinnovations.com', encode(digest('password123', 'sha256'), 'hex'), 'https://placehold.co/250?text=alice@techinnovations.com', 2),
+('bob@globalservices.com', encode(digest('securepass', 'sha256'), 'hex'), 'https://placehold.co/250?text=bob@globalservices.com', 3),
+('diana@localbusiness.com', encode(digest('userpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=diana@localbusiness.com', 4),
+('charlie@digitalsolutions.com', encode(digest('mypassword', 'sha256'), 'hex'), 'https://placehold.co/250?text=charlie@digitalsolutions.com', 5),
+('eva@customerfirst.com', encode(digest('strongpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=eva@customerfirst.com', 6),
+('john@echobox.com', encode(digest('testpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=john@echobox.com', 1),
+('sarah@techinnovations.com', encode(digest('devpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=sarah@techinnovations.com', 2);
 
 -- Populate the feedback table (depends on user, company, category, status)
--- Assuming user IDs are 1-8, company IDs are 1-6, category IDs are 1-8, and status IDs are 1-5 after TRUNCATE and RESTART
 INSERT INTO feedback (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus) VALUES
 ('Excellent Product Quality!', 'The product exceeded my expectations in terms of quality and features. Very satisfied with the purchase.', 2, 1, 1, 3),
 ('Slow Customer Support Response', 'Took several days to get a response from customer support. Could be improved.', 3, 2, 2, 2),

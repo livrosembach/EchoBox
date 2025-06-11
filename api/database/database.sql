@@ -1,3 +1,6 @@
+-- Enable pgcrypto extension for password hashing (Not really sure how extensions really work)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- drops thje tables dynamically because postgres doesnt let you just do drop database
 
 DO $$
@@ -23,7 +26,8 @@ CREATE TABLE company (
 CREATE TABLE "user" (
     idUser SERIAL PRIMARY KEY NOT NULL,
     emailUser VARCHAR(255) NOT NULL,
-    passwordUser VARCHAR(32) NOT NULL,
+    passwordUser VARCHAR(64) NOT NULL,
+    pictureUser VARCHAR(255),
     fk_user_idCompany INT,
 
     CONSTRAINT fk_user_company FOREIGN KEY (fk_user_idCompany) REFERENCES company(idCompany) ON DELETE CASCADE

@@ -4,5 +4,6 @@ export interface LoginResponse {
         id: string;
         email: string;
         companyId?: string;
+        pictureUser?: string;
     };
 }
