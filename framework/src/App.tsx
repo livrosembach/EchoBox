@@ -8,6 +8,12 @@ import Home from './components/Home';
 import SendFeedback from './components/SendFeedbacks';
 import RegisterCompany from './components/RegisterCompany';
 import FeedbackTicketDetail from './components/FeedbackTicketDetail';
+import CategoryManager from './components/CategoryManager';
+import StatusManager from './components/StatusManager';
+import AdminPanel from './components/AdminPanel';
+import UserManager from './components/UserManager';
+import CompanyManager from './components/CompanyManager';
+import FeedbackManager from './components/FeedbackManager';
 import './css/App.css';
 
 function App() {
@@ -23,6 +29,12 @@ function App() {
           <Route path="/send_feedback" element={<SendFeedback />} />
           <Route path="/register_company" element={<RegisterCompany />} />
           <Route path='/feedback/:id' element={<FeedbackTicketDetail />} />
+          <Route path='/admin' element={<AdminPanel />} />
+          <Route path='/admin/categories' element={<CategoryManager />} />
+          <Route path='/admin/statuses' element={<StatusManager />} />
+          <Route path='/admin/users' element={<UserManager />} />
+          <Route path='/admin/companies' element={<CompanyManager />} />
+          <Route path='/admin/feedbacks' element={<FeedbackManager />} />
         </Routes>
       </div>
     </Router>

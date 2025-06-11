@@ -1,0 +1,44 @@
+.truncate-text {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.feedback-form-modal .modal-content {
+  max-width: 600px;
+  width: 90%;
+}
+
+.feedback-form-modal textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.feedback-form-modal select {
+  width: 100%;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Custom styling for the feedback data in table */
+.feedback-row {
+  max-height: 60px;
+  overflow: hidden;
+}

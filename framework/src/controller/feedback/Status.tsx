@@ -2,7 +2,7 @@ import { StatusData } from "../../interface/feedback/StatusData";
 
 export const getStatus = async (): Promise<StatusData[]> => {
     try {
-        const response = await fetch("http://localhost:3003/Status", {
+        const response = await fetch("http://localhost:3003/status", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

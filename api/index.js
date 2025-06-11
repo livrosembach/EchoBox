@@ -7,6 +7,8 @@ const app = express();
 const companyRoutes = require('./routes/companies');
 const feedbackRoutes = require('./routes/feedbacks');
 const userRoutes = require('./routes/users');
+const categoryRoutes = require('./routes/categories');
+const statusRoutes = require('./routes/statuses');
 
 app.use(cors());
 app.use(express.json());
@@ -15,40 +17,8 @@ app.use(express.json());
 app.use('/company', companyRoutes);
 app.use('/feedback', feedbackRoutes);
 app.use('/user', userRoutes);
-
-// Route to get the categories
-app.get('/category', async (req, res) => {
-  try {
-    const query = `
-      SELECT
-        idCategory,
-        typeCategory
-      FROM category
-    `;
-    const result = await pool.query(query);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro a buscar tipos de categoria')
-  }
-});
-
-// Route to get the statuses
-app.get('/status', async (req, res) => {
-  try {
-    const query = `
-      SELECT
-        idStatus,
-        typeStatus
-      FROM status
-    `;
-    const result = await pool.query(query);
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro a buscar tipos de status')
-  }
-});
+app.use('/category', categoryRoutes);
+app.use('/status', statusRoutes);
 
 // App listen shit dont touch
 app.listen(3003, () => {

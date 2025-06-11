@@ -17,6 +17,7 @@ const Header: React.FC<{}> = ({}) => {
                 <ul>
                     <li><a href="/home">Home</a></li>
                     <li><a href="/send_feedback">Enviar Feedback</a></li>
+                    <li><a href="/admin">Admin</a></li>
                     <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Login</button></li>
                     <li><button className="login-button" onClick={handleLogout}>Logout</button></li>
                 </ul>
