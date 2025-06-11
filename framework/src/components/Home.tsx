@@ -3,15 +3,19 @@ import '../css/Home.css';
 import FeedbackList from "../controller/feedback/FeedbackList";
 import { getCategory } from '../controller/feedback/Category';
 import { getStatus } from '../controller/feedback/Status';
+import { getCompanies } from '../controller/feedback/Company';
 import { CategoryData } from '../interface/feedback/CategoryData';
 import { StatusData } from '../interface/feedback/StatusData';
+import { CompanyData } from '../interface/user/CompanyData';
 
 const Home: React.FC<{}> = ({}) => {
     const [categories, setCategories] = useState<CategoryData[]>([]);
     const [statuses, setStatuses] = useState<StatusData[]>([]);
+    const [companies, setCompanies] = useState<CompanyData[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all-categories');
     const [selectedStatus, setSelectedStatus] = useState<string>('all-status');
+    const [selectedCompany, setSelectedCompany] = useState<string>('all-companies');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -32,8 +36,18 @@ const Home: React.FC<{}> = ({}) => {
             }
         };
 
+        const fetchCompanies = async () => {
+            try {
+                const data = await getCompanies();
+                setCompanies(data);
+            } catch (error) {
+                console.error("Error fetching companies:", error);
+            }
+        };
+
         fetchCategories();
         fetchStatuses();
+        fetchCompanies();
     }, []);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,9 +62,14 @@ const Home: React.FC<{}> = ({}) => {
         setSelectedStatus(event.target.value);
     };
 
+    const handleCompanyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedCompany(event.target.value);
+    };
+
         console.log("Search Term:", searchTerm);
         console.log("Selected Category:", selectedCategory);
         console.log("Selected Status:", selectedStatus);
+        console.log("Selected Company:", selectedCompany);
 
 
    return (
@@ -95,6 +114,19 @@ const Home: React.FC<{}> = ({}) => {
                             </option>
                         ))}
                     </select>
+
+                    <select
+                        className="filter-dropdown"
+                        value={selectedCompany}
+                        onChange={handleCompanyChange}
+                    >
+                        <option value="all-companies">Todas Empresas</option>
+                        {companies.map(company => (
+                            <option key={company.idcompany} value={company.idcompany?.toString() || ''}>
+                                {company.namecompany}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
 
@@ -103,6 +135,7 @@ const Home: React.FC<{}> = ({}) => {
                     searchTerm={searchTerm}
                     selectedCategory={selectedCategory}
                     selectedStatus={selectedStatus}
+                    selectedCompany={selectedCompany}
                 />
             </div>
         </>

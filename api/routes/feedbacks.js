@@ -5,7 +5,7 @@ const pool = require('../db');
 // GET /feedback
 router.get('/', async (req, res) => {
   try {
-    const { search, category, status } = req.query;
+    const { search, category, status, company } = req.query;
 
     let query = `
       SELECT 
@@ -40,6 +40,12 @@ router.get('/', async (req, res) => {
     if (status && status !== 'all-status') {
       conditions.push(`f.fk_feedback_idStatus = $${paramIndex}`);
       values.push(parseInt(status));
+      paramIndex++;
+    }
+
+    if (company && company !== 'all-companies') {
+      conditions.push(`f.fk_feedback_idCompany = $${paramIndex}`);
+      values.push(parseInt(company));
       paramIndex++;
     }
 

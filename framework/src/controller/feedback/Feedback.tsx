@@ -7,12 +7,14 @@ export const getFeedbacks = async (filters?: {
     search?: string;
     category?: string;
     status?: string;
+    company?: string;
 }): Promise<FeedbackData[]> => {
     try {
         const queryParams = new URLSearchParams();
         if (filters?.search) queryParams.append('search', filters.search);
         if (filters?.category && filters.category !== 'all-categories') queryParams.append('category', filters.category);
         if (filters?.status && filters.status !== 'all-status') queryParams.append('status', filters.status);
+        if (filters?.company && filters.company !== 'all-companies') queryParams.append('company', filters.company);
 
         const response = await fetch(`http://localhost:3003/feedback?${queryParams.toString()}`, {
             method: "GET",

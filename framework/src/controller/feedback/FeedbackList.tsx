@@ -5,7 +5,7 @@ import { FeedbackListProps } from "../../interface/feedback/FeedbackListProps";
 import { getFeedbacks } from "./Feedback";
 
 
-const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategory, selectedStatus }) => {
+const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategory, selectedStatus, selectedCompany }) => {
     const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
 
     useEffect(() => {
@@ -14,7 +14,8 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategor
                 const data = await getFeedbacks({
                     search: searchTerm,
                     category: selectedCategory,
-                    status: selectedStatus
+                    status: selectedStatus,
+                    company: selectedCompany
                 });
                 setFeedbacks(data);
             } catch (error) {
@@ -23,7 +24,7 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ searchTerm, selectedCategor
         };
 
         fetchFeedbacks();
-    }, [searchTerm, selectedCategory, selectedStatus]);
+    }, [searchTerm, selectedCategory, selectedStatus, selectedCompany]);
 
     return (
         <div>
