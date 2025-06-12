@@ -27,7 +27,7 @@ const Login: React.FC<{}> = ({}) => {
         const result = await loginUser(userData);
 
         if (result) {
-            alert("User logged in successfully!");
+            alert("Usuário logado com sucesso!");
             setFormData({
                 email: "",
                 password: "",
@@ -35,7 +35,7 @@ const Login: React.FC<{}> = ({}) => {
 
             navigate("/home");
         } else {
-            alert("Failed to login.");
+            alert("Falha no login.");
         }
     };
 

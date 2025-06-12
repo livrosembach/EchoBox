@@ -16,7 +16,7 @@ export const useAdminGuard = () => {
         const currentUser = getCurrentUser();
         
         if (!currentUser || currentUser.companyId !== 1) {
-            alert('Access denied. Only EchoBox administrators can access this page.');
+            alert('Acesso negado. Apenas administradores do EchoBox podem acessar esta página.');
             navigate('/home');
             setIsAuthorized(false);
         } else {

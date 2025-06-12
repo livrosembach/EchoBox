@@ -35,7 +35,7 @@ const UserManager: React.FC = () => {
   }, [isAuthorized]);
 
   if (isLoading) {
-    return <div className="loading">Checking permissions...</div>;
+    return <div className="loading">Verificando permissões...</div>;
   }
 
   if (!isAuthorized) {
@@ -58,7 +58,7 @@ const UserManager: React.FC = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching users:', error);
-      setError('Failed to load users. Please try again.');
+      setError('Falha ao carregar usuários. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -104,11 +104,11 @@ const UserManager: React.FC = () => {
         await fetchUsers();
         setError(null);
       } else {
-        setError('Failed to delete user. Please try again.');
+        setError('Falha ao deletar usuário. Tente novamente.');
       }
     } catch (error) {
       console.error('Error deleting user:', error);
-      setError('Failed to delete user. Please try again.');
+      setError('Falha ao deletar usuário. Tente novamente.');
     }
   };
 
@@ -125,7 +125,7 @@ const UserManager: React.FC = () => {
     
     // Validate password match for new users or when changing password
     if (formData.passwordUser && formData.passwordUser !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError('As senhas não coincidem');
       return;
     }
     
@@ -152,12 +152,12 @@ const UserManager: React.FC = () => {
           setIsModalOpen(false);
           setError(null);
         } else {
-          setError('Failed to update user. Please try again.');
+          setError('Falha ao atualizar usuário. Tente novamente.');
         }
       } else {
         // Create new user - password is required for new users
         if (!formData.passwordUser) {
-          setError('Password is required for new users');
+          setError('Senha é obrigatória para novos usuários');
           return;
         }
         
@@ -169,12 +169,12 @@ const UserManager: React.FC = () => {
           setIsModalOpen(false);
           setError(null);
         } else {
-          setError('Failed to create user. Please try again.');
+          setError('Falha ao criar usuário. Tente novamente.');
         }
       }
     } catch (error) {
       console.error('Error saving user:', error);
-      setError('Failed to save user. Please try again.');
+      setError('Falha ao salvar usuário. Tente novamente.');
     }
   };
 
@@ -185,7 +185,7 @@ const UserManager: React.FC = () => {
       width: '80px'
     },
     {
-      header: 'User',
+      header: 'Usuário',
       accessor: 'emailUser',
       cell: (value: string, row: UserWithCompany) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -199,7 +199,7 @@ const UserManager: React.FC = () => {
       )
     },
     {
-      header: 'Company',
+      header: 'Empresa',
       accessor: 'companyname',
       cell: (value: string, row: UserWithCompany) => {
         const company = companies.find(c => c.idcompany === row.fk_user_idCompany);
@@ -211,7 +211,7 @@ const UserManager: React.FC = () => {
   return (
     <div className="category-manager">
       <CrudTable
-        title="User Management"
+        title="Gerenciamento de Usuários"
         data={users}
         columns={columns}
         loading={loading}
@@ -227,7 +227,7 @@ const UserManager: React.FC = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>{currentUser ? 'Edit User' : 'Add New User'}</h3>
+              <h3>{currentUser ? 'Editar Usuário' : 'Adicionar Novo Usuário'}</h3>
               <button 
                 className="close-button"
                 onClick={() => setIsModalOpen(false)}
@@ -251,7 +251,7 @@ const UserManager: React.FC = () => {
               
               <div className="form-group">
                 <label htmlFor="passwordUser">
-                  {currentUser ? 'New Password (leave blank to keep current)' : 'Password'}
+                  {currentUser ? 'Nova Senha (deixe em branco para manter a atual)' : 'Senha'}
                 </label>
                 <input
                   type="password"
@@ -264,7 +264,7 @@ const UserManager: React.FC = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm Password</label>
+                <label htmlFor="confirmPassword">Confirmar Senha</label>
                 <input
                   type="password"
                   id="confirmPassword"
@@ -276,14 +276,14 @@ const UserManager: React.FC = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="fk_user_idCompany">Company</label>
+                <label htmlFor="fk_user_idCompany">Empresa</label>
                 <select
                   id="fk_user_idCompany"
                   name="fk_user_idCompany"
                   value={formData.fk_user_idCompany}
                   onChange={handleInputChange}
                 >
-                  <option value="">-- Select Company --</option>
+                  <option value="">-- Selecione uma Empresa --</option>
                   {companies.map(company => (
                     <option key={company.idcompany} value={company.idcompany}>
                       {company.namecompany}
@@ -298,13 +298,13 @@ const UserManager: React.FC = () => {
                   className="cancel-button"
                   onClick={() => setIsModalOpen(false)}
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
                   className="save-button"
                 >
-                  {currentUser ? 'Update' : 'Create'}
+                  {currentUser ? 'Atualizar' : 'Criar'}
                 </button>
               </div>
             </form>

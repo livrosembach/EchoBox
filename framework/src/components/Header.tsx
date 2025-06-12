@@ -62,10 +62,10 @@ const Header: React.FC<{}> = ({}) => {
                                 />
                                 <span className="user-email">{currentUser?.email}</span>
                             </li>
-                            <li><button className="logout-button" onClick={handleLogout}>Logout</button></li>
+                            <li><button className="logout-button" onClick={handleLogout}>Sair</button></li>
                         </>
                     ) : (
-                        <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Login</button></li>
+                        <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Entrar</button></li>
                     )}
                 </ul>
             </nav>

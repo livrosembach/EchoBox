@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FeedbackDetailData } from "../interface/feedback/FeedbackDetailData";
+import { StatusData } from "../interface/feedback/StatusData";
 import { getFeedbackDetail } from "../controller/feedback/FeedbackTicketDetail";
 import { createReply } from "../controller/feedback/Reply";
+import { updateFeedbackStatus } from "../controller/feedback/Feedback";
+import { getStatus } from "../controller/feedback/Status";
 import { getCurrentUser } from "../utils/Auth";
 import UserAvatar from "./UserAvatar";
 import '../css/FeedbackTicketDetail.css'
@@ -10,9 +13,13 @@ import '../css/FeedbackTicketDetail.css'
 const FeedbackTicketDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [feedback, setFeedback] = useState<FeedbackDetailData | null>(null);
+    const [statuses, setStatuses] = useState<StatusData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [showReplyForm, setShowReplyForm] = useState<boolean>(false);
+    const [showStatusChange, setShowStatusChange] = useState<boolean>(false);
+    const [selectedStatus, setSelectedStatus] = useState<string>('');
+    const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
     const [replyTitle, setReplyTitle] = useState<string>('');
     const [replyContent, setReplyContent] = useState<string>('');
     const [submittingReply, setSubmittingReply] = useState<boolean>(false);
@@ -20,7 +27,7 @@ const FeedbackTicketDetail: React.FC = () => {
     useEffect(() => {
         const fetchFeedbackDetail = async () => {
             if (!id) {
-                setError("No feedback ID provided");
+                setError("ID do feedback não fornecido");
                 setLoading(false);
                 return;
             }
@@ -31,32 +38,43 @@ const FeedbackTicketDetail: React.FC = () => {
                 
                 if (data) {
                     setFeedback(data);
+                    setSelectedStatus(data.fk_feedback_idstatus?.toString() || '');
                     setError(null);
                 } else {
-                    setError("Failed to load feedback details");
+                    setError("Falha ao carregar detalhes do feedback");
                 }
             } catch (error) {
                 console.error("Error fetching feedback details:", error);
-                setError("Failed to load feedback details");
+                setError("Falha ao carregar detalhes do feedback");
             } finally {
                 setLoading(false);
             }
         };
 
+        const fetchStatusOptions = async () => {
+            try {
+                const statusList = await getStatus();
+                setStatuses(statusList);
+            } catch (error) {
+                console.error("Error fetching status options:", error);
+            }
+        };
+
         fetchFeedbackDetail();
+        fetchStatusOptions();
     }, [id]);
 
     const handleReplySubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
         if (!replyTitle.trim() || !replyContent.trim()) {
-            alert('Please fill in both title and content for the reply.');
+            alert('Por favor, preencha tanto o título quanto o conteúdo da resposta.');
             return;
         }
 
         const currentUser = getCurrentUser();
         if (!currentUser) {
-            alert('You must be logged in to reply.');
+            alert('Você deve estar logado para responder.');
             return;
         }
 
@@ -87,19 +105,52 @@ const FeedbackTicketDetail: React.FC = () => {
                 setShowReplyForm(false);
                 setError(null);
             } else {
-                setError('Failed to submit reply. Please try again.');
+                setError('Falha ao enviar resposta. Tente novamente.');
             }
         } catch (error) {
             console.error('Error submitting reply:', error);
-            setError('Failed to submit reply. Please try again.');
+            setError('Falha ao enviar resposta. Tente novamente.');
         } finally {
             setSubmittingReply(false);
         }
     };
 
-    if (loading) return <div className="loading">Loading...</div>;
+    const handleStatusChange = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!selectedStatus) {
+            alert('Por favor, selecione um status.');
+            return;
+        }
+
+        setUpdatingStatus(true);
+
+        try {
+            const success = await updateFeedbackStatus(feedback!.idfeedback, parseInt(selectedStatus));
+            
+            if (success) {
+                // Refresh the feedback data to show the updated status
+                const updatedFeedback = await getFeedbackDetail(id!);
+                if (updatedFeedback) {
+                    setFeedback(updatedFeedback);
+                    setSelectedStatus(updatedFeedback.fk_feedback_idstatus?.toString() || '');
+                }
+                setShowStatusChange(false);
+                setError(null);
+            } else {
+                setError('Falha ao atualizar status. Tente novamente.');
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            setError('Falha ao atualizar status. Tente novamente.');
+        } finally {
+            setUpdatingStatus(false);
+        }
+    };
+
+    if (loading) return <div className="loading">Carregando...</div>;
     if (error) return <div className="error">{error}</div>;
-    if (!feedback) return <div className="error">Feedback not found</div>;
+    if (!feedback) return <div className="error">Feedback não encontrado</div>;
 
     // Determine if current user can reply
     const currentUser = getCurrentUser();
@@ -108,6 +159,16 @@ const FeedbackTicketDetail: React.FC = () => {
         parseInt(currentUser.id) === feedback.fk_feedback_iduser ||
         // Company users can reply to feedback about their company
         (currentUser.companyId && currentUser.companyId === feedback.fk_feedback_idcompany)
+    );
+
+    // Determine if current user can change status
+    const canChangeStatus = currentUser && (
+        // User who created the feedback
+        parseInt(currentUser.id) === feedback.fk_feedback_iduser ||
+        // User who works at the company the feedback is about
+        (currentUser.companyId && currentUser.companyId === feedback.fk_feedback_idcompany) ||
+        // EchoBox admin (company ID = 1)
+        (currentUser.companyId && currentUser.companyId === 1)
     );
 
     return (
@@ -119,7 +180,7 @@ const FeedbackTicketDetail: React.FC = () => {
                         email={feedback.emailuser} 
                         size="lg" 
                     />
-                    <span>{feedback.emailuser || "Username"}</span>
+                    <span>{feedback.emailuser || "Nome de usuário"}</span>
                 </div>
                 <div className="title">
                     <div className="title-text">
@@ -128,6 +189,15 @@ const FeedbackTicketDetail: React.FC = () => {
                     <div className="category-status">
                         <span className="tag" style={{ backgroundColor: feedback.colorcategory || '#CCCCCC' }}>{feedback.typecategory}</span>
                         <span className="tag" style={{ backgroundColor: feedback.colorstatus || '#007bff' }}>{feedback.typestatus}</span>
+                        {canChangeStatus && (
+                            <button 
+                                className="change-status-btn"
+                                onClick={() => setShowStatusChange(true)}
+                                title="Alterar Status"
+                            >
+                                <i className="fa-solid fa-edit"></i>
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div className="description">
@@ -137,7 +207,7 @@ const FeedbackTicketDetail: React.FC = () => {
             <div id="company-answer" className="feedback-data company-answer">
                 <div className="feedback-header">
                     <i className="fa-solid fa-building fa-lg"></i>
-                    <span>{feedback.namecompany || "Company"}</span>
+                    <span>{feedback.namecompany || "Empresa"}</span>
                 </div>
                 <div className="replies-section">
                     {feedback.replies && feedback.replies.length > 0 ? (
@@ -150,7 +220,7 @@ const FeedbackTicketDetail: React.FC = () => {
                                             email={reply.emailuser} 
                                             size="sm" 
                                         />
-                                        <span>{reply.emailuser || reply.namecompany || "Unknown"}</span>
+                                        <span>{reply.emailuser || reply.namecompany || "Desconhecido"}</span>
                                     </div>
                                     <h4 className="reply-title">{reply.titlereply}</h4>
                                 </div>
@@ -161,10 +231,65 @@ const FeedbackTicketDetail: React.FC = () => {
                         ))
                     ) : (
                         <div className="no-replies">
-                            <p>No response from company yet.</p>
+                            <p>Ainda não há resposta da empresa.</p>
                         </div>
                     )}
                 </div>
+                
+                {/* Status Change Form - Only show if user can change status */}
+                {showStatusChange && canChangeStatus && (
+                    <div className="status-change-modal">
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h3>Alterar Status</h3>
+                                    <button 
+                                        className="close-button"
+                                        onClick={() => setShowStatusChange(false)}
+                                    >
+                                        <i className="fa-solid fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <form onSubmit={handleStatusChange} className="status-form">
+                                    <div className="form-group">
+                                        <label htmlFor="statusSelect">Selecione o Novo Status:</label>
+                                        <select
+                                            id="statusSelect"
+                                            value={selectedStatus}
+                                            onChange={(e) => setSelectedStatus(e.target.value)}
+                                            required
+                                        >
+                                            <option value="">-- Selecione um Status --</option>
+                                            {statuses.map(status => (
+                                                <option key={status.idstatus} value={status.idstatus}>
+                                                    {status.typestatus}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="form-buttons">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowStatusChange(false)}
+                                            className="cancel-btn"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={updatingStatus}
+                                            className="submit-btn"
+                                        >
+                                            {updatingStatus ? 'Atualizando...' : 'Atualizar Status'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 
                 {/* Reply Form - Only show if user can reply */}
                 {canReply && (
@@ -174,29 +299,29 @@ const FeedbackTicketDetail: React.FC = () => {
                                 className="add-reply-btn"
                                 onClick={() => setShowReplyForm(true)}
                             >
-                                Add Reply
+                                Adicionar Resposta
                             </button>
                         ) : (
                             <form onSubmit={handleReplySubmit} className="reply-form">
-                                <h3>Add a Reply</h3>
+                                <h3>Adicionar uma Resposta</h3>
                                 <div className="form-group">
-                                    <label htmlFor="replyTitle">Reply Title:</label>
+                                    <label htmlFor="replyTitle">Título da Resposta:</label>
                                     <input
                                         type="text"
                                         id="replyTitle"
                                         value={replyTitle}
                                         onChange={(e) => setReplyTitle(e.target.value)}
-                                        placeholder="Enter reply title..."
+                                        placeholder="Digite o título da resposta..."
                                         required
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="replyContent">Reply Content:</label>
+                                    <label htmlFor="replyContent">Conteúdo da Resposta:</label>
                                     <textarea
                                         id="replyContent"
                                         value={replyContent}
                                         onChange={(e) => setReplyContent(e.target.value)}
-                                        placeholder="Enter your reply..."
+                                        placeholder="Digite sua resposta..."
                                         rows={4}
                                         required
                                     />
@@ -211,14 +336,14 @@ const FeedbackTicketDetail: React.FC = () => {
                                         }}
                                         className="cancel-btn"
                                     >
-                                        Cancel
+                                        Cancelar
                                     </button>
                                     <button 
                                         type="submit" 
                                         disabled={submittingReply}
                                         className="submit-btn"
                                     >
-                                        {submittingReply ? 'Submitting...' : 'Submit Reply'}
+                                        {submittingReply ? 'Enviando...' : 'Enviar Resposta'}
                                     </button>
                                 </div>
                             </form>

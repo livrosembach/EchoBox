@@ -24,7 +24,7 @@ const CategoryManager: React.FC = () => {
   }, [isAuthorized]);
 
   if (isLoading) {
-    return <div className="loading">Checking permissions...</div>;
+    return <div className="loading">Verificando permissões...</div>;
   }
 
   if (!isAuthorized) {
@@ -39,7 +39,7 @@ const CategoryManager: React.FC = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching categories:', error);
-      setError('Failed to load categories. Please try again.');
+      setError('Falha ao carregar categorias. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -70,11 +70,11 @@ const CategoryManager: React.FC = () => {
         setCategories(categories.filter(category => category.idcategory !== id));
         setError(null);
       } else {
-        setError('Failed to delete category. It may be in use by existing feedback.');
+        setError('Falha ao deletar categoria. Ela pode estar em uso por feedbacks existentes.');
       }
     } catch (error) {
       console.error('Error deleting category:', error);
-      setError('Failed to delete category. Please try again.');
+      setError('Falha ao deletar categoria. Tente novamente.');
     }
   };
 
@@ -104,7 +104,7 @@ const CategoryManager: React.FC = () => {
           setIsModalOpen(false);
           setError(null);
         } else {
-          setError('Failed to update category. Please try again.');
+          setError('Falha ao atualizar categoria. Tente novamente.');
         }
       } else {
         // Create new category
@@ -118,12 +118,12 @@ const CategoryManager: React.FC = () => {
           setIsModalOpen(false);
           setError(null);
         } else {
-          setError('Failed to create category. Please try again.');
+          setError('Falha ao criar categoria. Tente novamente.');
         }
       }
     } catch (error) {
       console.error('Error saving category:', error);
-      setError('Failed to save category. Please try again.');
+      setError('Falha ao salvar categoria. Tente novamente.');
     }
   };
 
@@ -134,11 +134,11 @@ const CategoryManager: React.FC = () => {
       width: '80px'
     },
     {
-      header: 'Category Name',
+      header: 'Nome da Categoria',
       accessor: 'typecategory'
     },
     {
-      header: 'Color',
+      header: 'Cor',
       accessor: 'colorcategory',
       cell: (value: string) => (
         <div className="color-cell">
@@ -155,7 +155,7 @@ const CategoryManager: React.FC = () => {
   return (
     <div className="category-manager">
       <CrudTable
-        title="Category Management"
+        title="Gerenciamento de Categorias"
         data={categories}
         columns={columns}
         loading={loading}
@@ -171,7 +171,7 @@ const CategoryManager: React.FC = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>{currentCategory ? 'Edit Category' : 'Add New Category'}</h3>
+              <h3>{currentCategory ? 'Editar Categoria' : 'Adicionar Nova Categoria'}</h3>
               <button 
                 className="close-button"
                 onClick={() => setIsModalOpen(false)}
@@ -182,7 +182,7 @@ const CategoryManager: React.FC = () => {
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="typeCategory">Category Name</label>
+                <label htmlFor="typeCategory">Nome da Categoria</label>
                 <input
                   type="text"
                   id="typeCategory"
@@ -194,7 +194,7 @@ const CategoryManager: React.FC = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="colorCategory">Category Color</label>
+                <label htmlFor="colorCategory">Cor da Categoria</label>
                 <div className="color-input-container">
                   <input
                     type="color"
@@ -220,13 +220,13 @@ const CategoryManager: React.FC = () => {
                   className="cancel-button"
                   onClick={() => setIsModalOpen(false)}
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
                   className="save-button"
                 >
-                  {currentCategory ? 'Update' : 'Create'}
+                  {currentCategory ? 'Atualizar' : 'Criar'}
                 </button>
               </div>
             </form>

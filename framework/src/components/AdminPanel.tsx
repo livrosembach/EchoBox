@@ -7,7 +7,7 @@ const AdminPanel: React.FC = () => {
   const { isAuthorized, isLoading } = useAdminGuard();
 
   if (isLoading) {
-    return <div className="loading">Checking permissions...</div>;
+    return <div className="loading">Verificando permissões...</div>;
   }
 
   if (!isAuthorized) {
@@ -16,51 +16,51 @@ const AdminPanel: React.FC = () => {
 
   return (
     <div className="admin-panel">
-      <h1 className="admin-title">Admin Dashboard</h1>
+      <h1 className="admin-title">Painel Administrativo</h1>
       
       <div className="admin-cards">
         <div className="admin-card">
           <i className="fa-solid fa-tags admin-icon"></i>
-          <h2>Categories</h2>
-          <p>Manage feedback categories and their colors</p>
+          <h2>Categorias</h2>
+          <p>Gerencie categorias de feedback e suas cores</p>
           <Link to="/admin/categories" className="admin-button">
-            Manage Categories
+            Gerenciar Categorias
           </Link>
         </div>
         
         <div className="admin-card">
           <i className="fa-solid fa-spinner admin-icon"></i>
-          <h2>Statuses</h2>
-          <p>Manage feedback status types and their colors</p>
+          <h2>Status</h2>
+          <p>Gerencie tipos de status de feedback e suas cores</p>
           <Link to="/admin/statuses" className="admin-button">
-            Manage Statuses
+            Gerenciar Status
           </Link>
         </div>
         
         <div className="admin-card">
           <i className="fa-solid fa-building admin-icon"></i>
-          <h2>Companies</h2>
-          <p>Manage company accounts and information</p>
+          <h2>Empresas</h2>
+          <p>Gerencie contas de empresas e informações</p>
           <Link to="/admin/companies" className="admin-button">
-            Manage Companies
+            Gerenciar Empresas
           </Link>
         </div>
         
         <div className="admin-card">
           <i className="fa-solid fa-users admin-icon"></i>
-          <h2>Users</h2>
-          <p>Manage user accounts and permissions</p>
+          <h2>Usuários</h2>
+          <p>Gerencie contas de usuários e permissões</p>
           <Link to="/admin/users" className="admin-button">
-            Manage Users
+            Gerenciar Usuários
           </Link>
         </div>
         
         <div className="admin-card">
           <i className="fa-solid fa-comment admin-icon"></i>
           <h2>Feedbacks</h2>
-          <p>View and manage all feedback submissions</p>
+          <p>Visualize e gerencie todas as submissões de feedback</p>
           <Link to="/admin/feedbacks" className="admin-button">
-            Manage Feedbacks
+            Gerenciar Feedbacks
           </Link>
         </div>
       </div>

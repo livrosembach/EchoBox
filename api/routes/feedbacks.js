@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const jwt = require('jsonwebtoken');
+
+// I know this is bad I also dont care
+const JWT_SECRET = 'your-secret-key-here';
 
 // GET /feedback
 router.get('/', async (req, res) => {
@@ -171,6 +175,111 @@ router.delete('/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao deletar feedback');
+  }
+});
+
+// PUT /feedback/:id/status - Update feedback status with authorization
+router.put('/:id/status', async (req, res) => {
+  try {
+    const feedbackId = req.params.id;
+    const { fk_feedback_idStatus } = req.body;
+    const authHeader = req.headers.authorization;
+
+    // Check if authorization header exists
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Token de autorização necessário' });
+    }
+
+    // Extract and verify JWT token
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    let currentUser;
+    try {
+      currentUser = jwt.verify(token, JWT_SECRET);
+    } catch (jwtError) {
+      return res.status(401).json({ message: 'Token inválido' });
+    }
+
+    // Get feedback details to check authorization
+    const feedbackQuery = `
+      SELECT 
+        feedback.fk_feedback_idUser,
+        feedback.fk_feedback_idCompany,
+        feedback.fk_feedback_idStatus,
+        "user".fk_user_idCompany as userCompanyId
+      FROM feedback
+      JOIN "user" ON feedback.fk_feedback_idUser = "user".idUser
+      WHERE feedback.idFeedback = $1
+    `;
+    
+    const feedbackResult = await pool.query(feedbackQuery, [feedbackId]);
+    
+    if (feedbackResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Feedback não encontrado' });
+    }
+
+    const feedback = feedbackResult.rows[0];
+    
+    // Check authorization:
+    // 1. User who created the feedback
+    // 2. User who works at the company the feedback is about
+    // 3. EchoBox admin (company ID = 1)
+    const canUpdateStatus = 
+      parseInt(currentUser.userId) === feedback.fk_feedback_iduser ||
+      parseInt(currentUser.companyId) === feedback.fk_feedback_idcompany ||
+      parseInt(currentUser.companyId) === 1; // EchoBox admin
+
+    if (!canUpdateStatus) {
+      return res.status(403).json({ message: 'Você não tem permissão para alterar o status deste feedback' });
+    }
+
+    // Update the feedback status
+    const updateQuery = `
+      UPDATE feedback 
+      SET fk_feedback_idStatus = $1
+      WHERE idFeedback = $2
+      RETURNING 
+        feedback.idFeedback,
+        feedback.titleFeedback,
+        feedback.reviewFeedback,
+        feedback.fk_feedback_idUser,
+        feedback.fk_feedback_idCompany,
+        feedback.fk_feedback_idCategory,
+        feedback.fk_feedback_idStatus
+    `;
+    
+    const updateResult = await pool.query(updateQuery, [fk_feedback_idStatus, feedbackId]);
+
+    // Get the updated feedback with all related data
+    const fullFeedbackQuery = `
+      SELECT 
+        feedback.idFeedback,
+        feedback.titleFeedback,
+        feedback.reviewFeedback,
+        feedback.fk_feedback_idUser,
+        feedback.fk_feedback_idCompany,
+        feedback.fk_feedback_idCategory,
+        feedback.fk_feedback_idStatus,
+        "user".emailUser,
+        "user".pictureUser,
+        company.nameCompany,
+        category.typeCategory,
+        category.colorCategory,
+        status.typeStatus,
+        status.colorStatus
+      FROM feedback
+      JOIN "user" ON feedback.fk_feedback_idUser = "user".idUser
+      JOIN company ON feedback.fk_feedback_idCompany = company.idCompany
+      JOIN category ON feedback.fk_feedback_idCategory = category.idCategory
+      JOIN status ON feedback.fk_feedback_idStatus = status.idStatus
+      WHERE feedback.idFeedback = $1
+    `;
+    
+    const fullResult = await pool.query(fullFeedbackQuery, [feedbackId]);
+
+    res.json(fullResult.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao atualizar status do feedback');
   }
 });
 

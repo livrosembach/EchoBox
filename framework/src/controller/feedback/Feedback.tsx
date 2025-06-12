@@ -104,6 +104,40 @@ export const updateFeedback = async (id: number, feedbackData: UpdateFeedbackDat
     }
 };
 
+export const updateFeedbackStatus = async (id: number, statusId: number): Promise<boolean> => {
+    try {
+        const token = localStorage.getItem('authToken');
+        
+        const response = await fetch(`http://localhost:3003/feedback/${id}/status`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { "Authorization": `Bearer ${token}` })
+            },
+            body: JSON.stringify({ fk_feedback_idStatus: statusId }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Failed to update feedback status:", errorData.message || await response.text());
+            
+            // Show user-friendly error message
+            if (response.status === 403) {
+                alert(errorData.message || "Você não tem permissão para alterar o status deste feedback");
+            } else if (response.status === 401) {
+                alert("Você precisa estar logado para alterar o status");
+            }
+            
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Error updating feedback status:", error);
+        return false;
+    }
+};
+
 export const deleteFeedback = async (id: number): Promise<boolean> => {
     try {
         const response = await fetch(`http://localhost:3003/feedback/${id}`, {

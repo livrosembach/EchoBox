@@ -107,7 +107,7 @@ const Home: React.FC<{}> = ({}) => {
                         value={selectedStatus}
                         onChange={handleStatusChange}
                     >
-                        <option value="all-status">Todos Status</option>
+                        <option value="all-status">Todos os Status</option>
                         {statuses.map(status => (
                             <option key={status.idstatus} value={status.idstatus.toString()}>
                                 {status.typestatus}
@@ -120,7 +120,7 @@ const Home: React.FC<{}> = ({}) => {
                         value={selectedCompany}
                         onChange={handleCompanyChange}
                     >
-                        <option value="all-companies">Todas Empresas</option>
+                        <option value="all-companies">Todas as Empresas</option>
                         {companies.map(company => (
                             <option key={company.idcompany} value={company.idcompany?.toString() || ''}>
                                 {company.namecompany}
