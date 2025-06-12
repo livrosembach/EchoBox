@@ -19,66 +19,66 @@ ALTER SEQUENCE reply_idreply_seq RESTART WITH 1;
 
 -- Populate the category table (no dependencies)
 INSERT INTO category (typeCategory, colorCategory) VALUES
-('Product Quality', '#4CAF50'),      
-('Customer Service', '#2196F3'),
-('Website Usability', '#FF9800'),
-('Delivery Speed', '#9C27B0'),
-('Pricing', '#F44336'),
-('Bug Report', '#795548'),
-('Feature Request', '#607D8B'),
-('General Feedback', '#9E9E9E');
+('Qualidade do Produto', '#4CAF50'),      
+('Atendimento ao Cliente', '#2196F3'),
+('Usabilidade do Site', '#FF9800'),
+('Velocidade de Entrega', '#9C27B0'),
+('Preços', '#F44336'),
+('Relatório de Bug', '#795548'),
+('Solicitação de Funcionalidade', '#607D8B'),
+('Feedback Geral', '#9E9E9E');
 
 
 -- Populate the status table (no dependencies)
 INSERT INTO "status" (typeStatus, colorStatus) VALUES
-('Pending', '#FF9800'),
-('In Progress', '#2196F3'),
-('Solved', '#4CAF50'),
-('Closed', '#9E9E9E'),
-('Rejected', '#F44336');
+('Pendente', '#FF9800'),
+('Em Andamento', '#2196F3'),
+('Resolvido', '#4CAF50'),
+('Fechado', '#9E9E9E'),
+('Rejeitado', '#F44336');
 
 -- Populate the company table (no dependencies)
 INSERT INTO company (nameCompany, emailCompany, CNPJCompany) VALUES
-('EchoBox Solutions', 'contact@echobox.com', '12345678000100'),
+('EchoBox Solutions', 'contato@echobox.com', '12345678000100'),
 ('Tech Innovations Inc.', 'info@techinnovations.com', '98765432000199'),
-('Global Services Ltd.', 'support@globalservices.com', '11223344000155'),
-('Local Business Co.', 'hello@localbusiness.co', '55667788000122'),
-('Digital Solutions', 'contact@digitalsolutions.com', '99887766000144'),
-('Customer First Corp', 'support@customerfirst.com', '33445566000177');
+('Serviços Globais Ltda.', 'suporte@servicosglobais.com', '11223344000155'),
+('Negócios Locais Co.', 'ola@negocioslocais.co', '55667788000122'),
+('Soluções Digitais', 'contato@solucoesdigitais.com', '99887766000144'),
+('Cliente Primeiro Corp', 'suporte@clienteprimeiro.com', '33445566000177');
 
 -- Populate the "user" table (depends on company)
 INSERT INTO "user" (emailUser, passwordUser, pictureUser, fk_user_idCompany) VALUES
 ('admin@echobox.com', encode(digest('admin123', 'sha256'), 'hex'), 'https://placehold.co/250?text=admin@echobox.com', 1),
 ('alice@techinnovations.com', encode(digest('password123', 'sha256'), 'hex'), 'https://placehold.co/250?text=alice@techinnovations.com', 2),
-('bob@globalservices.com', encode(digest('securepass', 'sha256'), 'hex'), 'https://placehold.co/250?text=bob@globalservices.com', 3),
-('diana@localbusiness.com', encode(digest('userpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=diana@localbusiness.com', 4),
-('charlie@digitalsolutions.com', encode(digest('mypassword', 'sha256'), 'hex'), 'https://placehold.co/250?text=charlie@digitalsolutions.com', 5),
-('eva@customerfirst.com', encode(digest('strongpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=eva@customerfirst.com', 6),
-('john@echobox.com', encode(digest('testpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=john@echobox.com', 1),
+('bob@servicosglobais.com', encode(digest('securepass', 'sha256'), 'hex'), 'https://placehold.co/250?text=bob@servicosglobais.com', 3),
+('diana@negocioslocais.com', encode(digest('userpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=diana@negocioslocais.com', 4),
+('charlie@solucoesdigitais.com', encode(digest('mypassword', 'sha256'), 'hex'), 'https://placehold.co/250?text=charlie@solucoesdigitais.com', 5),
+('eva@clienteprimeiro.com', encode(digest('strongpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=eva@clienteprimeiro.com', 6),
+('joao@echobox.com', encode(digest('testpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=joao@echobox.com', 1),
 ('sarah@techinnovations.com', encode(digest('devpass', 'sha256'), 'hex'), 'https://placehold.co/250?text=sarah@techinnovations.com', 2);
 
 -- Populate the feedback table (depends on user, company, category, status)
 INSERT INTO feedback (titleFeedback, reviewFeedback, fk_feedback_idUser, fk_feedback_idCompany, fk_feedback_idCategory, fk_feedback_idStatus) VALUES
-('Excellent Product Quality!', 'The product exceeded my expectations in terms of quality and features. Very satisfied with the purchase.', 2, 1, 1, 3),
-('Slow Customer Support Response', 'Took several days to get a response from customer support. Could be improved.', 3, 2, 2, 2),
-('Website Navigation Issues', 'I had trouble finding the information I needed on the website. The navigation could be more intuitive.', 4, 1, 3, 1),
-('Lightning Fast Delivery', 'Received my order much faster than expected. Great logistics!', 5, 3, 4, 3),
-('Competitive Pricing', 'The pricing is very competitive for the features offered. Good value for money.', 6, 4, 5, 3),
-('Bug in Mobile App', 'Found a critical bug when using the mobile app on Android. Unable to complete checkout.', 7, 1, 6, 2),
-('Feature Request: Dark Mode', 'Would love to see a dark mode option in the application. It would greatly improve user experience.', 8, 1, 7, 1),
-('Overall Great Experience', 'Had a wonderful experience with your service. Keep up the good work!', 1, 1, 8, 3),
-('Payment Process Too Complex', 'The payment process has too many steps. Could be simplified for better user experience.', 2, 2, 3, 2),
-('Product Documentation Needs Work', 'The product documentation is incomplete and could use more examples.', 3, 3, 1, 1),
-('Awesome Customer Service', 'The customer service team was extremely helpful and resolved my issue quickly.', 4, 4, 2, 3),
-('Delivery Packaging Excellent', 'Items arrived in perfect condition thanks to excellent packaging.', 5, 5, 4, 3);
+('Excelente Qualidade do Produto!', 'O produto superou minhas expectativas em termos de qualidade e funcionalidades. Muito satisfeito com a compra.', 2, 1, 1, 3),
+('Resposta Lenta do Atendimento', 'Levei vários dias para receber uma resposta do atendimento ao cliente. Pode ser melhorado.', 3, 2, 2, 2),
+('Problemas de Navegação no Site', 'Tive dificuldade para encontrar as informações que precisava no site. A navegação poderia ser mais intuitiva.', 4, 1, 3, 1),
+('Entrega Muito Rápida', 'Recebi meu pedido muito mais rápido do que esperava. Excelente logística!', 5, 3, 4, 3),
+('Preços Competitivos', 'Os preços são muito competitivos para as funcionalidades oferecidas. Bom custo-benefício.', 6, 4, 5, 3),
+('Bug no Aplicativo Mobile', 'Encontrei um bug crítico ao usar o aplicativo mobile no Android. Não consegui finalizar a compra.', 7, 1, 6, 2),
+('Solicitação: Modo Escuro', 'Adoraria ver uma opção de modo escuro no aplicativo. Melhoraria muito a experiência do usuário.', 8, 1, 7, 1),
+('Experiência Geral Excelente', 'Tive uma experiência maravilhosa com seu serviço. Continue com o bom trabalho!', 1, 1, 8, 3),
+('Processo de Pagamento Muito Complexo', 'O processo de pagamento tem muitas etapas. Poderia ser simplificado para melhor experiência do usuário.', 2, 2, 3, 2),
+('Documentação do Produto Precisa Melhorar', 'A documentação do produto está incompleta e poderia ter mais exemplos.', 3, 3, 1, 1),
+('Atendimento ao Cliente Fantástico', 'A equipe de atendimento foi extremamente prestativa e resolveu meu problema rapidamente.', 4, 4, 2, 3),
+('Embalagem de Entrega Excelente', 'Os itens chegaram em perfeitas condições graças à excelente embalagem.', 5, 5, 4, 3);
 
 -- Populate the reply table (depends on feedback and user)
 -- Adding some replies to existing feedback
 INSERT INTO reply (titleReply, reviewReply, fk_reply_idFeedback, fk_reply_idUser) VALUES
-('Thank you for your feedback!', 'We really appreciate your positive review. We''re glad you''re satisfied with our product quality.', 1, 1),
-('We''re working on it', 'Thank you for bringing this to our attention. We''re currently working on improving our response times.', 2, 1),
-('Navigation improvements coming soon', 'We''ve noted your feedback and are planning a website redesign to improve navigation.', 3, 1),
-('Great to hear!', 'We''re happy that our delivery service met your expectations. Thank you for the feedback!', 4, 1),
-('Bug fix in progress', 'We''ve identified the issue and our development team is working on a fix. Update coming soon.', 6, 7),
-('Dark mode under consideration', 'This is a popular request! We''re evaluating the implementation of dark mode for our next major update.', 7, 1),
-('Payment process review', 'We''re reviewing our payment flow based on user feedback. Simplification is a priority.', 9, 1);
+('Obrigado pelo seu feedback!', 'Realmente apreciamos sua avaliação positiva. Ficamos felizes que você esteja satisfeito com a qualidade do nosso produto.', 1, 1),
+('Estamos trabalhando nisso', 'Obrigado por nos alertar sobre isso. Estamos trabalhando para melhorar nossos tempos de resposta.', 2, 1),
+('Melhorias na navegação em breve', 'Anotamos seu feedback e estamos planejando um redesign do site para melhorar a navegação.', 3, 1),
+('Ótimo saber!', 'Ficamos felizes que nosso serviço de entrega atendeu suas expectativas. Obrigado pelo feedback!', 4, 1),
+('Correção de bug em andamento', 'Identificamos o problema e nossa equipe de desenvolvimento está trabalhando em uma correção. Atualização em breve.', 6, 7),
+('Modo escuro em consideração', 'Esta é uma solicitação popular! Estamos avaliando a implementação do modo escuro para nossa próxima atualização principal.', 7, 1),
+('Revisão do processo de pagamento', 'Estamos revisando nosso fluxo de pagamento baseado no feedback dos usuários. A simplificação é uma prioridade.', 9, 1);
