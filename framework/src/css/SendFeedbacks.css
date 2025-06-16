@@ -87,7 +87,6 @@ select {
 select:focus, input:focus, textarea:focus {
     outline: none;
     border-color: #0A0593;
-    box-shadow: 0 0 0 3px rgba(10, 5, 147, 0.25);
 }
 
 .stars-group{
@@ -330,4 +329,18 @@ select:active, input:active, textarea:active,
 @keyframes slideIn {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+/* Form validation styles */
+.input-error {
+    border-color: #d32f2f !important;
+    background-color: rgba(211, 47, 47, 0.05);
+}
+
+.validation-error {
+    color: #d32f2f;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    animation: fadeIn 0.3s ease-in-out;
+    padding-left: 5px;
 }

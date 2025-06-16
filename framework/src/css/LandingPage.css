@@ -22,6 +22,7 @@
     flex-direction: column;
     gap: 18px;
     max-width: 600px;
+    margin-left: 80px;
 }
 
 .image {

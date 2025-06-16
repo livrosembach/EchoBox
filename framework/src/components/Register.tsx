@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../controller/user/Register";
 import "../css/Login.css";
+import Swal from 'sweetalert2';
 
 const Register: React.FC<{}> = () => {
     const [formData, setFormData] = useState({
@@ -10,46 +11,231 @@ const Register: React.FC<{}> = () => {
         confirmPassword: "",
     });
 
+    const [validationErrors, setValidationErrors] = useState({
+        email: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Password visibility state
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    
+    // Password strength state
+    const [passwordStrength, setPasswordStrength] = useState({
+        score: 0, // 0-4 scale
+        hasLength: false,
+        hasUppercase: false,
+        hasLowercase: false,
+        hasNumber: false,
+        hasSpecial: false
+    });
+
     const navigate = useNavigate();
+
+    // Validate a single field
+    const validateField = (name: string, value: string, allValues = formData): string => {
+        switch (name) {
+            case 'email':
+                if (!value.trim()) return 'O email é obrigatório';
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return !emailRegex.test(value) ? 'Digite um email válido' : '';
+            case 'password':
+                if (!value.trim()) return 'A senha é obrigatória';
+                
+                // Password must be at least 8 characters
+                if (value.length < 8) return 'A senha deve ter pelo menos 8 caracteres';
+                
+                // Password must contain one uppercase letter
+                if (!/[A-Z]/.test(value)) return 'A senha deve conter pelo menos uma letra maiúscula';
+                
+                // Password must contain one lowercase letter
+                if (!/[a-z]/.test(value)) return 'A senha deve conter pelo menos uma letra minúscula';
+                
+                // Password must contain one number
+                if (!/[0-9]/.test(value)) return 'A senha deve conter pelo menos um número';
+                
+                // Password must contain one special character
+                if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) 
+                    return 'A senha deve conter pelo menos um caractere especial (!@#$%^&*()_+-=[]{};\':"\\|,.<>/?)';
+                
+                return '';
+            case 'confirmPassword':
+                if (!value.trim()) return 'Confirme sua senha';
+                if (value !== allValues.password) return 'As senhas não coincidem';
+                return '';
+            default:
+                return '';
+        }
+    };
+
+    // Check password strength and update criteria state
+    const checkPasswordStrength = (password: string) => {
+        // Check criteria
+        const hasLength = password.length >= 8;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+        
+        // Calculate score (0-4)
+        let score = 0;
+        if (hasLength) score++;
+        if (hasUppercase) score++;
+        if (hasLowercase) score++;
+        if (hasNumber) score++;
+        if (hasSpecial) score++;
+        
+        // Adjust score based on password length
+        if (password.length < 4) score = Math.min(score, 1);
+        if (password.length < 6) score = Math.min(score, 2);
+        
+        setPasswordStrength({
+            score: Math.min(Math.floor(score * 0.8), 4), // Scale to 0-4
+            hasLength,
+            hasUppercase,
+            hasLowercase,
+            hasNumber,
+            hasSpecial
+        });
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const newFormData = { ...formData, [name]: value };
+        setFormData(newFormData);
+        
+        // Check password strength when password field changes
+        if (name === 'password') {
+            checkPasswordStrength(value);
+        }
+        
+        // For confirmPassword, we need to validate it using the updated form data
+        const fieldError = validateField(name, value, newFormData);
+        setValidationErrors(prev => ({
+            ...prev,
+            [name]: fieldError
+        }));
+        
+        // If we're updating password, we need to re-validate confirmPassword
+        if (name === 'password' && formData.confirmPassword) {
+            const confirmError = validateField('confirmPassword', formData.confirmPassword, newFormData);
+            setValidationErrors(prev => ({
+                ...prev,
+                confirmPassword: confirmError
+            }));
+        }
+    };
+
+    // Validate all fields
+    const validateForm = (): boolean => {
+        const emailError = validateField('email', formData.email);
+        const passwordError = validateField('password', formData.password);
+        const confirmPasswordError = validateField('confirmPassword', formData.confirmPassword);
+        
+        setValidationErrors({
+            email: emailError,
+            password: passwordError,
+            confirmPassword: confirmPasswordError
+        });
+        
+        return !(emailError || passwordError || confirmPasswordError);
+    };
+
+    // Get password strength label
+    const getPasswordStrengthText = () => {
+        switch (passwordStrength.score) {
+            case 0: return 'Muito fraca';
+            case 1: return 'Fraca';
+            case 2: return 'Média';
+            case 3: return 'Forte';
+            case 4: return 'Muito forte';
+            default: return '';
+        }
+    };
+
+    // Get password strength class
+    const getPasswordStrengthClass = () => {
+        switch (passwordStrength.score) {
+            case 0: return 'strength-very-weak';
+            case 1: return 'strength-weak';
+            case 2: return 'strength-medium';
+            case 3: return 'strength-strong';
+            case 4: return 'strength-very-strong';
+            default: return '';
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+        // Validate all fields before submission
+        if (!validateForm()) {
+            Swal.fire({
+                title: 'Formulário Incompleto',
+                text: 'Por favor, corrija os erros no formulário antes de enviar.',
+                icon: 'warning',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
             return;
         }
+
+        setIsSubmitting(true);
 
         const userData = {
             emailUser: formData.email,
             passwordUser: formData.password,
         };
 
-        const result = await registerUser(userData);
+        try {
+            const result = await registerUser(userData);
 
-        if (result) {
-            alert("User registered successfully!");
-            setFormData({
-                email: "",
-                password: "",
-                confirmPassword: "",
+            if (result) {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Usuário cadastrado com sucesso!',
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => {
+                    setFormData({
+                        email: "",
+                        password: "",
+                        confirmPassword: "",
+                    });
+                    navigate("/Login");
+                });
+            } else {
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Falha ao cadastrar usuário. Email já pode estar em uso.',
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#1575C5'
+                });
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            Swal.fire({
+                title: 'Erro',
+                text: 'Falha ao cadastrar usuário. Por favor, tente novamente.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
             });
-
-            navigate("/Login")
-        } else {
-            alert("Failed to register user.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <div className="container">
             <div className="form-container">
-                <div className="title">Junte-se a nós! Cadastre-se agora.</div>
+                <div className="title title-login">Junte-se a nós! Cadastre-se agora.</div>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
@@ -59,29 +245,91 @@ const Register: React.FC<{}> = () => {
                             id="email"
                             value={formData.email}
                             onChange={handleChange}
+                            className={validationErrors.email ? 'input-error' : ''}
                         />
+                        {validationErrors.email && <div className="validation-error">{validationErrors.email}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">Senha</label>
-                        <input
-                            type="password"
-                            name="password"
-                            id="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                        />
+                        <div className="password-wrapper">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                id="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className={validationErrors.password ? 'input-error' : ''}
+                            />
+                            <button 
+                                type="button" 
+                                className="btn-toggle-password" 
+                                onClick={() => setShowPassword(prev => !prev)}
+                                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                            >
+                                {showPassword ? <i className="fa-solid fa-eye-slash"></i> : <i className="fa-regular fa-eye"></i>}
+                            </button>
+                        </div>
+                        {formData.password && (
+                            <div className="password-strength-meter">
+                                <div className={`strength-meter-fill ${getPasswordStrengthClass()}`}></div>
+                            </div>
+                        )}
+                        {formData.password && (
+                            <div className="password-strength-text">
+                                Força da senha: <strong>{getPasswordStrengthText()}</strong>
+                            </div>
+                        )}
+                        <div className="password-criteria">
+                            <small>A senha deve conter:</small>
+                            <ul>
+                                <li className={passwordStrength.hasLength ? 'met' : ''}>
+                                    Pelo menos 8 caracteres
+                                </li>
+                                <li className={passwordStrength.hasUppercase ? 'met' : ''}>
+                                    Pelo menos uma letra maiúscula
+                                </li>
+                                <li className={passwordStrength.hasLowercase ? 'met' : ''}>
+                                    Pelo menos uma letra minúscula
+                                </li>
+                                <li className={passwordStrength.hasNumber ? 'met' : ''}>
+                                    Pelo menos um número
+                                </li>
+                                <li className={passwordStrength.hasSpecial ? 'met' : ''}>
+                                    Pelo menos um caractere especial
+                                </li>
+                            </ul>
+                        </div>
+                        {validationErrors.password && <div className="validation-error">{validationErrors.password}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="confirmPassword">Confirme a senha</label>
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            id="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                        />
+                        <div className="password-wrapper">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                name="confirmPassword"
+                                id="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                className={validationErrors.confirmPassword ? 'input-error' : ''}
+                            />
+                            <button 
+                                type="button" 
+                                className="btn-toggle-password" 
+                                onClick={() => setShowConfirmPassword(prev => !prev)}
+                                aria-label={showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                            >
+                                {showConfirmPassword ? <i className="fa-solid fa-eye-slash"></i> : <i className="fa-regular fa-eye"></i>}
+                            </button>
+                        </div>
+                        {validationErrors.confirmPassword && <div className="validation-error">{validationErrors.confirmPassword}</div>}
                     </div>
-                    <button type="submit" className="btn-login">Cadastre-se</button>
+                    <button 
+                        type="submit" 
+                        className="btn-login" 
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Cadastrando...' : 'Cadastre-se'}
+                    </button>
                     <div className="links">
                         <p>Já tem conta? <a href="/login">Entrar</a></p>
                         <p>É uma empresa? <a href="/register_company">Cadastre ela aqui!</a></p>

@@ -64,7 +64,7 @@ body, #root, .App {
 
 .filter-dropdown {
     width: auto;
-    min-width: 150px;
+    min-width: 200px;
     height: 40px;
     border-radius: 12px;
     border: 2px solid black;
@@ -84,7 +84,6 @@ body, #root, .App {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 20px 5%;
     margin: 0 auto;
     flex: 1;
 }
@@ -94,7 +93,7 @@ body, #root, .App {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    align-items: center;
+    align-items: start;
 }
 
 .no-results, .loading-feedbacks, .feedback-error {

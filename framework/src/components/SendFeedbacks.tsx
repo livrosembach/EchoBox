@@ -25,7 +25,14 @@ const SendFeedback: React.FC<{}> = ({}) => {
     const [error, setError] = useState<string>('');
     const [formTouched, setFormTouched] = useState<boolean>(false);
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
-
+    
+    // Form validation errors
+    const [validationErrors, setValidationErrors] = useState({
+        title: '',
+        company: '',
+        category: '',
+        comments: ''
+    });
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -61,11 +68,37 @@ const SendFeedback: React.FC<{}> = ({}) => {
             setError('');
         }
     }, [title, selectedCompany, selectedCategory, comments, formTouched, error]);
+    
+    // Validate a single field
+    const validateField = (name: string, value: string): string => {
+        switch (name) {
+            case 'title':
+                return value.trim() === '' 
+                    ? 'O título é obrigatório' 
+                    : value.length < 5 
+                        ? 'O título deve ter pelo menos 5 caracteres'
+                        : '';
+            case 'company':
+                return value === '' ? 'Selecione uma empresa' : '';
+            case 'category':
+                return value === '' ? 'Selecione uma categoria' : '';
+            case 'comments':
+                return value.trim() === '' 
+                    ? 'Os comentários são obrigatórios' 
+                    : value.length < 10 
+                        ? 'Os comentários devem ter pelo menos 10 caracteres'
+                        : '';
+            default:
+                return '';
+        }
+    };
  
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         if (!formTouched) setFormTouched(true);
         
         const { name, value } = e.target;
+        
+        // Update form state
         switch (name) {
             case 'title':
                 setTitle(value);
@@ -82,15 +115,40 @@ const SendFeedback: React.FC<{}> = ({}) => {
             default:
                 break;
         }
+        
+        // Validate the field and update error state
+        const fieldError = validateField(name, value);
+        setValidationErrors(prev => ({
+            ...prev,
+            [name]: fieldError
+        }));
+    };
+
+    // Validate all fields
+    const validateForm = (): boolean => {
+        const titleError = validateField('title', title);
+        const companyError = validateField('company', selectedCompany);
+        const categoryError = validateField('category', selectedCategory);
+        const commentsError = validateField('comments', comments);
+        
+        setValidationErrors({
+            title: titleError,
+            company: companyError,
+            category: categoryError,
+            comments: commentsError
+        });
+        
+        return !(titleError || companyError || categoryError || commentsError);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!title || !selectedCompany || !selectedCategory || !comments) {
+        // Validate all fields before submission
+        if (!validateForm()) {
             Swal.fire({
                 title: 'Formulário Incompleto',
-                text: 'Todos os campos são obrigatórios!',
+                text: 'Por favor, corrija os erros no formulário antes de enviar.',
                 icon: 'warning',
                 confirmButtonText: 'Ok',
                 confirmButtonColor: '#1575C5'
@@ -179,9 +237,10 @@ const SendFeedback: React.FC<{}> = ({}) => {
                             name="title"
                             value={title}
                             onChange={handleInputChange}
-                            required
                             placeholder="Digite um título para o feedback"
+                            className={validationErrors.title ? 'input-error' : ''}
                         />
+                        {validationErrors.title && <div className="validation-error">{validationErrors.title}</div>}
                     </div>
                     <div className="form-group-feedback">
                         <label htmlFor="company">Empresa</label>
@@ -190,7 +249,7 @@ const SendFeedback: React.FC<{}> = ({}) => {
                             id="company"
                             value={selectedCompany}
                             onChange={handleInputChange}
-                            required
+                            className={validationErrors.company ? 'input-error' : ''}
                         >
                             <option value="">Selecione uma empresa</option>
                             {companies.map((company) => (
@@ -199,6 +258,7 @@ const SendFeedback: React.FC<{}> = ({}) => {
                                 </option>
                             ))}
                         </select>
+                        {validationErrors.company && <div className="validation-error">{validationErrors.company}</div>}
                     </div>
                     <div className="form-group-feedback">
                         <label htmlFor="category">Categoria</label>
@@ -207,7 +267,7 @@ const SendFeedback: React.FC<{}> = ({}) => {
                             id="category"
                             value={selectedCategory}
                             onChange={handleInputChange}
-                            required
+                            className={validationErrors.category ? 'input-error' : ''}
                         >
                             <option value="">Selecione uma categoria</option>
                             {categories.map((category) => (
@@ -216,6 +276,7 @@ const SendFeedback: React.FC<{}> = ({}) => {
                                 </option>
                             ))}
                         </select>
+                        {validationErrors.category && <div className="validation-error">{validationErrors.category}</div>}
                     </div>
                     <div className="form-group-feedback">
                         <label htmlFor="comments">Comentários</label>
@@ -224,9 +285,10 @@ const SendFeedback: React.FC<{}> = ({}) => {
                             id="comments"
                             value={comments}
                             onChange={handleInputChange}
-                            required
                             placeholder="Descreva seu feedback detalhadamente..."
+                            className={validationErrors.comments ? 'input-error' : ''}
                         />
+                        {validationErrors.comments && <div className="validation-error">{validationErrors.comments}</div>}
                     </div>
                     <button 
                         type="submit" 

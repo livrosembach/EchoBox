@@ -8,7 +8,8 @@ import { updateFeedbackStatus } from "../controller/feedback/Feedback";
 import { getStatus } from "../controller/feedback/Status";
 import { getCurrentUser } from "../utils/Auth";
 import UserAvatar from "./UserAvatar";
-import '../css/FeedbackTicketDetail.css'
+import '../css/FeedbackTicketDetail.css';
+import Swal from 'sweetalert2';
 
 const FeedbackTicketDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -23,6 +24,13 @@ const FeedbackTicketDetail: React.FC = () => {
     const [replyTitle, setReplyTitle] = useState<string>('');
     const [replyContent, setReplyContent] = useState<string>('');
     const [submittingReply, setSubmittingReply] = useState<boolean>(false);
+    
+    // Validation errors
+    const [validationErrors, setValidationErrors] = useState({
+        replyTitle: '',
+        replyContent: '',
+        selectedStatus: ''
+    });
 
     useEffect(() => {
         const fetchFeedbackDetail = async () => {
@@ -64,17 +72,82 @@ const FeedbackTicketDetail: React.FC = () => {
         fetchStatusOptions();
     }, [id]);
 
+    // Validate a single field
+    const validateField = (name: string, value: string): string => {
+        switch (name) {
+            case 'replyTitle':
+                return !value.trim() ? 'O título da resposta é obrigatório' : '';
+            case 'replyContent':
+                return !value.trim() 
+                    ? 'O conteúdo da resposta é obrigatório' 
+                    : value.length < 5 
+                        ? 'A resposta deve ter pelo menos 5 caracteres' 
+                        : '';
+            case 'selectedStatus':
+                return !value ? 'Selecione um status' : '';
+            default:
+                return '';
+        }
+    };
+
+    const handleReplyChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { id, value } = e.target;
+        
+        // Map HTML id to state field name
+        const fieldName = id === 'replyTitle' ? 'replyTitle' : 'replyContent';
+        
+        // Update state based on field
+        if (fieldName === 'replyTitle') {
+            setReplyTitle(value);
+        } else {
+            setReplyContent(value);
+        }
+        
+        // Validate and update error
+        const fieldError = validateField(fieldName, value);
+        setValidationErrors(prev => ({
+            ...prev,
+            [fieldName]: fieldError
+        }));
+    };
+
+    // Validate reply form
+    const validateReplyForm = (): boolean => {
+        const titleError = validateField('replyTitle', replyTitle);
+        const contentError = validateField('replyContent', replyContent);
+        
+        setValidationErrors(prev => ({
+            ...prev,
+            replyTitle: titleError,
+            replyContent: contentError
+        }));
+        
+        return !(titleError || contentError);
+    };
+
     const handleReplySubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!replyTitle.trim() || !replyContent.trim()) {
-            alert('Por favor, preencha tanto o título quanto o conteúdo da resposta.');
+        if (!validateReplyForm()) {
+            Swal.fire({
+                title: 'Formulário Incompleto',
+                text: 'Por favor, preencha todos os campos corretamente.',
+                icon: 'warning',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
             return;
         }
 
         const currentUser = getCurrentUser();
         if (!currentUser) {
-            alert('Você deve estar logado para responder.');
+            Swal.fire({
+                title: 'Autenticação Necessária',
+                text: 'Você deve estar logado para responder.',
+                icon: 'info',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
             return;
         }
 
@@ -104,22 +177,73 @@ const FeedbackTicketDetail: React.FC = () => {
                 setReplyContent('');
                 setShowReplyForm(false);
                 setError(null);
+                
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Resposta enviada com sucesso!',
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
             } else {
-                setError('Falha ao enviar resposta. Tente novamente.');
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Falha ao enviar resposta. Tente novamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#1575C5'
+                });
             }
         } catch (error) {
             console.error('Error submitting reply:', error);
-            setError('Falha ao enviar resposta. Tente novamente.');
+            Swal.fire({
+                title: 'Erro',
+                text: 'Falha ao enviar resposta. Tente novamente.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
         } finally {
             setSubmittingReply(false);
         }
     };
 
+    const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setSelectedStatus(value);
+        
+        // Validate and update error
+        const fieldError = validateField('selectedStatus', value);
+        setValidationErrors(prev => ({
+            ...prev,
+            selectedStatus: fieldError
+        }));
+    };
+
+    // Validate status form
+    const validateStatusForm = (): boolean => {
+        const statusError = validateField('selectedStatus', selectedStatus);
+        
+        setValidationErrors(prev => ({
+            ...prev,
+            selectedStatus: statusError
+        }));
+        
+        return !statusError;
+    };
+
     const handleStatusChange = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!selectedStatus) {
-            alert('Por favor, selecione um status.');
+        if (!validateStatusForm()) {
+            Swal.fire({
+                title: 'Seleção Necessária',
+                text: 'Por favor, selecione um status.',
+                icon: 'warning',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
             return;
         }
 
@@ -137,12 +261,33 @@ const FeedbackTicketDetail: React.FC = () => {
                 }
                 setShowStatusChange(false);
                 setError(null);
+                
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Status atualizado com sucesso!',
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
             } else {
-                setError('Falha ao atualizar status. Tente novamente.');
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Falha ao atualizar status. Tente novamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#1575C5'
+                });
             }
         } catch (error) {
             console.error('Error updating status:', error);
-            setError('Falha ao atualizar status. Tente novamente.');
+            Swal.fire({
+                title: 'Erro',
+                text: 'Falha ao atualizar status. Tente novamente.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
         } finally {
             setUpdatingStatus(false);
         }
@@ -257,8 +402,8 @@ const FeedbackTicketDetail: React.FC = () => {
                                         <select
                                             id="statusSelect"
                                             value={selectedStatus}
-                                            onChange={(e) => setSelectedStatus(e.target.value)}
-                                            required
+                                            onChange={handleStatusSelect}
+                                            className={validationErrors.selectedStatus ? 'input-error' : ''}
                                         >
                                             <option value="">-- Selecione um Status --</option>
                                             {statuses.map(status => (
@@ -267,6 +412,9 @@ const FeedbackTicketDetail: React.FC = () => {
                                                 </option>
                                             ))}
                                         </select>
+                                        {validationErrors.selectedStatus && (
+                                            <div className="validation-error">{validationErrors.selectedStatus}</div>
+                                        )}
                                     </div>
                                     
                                     <div className="form-buttons">
@@ -310,21 +458,27 @@ const FeedbackTicketDetail: React.FC = () => {
                                         type="text"
                                         id="replyTitle"
                                         value={replyTitle}
-                                        onChange={(e) => setReplyTitle(e.target.value)}
+                                        onChange={handleReplyChange}
                                         placeholder="Digite o título da resposta..."
-                                        required
+                                        className={validationErrors.replyTitle ? 'input-error' : ''}
                                     />
+                                    {validationErrors.replyTitle && (
+                                        <div className="validation-error">{validationErrors.replyTitle}</div>
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="replyContent">Conteúdo da Resposta:</label>
                                     <textarea
                                         id="replyContent"
                                         value={replyContent}
-                                        onChange={(e) => setReplyContent(e.target.value)}
+                                        onChange={handleReplyChange}
                                         placeholder="Digite sua resposta..."
                                         rows={4}
-                                        required
+                                        className={validationErrors.replyContent ? 'input-error' : ''}
                                     />
+                                    {validationErrors.replyContent && (
+                                        <div className="validation-error">{validationErrors.replyContent}</div>
+                                    )}
                                 </div>
                                 <div className="form-buttons">
                                     <button 
@@ -333,6 +487,11 @@ const FeedbackTicketDetail: React.FC = () => {
                                             setShowReplyForm(false);
                                             setReplyTitle('');
                                             setReplyContent('');
+                                            setValidationErrors(prev => ({
+                                                ...prev,
+                                                replyTitle: '',
+                                                replyContent: ''
+                                            }));
                                         }}
                                         className="cancel-btn"
                                     >

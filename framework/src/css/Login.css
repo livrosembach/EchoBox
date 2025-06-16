@@ -1,6 +1,8 @@
-.title{
+.title-login{
     font-size: 40px;
     font-weight: bold;
+    text-align: center;
+    justify-content: center !important;
 }
 
 .form-container{
@@ -29,6 +31,51 @@ form{
     padding: 0 5px;
 }
 
+/* Password input wrapper styling */
+.password-wrapper {
+    position: relative;
+    width: 430px;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* Space for the toggle button */
+}
+
+.btn-toggle-password {
+    color: #0A0593;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    z-index: 2;
+    opacity: 0.7;
+    transition: opacity 2s ease-in-out;
+}
+
+.btn-toggle-password:hover {
+    opacity: 1;
+    background-color: transparent;
+    transform: unset;
+    transform: translateY(-65%);
+}
+
+.btn-toggle-password:focus {
+    outline: none;
+}
+
 .form-group label{
     font-size: 20px;
     color: #6B6A6A;
@@ -53,12 +100,92 @@ p a{
     text-align: center;
 }
 
+/* Password strength indicator */
+.password-strength-meter {
+    height: 5px;
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 3px;
+    margin-top: 8px;
+    position: relative;
+}
+
+.password-strength-meter .strength-meter-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.password-strength-meter .strength-very-weak {
+    background-color: #f44336;
+    width: 20%;
+}
+
+.password-strength-meter .strength-weak {
+    background-color: #ff9800;
+    width: 40%;
+}
+
+.password-strength-meter .strength-medium {
+    background-color: #ffeb3b;
+    width: 60%;
+}
+
+.password-strength-meter .strength-strong {
+    background-color: #8bc34a;
+    width: 80%;
+}
+
+.password-strength-meter .strength-very-strong {
+    background-color: #4caf50;
+    width: 100%;
+}
+
+.password-strength-text {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.password-criteria {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.password-criteria ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+    list-style-type: none;
+}
+
+.password-criteria li {
+    margin-bottom: 3px;
+    position: relative;
+}
+
+.password-criteria li::before {
+    content: '•';
+    position: absolute;
+    left: -15px;
+    color: #ccc;
+}
+
+.password-criteria .met {
+    color: #4caf50;
+}
+
+.password-criteria .met::before {
+    content: '✓';
+    color: #4caf50;
+}
+
 @media screen and (max-width: 768px) {
     .title {
         font-size: 32px;
     }
     
-    .form-group input, .btn-login {
+    .form-group input, .btn-login, .password-wrapper {
         width: 100%;
     }
 }
@@ -68,7 +195,7 @@ p a{
         font-size: 28px;
     }
     
-    .form-group input, .btn-login {
+    .form-group input, .btn-login, .password-wrapper {
         width: 100%;
     }
     
