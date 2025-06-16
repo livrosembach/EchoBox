@@ -1,10 +1,11 @@
-.feedback-detail-container{
+.feedback-detail-container {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.feedback-data{
+
+.feedback-data {
     width: 90%;
     display: flex;
     flex-direction: column;
@@ -12,7 +13,7 @@
     margin-top: 3%;
 }
 
-.feedback-header{
+.feedback-header {
     width: 100%;
     height: 40px;
     display: flex;
@@ -23,16 +24,18 @@
     color: #0A0593;
 }
 
-.title{
+.title {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
     font-size: 40px;
+    flex-wrap: wrap;
+    padding-right: 80px;
 }
 
-.title-text p{
+.title-text p {
     font-size: 40px;
     color: #0A0593;
 }
@@ -113,18 +116,13 @@
 }
 
 .add-reply-btn {
-    background-color: #0A0593;
-    color: white;
+    background-color: #1575C5;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    color: white;
 }
 
 .add-reply-btn:hover {
-    background-color: #0800ff;
+    background-color: #0A0593;
 }
 
 .reply-form {
@@ -148,7 +146,7 @@
     font-weight: 500;
 }
 
-.reply-form input, 
+.reply-form input,
 .reply-form textarea,
 .status-form select {
     width: 100%;
@@ -166,30 +164,35 @@
 .form-buttons {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 15px;
+    margin-top: 30px;
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
 .cancel-btn {
-    background-color: #f44336;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
 }
 
 .cancel-btn:hover {
-    background-color: #d32f2f;
+    background-color: #6f0909;
+    color: white;
 }
 
 .submit-btn {
-    background-color: #28a745;
-    color: white;
+    background-color: #1575C5;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    color: white;
 }
 
 .submit-btn:hover:not(:disabled) {
-    background-color: #218838;
+    background-color: #0A0593;
 }
 
 .submit-btn:disabled {
@@ -273,10 +276,6 @@
     cursor: pointer;
 }
 
-.status-change-modal .close-button:hover {
-    color: #d32f2f;
-}
-
 .status-form {
     display: flex;
     flex-direction: column;
@@ -309,30 +308,32 @@
 
 .status-form .cancel-btn,
 .status-form .submit-btn {
-    padding: 8px 16px;
-    border: none;
+    padding: 10px 20px;
     border-radius: 4px;
+    font-size: 16px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
+    transition: all 0.3s ease-in-out;
 }
 
 .status-form .cancel-btn {
-    background-color: #6c757d;
-    color: white;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
 }
 
 .status-form .cancel-btn:hover {
-    background-color: #5a6268;
+    background-color: #6f0909;
+    color: white;
 }
 
 .status-form .submit-btn {
-    background-color: #0A0593;
+    background-color: #1575C5;
+    border: none;
     color: white;
 }
 
 .status-form .submit-btn:hover:not(:disabled) {
-    background-color: #080447;
+    background-color: #0A0593;
 }
 
 .status-form .submit-btn:disabled {
@@ -355,8 +356,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Responsive adjustments */
@@ -365,16 +373,63 @@
         font-size: 28px;
     }
     
+    .title {
+        padding-right: 20px;
+        font-size: 32px;
+    }
+
     .category-status {
         width: 40%;
     }
-    
+
     .description {
         font-size: 18px;
     }
-    
+
     .status-change-modal .modal-content {
         width: 95%;
         padding: 15px;
+    }
+    
+    .reply-item {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .feedback-data {
+        width: 95%;
+        padding: 8px;
+    }
+    
+    .title-text p {
+        font-size: 22px;
+    }
+    
+    .title {
+        font-size: 24px;
+        padding-right: 10px;
+    }
+    
+    .category-status {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .description {
+        font-size: 16px;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .reply-title {
+        font-size: 16px;
+    }
+    
+    .reply-content {
+        font-size: 14px;
     }
 }
