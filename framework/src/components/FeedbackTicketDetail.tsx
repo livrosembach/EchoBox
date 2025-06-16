@@ -52,7 +52,6 @@ const FeedbackTicketDetail: React.FC = () => {
                     setError("Falha ao carregar detalhes do feedback");
                 }
             } catch (error) {
-                console.error("Error fetching feedback details:", error);
                 setError("Falha ao carregar detalhes do feedback");
             } finally {
                 setLoading(false);
@@ -64,7 +63,7 @@ const FeedbackTicketDetail: React.FC = () => {
                 const statusList = await getStatus();
                 setStatuses(statusList);
             } catch (error) {
-                console.error("Error fetching status options:", error);
+                // Handle error silently
             }
         };
 
@@ -196,7 +195,6 @@ const FeedbackTicketDetail: React.FC = () => {
                 });
             }
         } catch (error) {
-            console.error('Error submitting reply:', error);
             Swal.fire({
                 title: 'Erro',
                 text: 'Falha ao enviar resposta. Tente novamente.',
@@ -211,18 +209,40 @@ const FeedbackTicketDetail: React.FC = () => {
 
     const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
-        setSelectedStatus(value);
         
-        // Validate and update error
-        const fieldError = validateField('selectedStatus', value);
-        setValidationErrors(prev => ({
-            ...prev,
-            selectedStatus: fieldError
-        }));
+        // Ensure we're setting a valid status
+        if (value && !isNaN(parseInt(value))) {
+            setSelectedStatus(value);
+            
+            // Clear any previous validation errors
+            setValidationErrors(prev => ({
+                ...prev,
+                selectedStatus: ''
+            }));
+        } else {
+            setSelectedStatus('');
+            
+            // Validate and update error
+            const fieldError = validateField('selectedStatus', value);
+            setValidationErrors(prev => ({
+                ...prev,
+                selectedStatus: fieldError
+            }));
+        }
     };
 
     // Validate status form
     const validateStatusForm = (): boolean => {
+        // First, check if the selected status is a valid number
+        if (selectedStatus && !isNaN(parseInt(selectedStatus))) {
+            setValidationErrors(prev => ({
+                ...prev,
+                selectedStatus: ''
+            }));
+            return true;
+        }
+        
+        // If no selection or invalid selection, show error
         const statusError = validateField('selectedStatus', selectedStatus);
         
         setValidationErrors(prev => ({
@@ -230,7 +250,7 @@ const FeedbackTicketDetail: React.FC = () => {
             selectedStatus: statusError
         }));
         
-        return !statusError;
+        return false;
     };
 
     const handleStatusChange = async (e: React.FormEvent) => {
@@ -250,6 +270,19 @@ const FeedbackTicketDetail: React.FC = () => {
         setUpdatingStatus(true);
 
         try {
+            // Make sure we have a valid status ID
+            if (!selectedStatus || isNaN(parseInt(selectedStatus))) {
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Status inválido selecionado',
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#1575C5'
+                });
+                setUpdatingStatus(false);
+                return;
+            }
+
             const success = await updateFeedbackStatus(feedback!.idfeedback, parseInt(selectedStatus));
             
             if (success) {
@@ -280,7 +313,6 @@ const FeedbackTicketDetail: React.FC = () => {
                 });
             }
         } catch (error) {
-            console.error('Error updating status:', error);
             Swal.fire({
                 title: 'Erro',
                 text: 'Falha ao atualizar status. Tente novamente.',

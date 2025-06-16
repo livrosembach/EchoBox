@@ -6,6 +6,4 @@ export const logout = () => {
     
     // Dispatch auth state change event
     dispatchAuthStateChange();
-    
-    window.location.href = '/login';
 };

@@ -185,6 +185,17 @@ router.put('/:id/status', async (req, res) => {
     const { fk_feedback_idStatus } = req.body;
     const authHeader = req.headers.authorization;
 
+    console.log("Status update request:", {
+      feedbackId,
+      requestBody: req.body,
+      statusId: fk_feedback_idStatus
+    });
+
+    // Validate status ID
+    if (!fk_feedback_idStatus) {
+      return res.status(400).json({ message: 'Status ID é obrigatório' });
+    }
+
     // Check if authorization header exists
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ message: 'Token de autorização necessário' });
@@ -195,7 +206,9 @@ router.put('/:id/status', async (req, res) => {
     let currentUser;
     try {
       currentUser = jwt.verify(token, JWT_SECRET);
+      console.log("Decoded token:", currentUser);
     } catch (jwtError) {
+      console.error("JWT verification error:", jwtError);
       return res.status(401).json({ message: 'Token inválido' });
     }
 
@@ -218,15 +231,24 @@ router.put('/:id/status', async (req, res) => {
     }
 
     const feedback = feedbackResult.rows[0];
+    console.log("Feedback data from DB:", feedback);
     
     // Check authorization:
     // 1. User who created the feedback
     // 2. User who works at the company the feedback is about
     // 3. EchoBox admin (company ID = 1)
     const canUpdateStatus = 
-      parseInt(currentUser.userId) === feedback.fk_feedback_iduser ||
-      parseInt(currentUser.companyId) === feedback.fk_feedback_idcompany ||
+      parseInt(currentUser.userId) === parseInt(feedback.fk_feedback_iduser) ||
+      parseInt(currentUser.companyId) === parseInt(feedback.fk_feedback_idcompany) ||
       parseInt(currentUser.companyId) === 1; // EchoBox admin
+
+    console.log("Auth check:", {
+      currentUserId: parseInt(currentUser.userId),
+      feedbackUserId: parseInt(feedback.fk_feedback_iduser),
+      currentCompanyId: parseInt(currentUser.companyId),
+      feedbackCompanyId: parseInt(feedback.fk_feedback_idcompany),
+      canUpdateStatus
+    });
 
     if (!canUpdateStatus) {
       return res.status(403).json({ message: 'Você não tem permissão para alterar o status deste feedback' });

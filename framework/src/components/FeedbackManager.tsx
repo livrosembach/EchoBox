@@ -324,12 +324,12 @@ const FeedbackManager: React.FC = () => {
       hideOnMobile: true
     },
     {
-      header: 'Title',
+      header: 'Título',
       accessor: 'titlefeedback',
       width: '20%'
     },
     {
-      header: 'Category',
+      header: 'Categoria',
       accessor: 'typecategory',
       width: '15%',
       cell: (value: string, row: FeedbackData) => (
@@ -355,7 +355,7 @@ const FeedbackManager: React.FC = () => {
       )
     },
     {
-      header: 'Content',
+      header: 'Conteúdo',
       accessor: 'reviewfeedback',
       width: '40%',
       cell: (value: string) => (
@@ -366,7 +366,7 @@ const FeedbackManager: React.FC = () => {
   ];
 
   if (authLoading) {
-    return <div className="loading">Checking permissions...</div>;
+    return <div className="loading">Checando permissões...</div>;
   }
 
   if (!isAuthorized) {

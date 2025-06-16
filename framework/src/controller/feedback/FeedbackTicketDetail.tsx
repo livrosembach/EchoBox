@@ -11,7 +11,6 @@ export const getFeedbackDetail = async (id: string): Promise<FeedbackDetailData 
         });
 
         if (!response.ok) {
-            console.error("Failed to fetch feedback detail:", await response.text());
             return null;
         }
 
@@ -23,7 +22,6 @@ export const getFeedbackDetail = async (id: string): Promise<FeedbackDetailData 
         
         return feedbackData;
     } catch (error) {
-        console.error("Error fetching feedback detail:", error);
         return null;
     }
 };

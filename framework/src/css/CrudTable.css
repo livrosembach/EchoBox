@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;
+  animation: slideIn 0.5s ease-out;
 }
 
 .crud-table-header {

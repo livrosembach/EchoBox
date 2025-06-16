@@ -4,6 +4,7 @@ import '../css/Header.css';
 import { logout } from "../utils/Logout";
 import { getCurrentUser, isUserLoggedIn, AUTH_STATE_CHANGED } from "../utils/Auth";
 import UserAvatar from './UserAvatar';
+import Swal from 'sweetalert2';
 
 const Header: React.FC<{}> = ({}) => {
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -34,10 +35,36 @@ const Header: React.FC<{}> = ({}) => {
     }, []);
 
     const handleLogout = () => {
-        logout();
-        setCurrentUser(null);
-        setIsLoggedIn(false);
-        setMobileMenuOpen(false);
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você realmente deseja sair do sistema?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1575C5',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, sair!',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                logout();
+                setCurrentUser(null);
+                setIsLoggedIn(false);
+                setMobileMenuOpen(false);
+                
+                Swal.fire({
+                    title: 'Desconectado!',
+                    text: 'Você saiu do sistema com sucesso.',
+                    icon: 'success',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Redirect to login page after the success message
+                    window.location.href = '/login';
+                });
+            }
+        });
     };
 
     const toggleMobileMenu = () => {

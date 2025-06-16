@@ -108,25 +108,70 @@ export const updateFeedbackStatus = async (id: number, statusId: number): Promis
     try {
         const token = localStorage.getItem('authToken');
         
+        // Make sure the status ID is an integer
+        const statusIdInt = parseInt(statusId.toString(), 10);
+        
+        if (isNaN(statusIdInt)) {
+            console.error("Invalid status ID:", statusId);
+            throw new Error("Invalid status ID");
+        }
+        
+        // Check if token exists
+        if (!token) {
+            console.error("No auth token found");
+            const Swal = (await import('sweetalert2')).default;
+            Swal.fire({
+                title: 'Autenticação Necessária',
+                text: 'Você precisa estar logado para alterar o status',
+                icon: 'warning',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
+            return false;
+        }
+        
         const response = await fetch(`http://localhost:3003/feedback/${id}/status`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                ...(token && { "Authorization": `Bearer ${token}` })
+                "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ fk_feedback_idStatus: statusId }),
+            body: JSON.stringify({ fk_feedback_idStatus: statusIdInt }),
         });
 
+        // Try to get response body for better error handling
+        let responseText;
+        try {
+            responseText = await response.text();
+        } catch (e) {
+            console.error("Error reading response:", e);
+        }
+        
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Failed to update feedback status:", errorData.message || await response.text());
+            let errorMessage = "Erro ao atualizar o status. Por favor, tente novamente.";
             
-            // Show user-friendly error message
-            if (response.status === 403) {
-                alert(errorData.message || "Você não tem permissão para alterar o status deste feedback");
-            } else if (response.status === 401) {
-                alert("Você precisa estar logado para alterar o status");
+            try {
+                const errorData = JSON.parse(responseText || '{}');
+                if (response.status === 403) {
+                    errorMessage = errorData.message || "Você não tem permissão para alterar o status deste feedback";
+                } else if (response.status === 401) {
+                    errorMessage = "Você precisa estar logado para alterar o status";
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (jsonError) {
+                console.error("Error parsing JSON response:", jsonError);
             }
+            
+            // Use SweetAlert for error message
+            const Swal = (await import('sweetalert2')).default;
+            Swal.fire({
+                title: 'Erro',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#1575C5'
+            });
             
             return false;
         }
@@ -134,6 +179,17 @@ export const updateFeedbackStatus = async (id: number, statusId: number): Promis
         return true;
     } catch (error) {
         console.error("Error updating feedback status:", error);
+        
+        // Use SweetAlert for error message
+        const Swal = (await import('sweetalert2')).default;
+        Swal.fire({
+            title: 'Erro',
+            text: 'Ocorreu um erro ao atualizar o status. Por favor, tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+        });
+        
         return false;
     }
 };

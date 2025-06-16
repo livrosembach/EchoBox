@@ -10,14 +10,12 @@ export const getRepliesForFeedback = async (feedbackId: string): Promise<ReplyDa
         });
 
         if (!response.ok) {
-            console.error("Failed to fetch replies:", await response.text());
             return [];
         }
 
         const data: ReplyData[] = await response.json();
         return data;
     } catch (error) {
-        console.error("Error fetching replies:", error);
         return [];
     }
 };
@@ -38,14 +36,12 @@ export const createReply = async (replyData: {
         });
 
         if (!response.ok) {
-            console.error("Failed to create reply:", await response.text());
             return null;
         }
 
         const data: ReplyData = await response.json();
         return data;
     } catch (error) {
-        console.error("Error creating reply:", error);
         return null;
     }
 };
