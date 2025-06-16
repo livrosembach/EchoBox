@@ -1,6 +1,7 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom"; 
 import { loginUser } from "../controller/user/Login";
+import { isUserLoggedIn } from "../utils/Auth";
 import '../css/Login.css';
 import Swal from 'sweetalert2';
 
@@ -21,6 +22,22 @@ const Login: React.FC<{}> = ({}) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
+    
+    // Check if user is already logged in
+    useEffect(() => {
+        if (isUserLoggedIn()) {
+            Swal.fire({
+                title: 'Você já está logado',
+                text: 'Redirecionando para a página inicial',
+                icon: 'info',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            }).then(() => {
+                navigate('/home');
+            });
+        }
+    }, [navigate]);
 
     // Validate a single field
     const validateField = (name: string, value: string): string => {

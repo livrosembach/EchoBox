@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from './Auth';
+import Swal from 'sweetalert2';
 
 export const isEchoBoxAdmin = (): boolean => {
     const currentUser = getCurrentUser();
@@ -16,8 +17,18 @@ export const useAdminGuard = () => {
         const currentUser = getCurrentUser();
         
         if (!currentUser || currentUser.companyId !== 1) {
-            alert('Acesso negado. Apenas administradores do EchoBox podem acessar esta página.');
-            navigate('/home');
+            // Replace alert with SweetAlert2 notification
+            Swal.fire({
+                title: 'Acesso Negado',
+                text: 'Apenas administradores do EchoBox podem acessar esta página.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#1575C5',
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                navigate('/home');
+            });
             setIsAuthorized(false);
         } else {
             setIsAuthorized(true);
