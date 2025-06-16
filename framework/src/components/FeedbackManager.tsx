@@ -15,6 +15,8 @@ import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing base styling
 import '../css/FeedbackManager.css'; // Custom styling for feedback manager
 import Swal from 'sweetalert2';
+import * as Validation from '../utils/FormValidation';
+import { validateForm, required, minLength, maxLength, getFirstErrorByField, ValidationRule } from '../utils/FormValidation';
 
 interface FeedbackFormData {
   titleFeedback: string;
@@ -44,6 +46,7 @@ const FeedbackManager: React.FC = () => {
     fk_feedback_idCategory: '',
     fk_feedback_idStatus: ''
   });
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isAuthorized) {
@@ -126,6 +129,9 @@ const FeedbackManager: React.FC = () => {
       fk_feedback_idStatus: ''
     });
     
+    // Reset validation errors
+    setValidationErrors({});
+    
     // Only refresh user and company data when adding new feedback
     await Promise.all([
       fetchUsers(),
@@ -151,6 +157,9 @@ const FeedbackManager: React.FC = () => {
             fk_feedback_idCategory: data.fk_feedback_idcategory ? data.fk_feedback_idcategory.toString() : '',
             fk_feedback_idStatus: data.fk_feedback_idstatus ? data.fk_feedback_idstatus.toString() : ''
           });
+          
+          // Reset validation errors
+          setValidationErrors({});
 
           // Only refresh categories and statuses for editing (user/company are readonly)
           Promise.all([
@@ -228,10 +237,88 @@ const FeedbackManager: React.FC = () => {
       ...formData,
       [name]: value
     });
+    
+    // Validate field as user types
+    validateField(name, value);
+  };
+  
+  const validateField = (name: string, value: string): boolean => {
+    const fieldValidations: Record<string, ValidationRule[]> = {
+      titleFeedback: [
+        required('O título do feedback é obrigatório'),
+        minLength(5, 'O título deve ter pelo menos 5 caracteres'),
+        maxLength(100, 'O título deve ter no máximo 100 caracteres')
+      ],
+      reviewFeedback: [
+        required('A descrição do feedback é obrigatória'),
+        minLength(10, 'A descrição deve ter pelo menos 10 caracteres'),
+        maxLength(500, 'A descrição deve ter no máximo 500 caracteres')
+      ],
+      fk_feedback_idCategory: [
+        required('A categoria é obrigatória')
+      ],
+      fk_feedback_idStatus: [
+        required('O status é obrigatório')
+      ],
+      fk_feedback_idUser: [
+        required('O usuário é obrigatório')
+      ],
+      fk_feedback_idCompany: [
+        required('A empresa é obrigatória')
+      ]
+    };
+    
+    // Only validate the specified field
+    const fieldRules = fieldValidations[name];
+    if (!fieldRules) return true;
+    
+    const validation = validateForm(
+      { [name]: value },
+      { [name]: fieldRules }
+    );
+    
+    const error = getFirstErrorByField(validation, name);
+    
+    setValidationErrors(prev => ({
+      ...prev,
+      [name]: error || ''
+    }));
+    
+    return !error;
+  };
+  
+  const validateAllFields = (): boolean => {
+    const titleValid = validateField('titleFeedback', formData.titleFeedback);
+    const reviewValid = validateField('reviewFeedback', formData.reviewFeedback);
+    const categoryValid = validateField('fk_feedback_idCategory', formData.fk_feedback_idCategory);
+    const statusValid = validateField('fk_feedback_idStatus', formData.fk_feedback_idStatus);
+    
+    // Only validate user and company when creating new feedback
+    let userValid = true;
+    let companyValid = true;
+    
+    if (!currentFeedback) {
+      userValid = validateField('fk_feedback_idUser', formData.fk_feedback_idUser);
+      companyValid = validateField('fk_feedback_idCompany', formData.fk_feedback_idCompany);
+    }
+    
+    return titleValid && reviewValid && categoryValid && statusValid && userValid && companyValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    if (!validateAllFields()) {
+      Swal.fire({
+        title: 'Formulário Inválido',
+        text: 'Por favor, corrija os erros no formulário antes de enviar.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
+      return;
+    }
     
     try {
       if (currentFeedback) {
@@ -409,8 +496,11 @@ const FeedbackManager: React.FC = () => {
                   name="titleFeedback"
                   value={formData.titleFeedback}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.titleFeedback ? 'is-invalid' : ''}
                 />
+                {validationErrors.titleFeedback && (
+                  <span className="validation-error">{validationErrors.titleFeedback}</span>
+                )}
               </div>
 
               {/* Only show user and company selection when creating new feedback */}
@@ -423,7 +513,7 @@ const FeedbackManager: React.FC = () => {
                       name="fk_feedback_idUser"
                       value={formData.fk_feedback_idUser}
                       onChange={handleInputChange}
-                      required={!currentFeedback}
+                      className={validationErrors.fk_feedback_idUser ? 'is-invalid' : ''}
                     >
                       <option value="">Escolha um usuário</option>
                       {users.map(user => (
@@ -432,6 +522,9 @@ const FeedbackManager: React.FC = () => {
                         </option>
                       ))}
                     </select>
+                    {validationErrors.fk_feedback_idUser && (
+                      <span className="validation-error">{validationErrors.fk_feedback_idUser}</span>
+                    )}
                   </div>
 
                   <div className="form-group">
@@ -441,7 +534,7 @@ const FeedbackManager: React.FC = () => {
                       name="fk_feedback_idCompany"
                       value={formData.fk_feedback_idCompany}
                       onChange={handleInputChange}
-                      required={!currentFeedback}
+                      className={validationErrors.fk_feedback_idCompany ? 'is-invalid' : ''}
                     >
                       <option value="">Escolha uma empresa</option>
                       {companies.map(company => (
@@ -450,6 +543,9 @@ const FeedbackManager: React.FC = () => {
                         </option>
                       ))}
                     </select>
+                    {validationErrors.fk_feedback_idCompany && (
+                      <span className="validation-error">{validationErrors.fk_feedback_idCompany}</span>
+                    )}
                   </div>
                 </>
               )}
@@ -480,7 +576,7 @@ const FeedbackManager: React.FC = () => {
                   name="fk_feedback_idCategory"
                   value={formData.fk_feedback_idCategory}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.fk_feedback_idCategory ? 'is-invalid' : ''}
                 >
                   <option value="">Escolha uma categoria</option>
                   {categories.map(category => (
@@ -489,6 +585,9 @@ const FeedbackManager: React.FC = () => {
                     </option>
                   ))}
                 </select>
+                {validationErrors.fk_feedback_idCategory && (
+                  <span className="validation-error">{validationErrors.fk_feedback_idCategory}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -498,7 +597,7 @@ const FeedbackManager: React.FC = () => {
                   name="fk_feedback_idStatus"
                   value={formData.fk_feedback_idStatus}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.fk_feedback_idStatus ? 'is-invalid' : ''}
                 >
                   <option value="">Escolha um status</option>
                   {statuses.map(status => (
@@ -507,6 +606,9 @@ const FeedbackManager: React.FC = () => {
                     </option>
                   ))}
                 </select>
+                {validationErrors.fk_feedback_idStatus && (
+                  <span className="validation-error">{validationErrors.fk_feedback_idStatus}</span>
+                )}
               </div>
 
               <div className="form-group">
@@ -516,9 +618,12 @@ const FeedbackManager: React.FC = () => {
                   name="reviewFeedback"
                   value={formData.reviewFeedback}
                   onChange={handleInputChange}
-                  required
                   rows={5}
+                  className={validationErrors.reviewFeedback ? 'is-invalid' : ''}
                 />
+                {validationErrors.reviewFeedback && (
+                  <span className="validation-error">{validationErrors.reviewFeedback}</span>
+                )}
               </div>
               
               {error && <div className="error-message">{error}</div>}

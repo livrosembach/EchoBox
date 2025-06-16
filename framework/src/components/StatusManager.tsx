@@ -5,6 +5,7 @@ import { getStatus, createStatus, updateStatus, deleteStatus } from '../controll
 import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing the same styling
 import Swal from 'sweetalert2';
+import * as Validation from '../utils/FormValidation';
 
 const StatusManager: React.FC = () => {
   const { isAuthorized, isLoading } = useAdminGuard();
@@ -17,6 +18,7 @@ const StatusManager: React.FC = () => {
     typeStatus: '',
     colorStatus: '#CCCCCC'
   });
+  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (isAuthorized) {
@@ -59,6 +61,8 @@ const StatusManager: React.FC = () => {
       typeStatus: '',
       colorStatus: '#CCCCCC'
     });
+    // Reset validation errors when opening the form
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
@@ -68,6 +72,8 @@ const StatusManager: React.FC = () => {
       typeStatus: status.typestatus,
       colorStatus: status.colorstatus || '#CCCCCC'
     });
+    // Reset validation errors when opening the form
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
@@ -114,10 +120,60 @@ const StatusManager: React.FC = () => {
       ...formData,
       [name]: value
     });
+    
+    // Validate the field as the user types
+    validateField(name, value);
+  };
+  
+  const validateField = (fieldName: string, value: string): boolean => {
+    let error = '';
+    
+    if (fieldName === 'typeStatus') {
+      if (!value.trim()) {
+        error = 'O nome do status é obrigatório';
+      } else if (value.length < 3) {
+        error = 'O nome do status deve ter pelo menos 3 caracteres';
+      } else if (value.length > 50) {
+        error = 'O nome do status deve ter no máximo 50 caracteres';
+      }
+    } else if (fieldName === 'colorStatus') {
+      if (!value.trim()) {
+        error = 'A cor do status é obrigatória';
+      } else if (!/^#([A-Fa-f0-9]{6})$/.test(value)) {
+        error = 'A cor deve estar no formato hexadecimal válido (#RRGGBB)';
+      }
+    }
+    
+    // Update validation errors
+    setValidationErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }));
+    
+    return !error;
+  };
+  
+  const validateAllFields = (): boolean => {
+    const typeStatusValid = validateField('typeStatus', formData.typeStatus);
+    const colorStatusValid = validateField('colorStatus', formData.colorStatus);
+    
+    return typeStatusValid && colorStatusValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    if (!validateAllFields()) {
+      Swal.fire({
+        title: 'Formulário Inválido',
+        text: 'Por favor, corrija os erros no formulário antes de enviar.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
+      return;
+    }
     
     try {
       if (currentStatus) {
@@ -256,8 +312,11 @@ const StatusManager: React.FC = () => {
                   name="typeStatus"
                   value={formData.typeStatus}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.typeStatus ? 'is-invalid' : ''}
                 />
+                {validationErrors.typeStatus && (
+                  <span className="validation-error">{validationErrors.typeStatus}</span>
+                )}
               </div>
               
               <div className="form-group">
@@ -276,9 +335,12 @@ const StatusManager: React.FC = () => {
                     value={formData.colorStatus}
                     onChange={handleInputChange}
                     placeholder="#RRGGBB"
-                    pattern="^#([A-Fa-f0-9]{6})$"
+                    className={validationErrors.colorStatus ? 'is-invalid' : ''}
                   />
                 </div>
+                {validationErrors.colorStatus && (
+                  <span className="validation-error">{validationErrors.colorStatus}</span>
+                )}
               </div>
               
               <div className="form-actions">

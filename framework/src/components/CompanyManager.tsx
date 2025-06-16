@@ -18,6 +18,7 @@ const CompanyManager: React.FC = () => {
     emailCompany: '',
     cnpjCompany: ''
   });
+  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (isAuthorized) {
@@ -53,6 +54,8 @@ const CompanyManager: React.FC = () => {
       emailCompany: '',
       cnpjCompany: ''
     });
+    // Reset validation errors
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
@@ -63,6 +66,8 @@ const CompanyManager: React.FC = () => {
       emailCompany: company.emailcompany || '',
       cnpjCompany: company.cnpjcompany || ''
     });
+    // Reset validation errors
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
@@ -109,10 +114,72 @@ const CompanyManager: React.FC = () => {
       ...formData,
       [name]: value
     });
+    
+    // Validate field as user types
+    validateField(name, value);
+  };
+  
+  const validateField = (fieldName: string, value: string): boolean => {
+    let error = '';
+    
+    switch (fieldName) {
+      case 'nameCompany':
+        if (!value.trim()) {
+          error = 'O nome da empresa é obrigatório';
+        } else if (value.length < 3) {
+          error = 'O nome da empresa deve ter pelo menos 3 caracteres';
+        } else if (value.length > 100) {
+          error = 'O nome da empresa deve ter no máximo 100 caracteres';
+        }
+        break;
+        
+      case 'emailCompany':
+        if (!value.trim()) {
+          error = 'O email da empresa é obrigatório';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = 'Por favor, insira um email válido';
+        }
+        break;
+        
+      case 'cnpjCompany':
+        if (!value.trim()) {
+          error = 'O CNPJ da empresa é obrigatório';
+        } else if (!/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$|^\d{14}$/.test(value)) {
+          error = 'CNPJ inválido. Formato esperado: 00.000.000/0000-00 ou 00000000000000';
+        }
+        break;
+    }
+    
+    setValidationErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }));
+    
+    return !error;
+  };
+  
+  const validateAllFields = (): boolean => {
+    const nameValid = validateField('nameCompany', formData.nameCompany);
+    const emailValid = validateField('emailCompany', formData.emailCompany);
+    const cnpjValid = validateField('cnpjCompany', formData.cnpjCompany);
+    
+    return nameValid && emailValid && cnpjValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    if (!validateAllFields()) {
+      Swal.fire({
+        title: 'Formulário Inválido',
+        text: 'Por favor, corrija os erros no formulário antes de enviar.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
+      return;
+    }
     
     try {
       const companyData = {
@@ -254,8 +321,11 @@ const CompanyManager: React.FC = () => {
                   name="nameCompany"
                   value={formData.nameCompany}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.nameCompany ? 'is-invalid' : ''}
                 />
+                {validationErrors.nameCompany && (
+                  <span className="validation-error">{validationErrors.nameCompany}</span>
+                )}
               </div>
               <div className="form-group">
                 <label htmlFor="emailCompany">Email:</label>
@@ -265,8 +335,11 @@ const CompanyManager: React.FC = () => {
                   name="emailCompany"
                   value={formData.emailCompany}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.emailCompany ? 'is-invalid' : ''}
                 />
+                {validationErrors.emailCompany && (
+                  <span className="validation-error">{validationErrors.emailCompany}</span>
+                )}
               </div>
               <div className="form-group">
                 <label htmlFor="cnpjCompany">CNPJ:</label>
@@ -276,8 +349,12 @@ const CompanyManager: React.FC = () => {
                   name="cnpjCompany"
                   value={formData.cnpjCompany}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.cnpjCompany ? 'is-invalid' : ''}
+                  placeholder="00.000.000/0000-00"
                 />
+                {validationErrors.cnpjCompany && (
+                  <span className="validation-error">{validationErrors.cnpjCompany}</span>
+                )}
               </div>
               
               {error && <div className="error-message">{error}</div>}

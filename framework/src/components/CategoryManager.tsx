@@ -5,6 +5,8 @@ import { getCategory, createCategory, updateCategory, deleteCategory } from '../
 import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css';
 import Swal from 'sweetalert2';
+import * as Validation from '../utils/FormValidation';
+import { validateForm, required, hexColor, minLength, maxLength, getFirstErrorByField, ValidationRule } from '../utils/FormValidation';
 
 const CategoryManager: React.FC = () => {
   const { isAuthorized, isLoading } = useAdminGuard();
@@ -17,20 +19,13 @@ const CategoryManager: React.FC = () => {
     typeCategory: '',
     colorCategory: '#CCCCCC'
   });
+  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (isAuthorized) {
       fetchCategories();
     }
   }, [isAuthorized]);
-
-  if (isLoading) {
-    return <div className="loading">Verificando permissões...</div>;
-  }
-
-  if (!isAuthorized) {
-    return null; // Component will be redirected by the hook
-  }
 
   const fetchCategories = async () => {
     try {
@@ -75,7 +70,7 @@ const CategoryManager: React.FC = () => {
     try {
       const success = await deleteCategory(id);
       if (success) {
-        setCategories(categories.filter(category => category.idcategory !== id));
+        setCategories(categories.filter((category) => category.idcategory !== id));
         setError(null);
         Swal.fire({
           title: 'Sucesso!',
@@ -114,10 +109,82 @@ const CategoryManager: React.FC = () => {
       ...formData,
       [name]: value
     });
+    
+    // Validate the field as the user types
+    validateField(name, value);
+  };
+  
+  const validateField = (fieldName: string, value: string): boolean => {
+    const fieldValidations: Record<string, ValidationRule[]> = {
+      typeCategory: [
+        required('O nome da categoria é obrigatório'),
+        minLength(3, 'O nome da categoria deve ter pelo menos 3 caracteres'),
+        maxLength(50, 'O nome da categoria deve ter no máximo 50 caracteres')
+      ],
+      colorCategory: [
+        required('A cor da categoria é obrigatória'),
+        hexColor('A cor deve estar no formato hexadecimal válido (#RRGGBB)')
+      ]
+    };
+    
+    // Only validate the specified field
+    const fieldRules = fieldValidations[fieldName];
+    if (!fieldRules) return true;
+    
+    const validation = validateForm(
+      { [fieldName]: value },
+      { [fieldName]: fieldRules }
+    );
+    
+    const error = getFirstErrorByField(validation, fieldName);
+    
+    setValidationErrors((prev) => ({
+      ...prev,
+      [fieldName]: error || ''
+    }));
+    
+    return !error;
+  };
+  
+  const validateAllFields = (): boolean => {
+    const fieldValidations: Record<string, ValidationRule[]> = {
+      typeCategory: [
+        required('O nome da categoria é obrigatório'),
+        minLength(3, 'O nome da categoria deve ter pelo menos 3 caracteres'),
+        maxLength(50, 'O nome da categoria deve ter no máximo 50 caracteres')
+      ],
+      colorCategory: [
+        required('A cor da categoria é obrigatória'),
+        hexColor('A cor deve estar no formato hexadecimal válido (#RRGGBB)')
+      ]
+    };
+    
+    const validation = validateForm(formData, fieldValidations);
+    
+    const newErrors: { [key: string]: string } = {};
+    validation.errors.forEach((error: Validation.ValidationError) => {
+      newErrors[error.field] = error.message;
+    });
+    
+    setValidationErrors(newErrors);
+    return validation.isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    const isValid = validateAllFields();
+    if (!isValid) {
+      Swal.fire({
+        title: 'Formulário Inválido',
+        text: 'Por favor, corrija os erros no formulário antes de enviar.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
+      return;
+    }
     
     try {
       if (currentCategory) {
@@ -128,7 +195,7 @@ const CategoryManager: React.FC = () => {
         });
         
         if (updatedCategory) {
-          setCategories(categories.map(category => 
+          setCategories(categories.map((category) => 
             category.idcategory === currentCategory.idcategory ? updatedCategory : category
           ));
           setIsModalOpen(false);
@@ -219,6 +286,14 @@ const CategoryManager: React.FC = () => {
     }
   ];
 
+  if (isLoading) {
+    return <div className="loading">Verificando permissões...</div>;
+  }
+
+  if (!isAuthorized) {
+    return null; // Component will be redirected by the hook
+  }
+
   return (
     <div className="category-manager">
       <CrudTable
@@ -231,7 +306,6 @@ const CategoryManager: React.FC = () => {
         onAdd={handleAdd}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onRefresh={fetchCategories}
       />
       
       {isModalOpen && (
@@ -256,8 +330,11 @@ const CategoryManager: React.FC = () => {
                   name="typeCategory"
                   value={formData.typeCategory}
                   onChange={handleInputChange}
-                  required
+                  className={validationErrors.typeCategory ? 'is-invalid' : ''}
                 />
+                {validationErrors.typeCategory && (
+                  <span className="validation-error">{validationErrors.typeCategory}</span>
+                )}
               </div>
               
               <div className="form-group">
@@ -276,9 +353,12 @@ const CategoryManager: React.FC = () => {
                     value={formData.colorCategory}
                     onChange={handleInputChange}
                     placeholder="#RRGGBB"
-                    pattern="^#([A-Fa-f0-9]{6})$"
+                    className={validationErrors.colorCategory ? 'is-invalid' : ''}
                   />
                 </div>
+                {validationErrors.colorCategory && (
+                  <span className="validation-error">{validationErrors.colorCategory}</span>
+                )}
               </div>
               
               <div className="form-actions">
