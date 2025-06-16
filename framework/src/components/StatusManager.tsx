@@ -4,6 +4,7 @@ import { StatusData } from '../interface/feedback/StatusData';
 import { getStatus, createStatus, updateStatus, deleteStatus } from '../controller/feedback/Status';
 import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing the same styling
+import Swal from 'sweetalert2';
 
 const StatusManager: React.FC = () => {
   const { isAuthorized, isLoading } = useAdminGuard();
@@ -39,6 +40,13 @@ const StatusManager: React.FC = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching statuses:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao carregar status. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to load statuses. Please try again.');
     } finally {
       setLoading(false);
@@ -69,11 +77,33 @@ const StatusManager: React.FC = () => {
       if (success) {
         setStatuses(statuses.filter(status => status.idstatus !== id));
         setError(null);
+        Swal.fire({
+          title: 'Sucesso!',
+          text: 'Status excluído com sucesso!',
+          icon: 'success',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
       } else {
+        Swal.fire({
+          title: 'Erro',
+          text: 'Falha ao deletar status. Ele pode estar em uso por feedbacks existentes.',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          confirmButtonColor: '#1575C5'
+        });
         setError('Failed to delete status. It may be in use by existing feedback.');
       }
     } catch (error) {
       console.error('Error deleting status:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao deletar status. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to delete status. Please try again.');
     }
   };
@@ -103,7 +133,22 @@ const StatusManager: React.FC = () => {
           ));
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Status atualizado com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao atualizar status. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Failed to update status. Please try again.');
         }
       } else {
@@ -117,12 +162,34 @@ const StatusManager: React.FC = () => {
           setStatuses([...statuses, newStatus]);
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Status criado com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao criar status. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Failed to create status. Please try again.');
         }
       }
     } catch (error) {
       console.error('Error saving status:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao salvar status. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to save status. Please try again.');
     }
   };
@@ -180,7 +247,7 @@ const StatusManager: React.FC = () => {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='form-admin'> 
               <div className="form-group">
                 <label htmlFor="typeStatus">Nome do Status</label>
                 <input

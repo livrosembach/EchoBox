@@ -4,11 +4,13 @@ header{
     justify-content: space-between;
     align-items: center;
     padding: 0 5%;
+    position: relative;
 }
 
 .logo{
     display: flex;
     align-items: center;
+    z-index: 10;
 }
 
 .logo img{
@@ -22,6 +24,20 @@ header{
     color: #0A0593;
     margin-left: 10px;
     cursor: pointer;
+}
+
+/* Mobile menu button */
+.mobile-menu-button {
+    display: none;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 11;
+}
+
+.mobile-menu-button i {
+    display: block;
+    color: #0A0593;
+    transition: all 0.3s ease;
 }
 
 nav{
@@ -85,6 +101,96 @@ nav a{
     background-color: #f0f0ff;
     border-radius: 20px;
     border: 1px solid #e0e0ff;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    nav ul {
+        gap: 30px;
+    }
+    
+    .logo-text {
+        font-size: 1.8rem;
+    }
+    
+    nav a {
+        font-size: 1.1rem;
+    }
+    
+    .login-button, .logout-button {
+        font-size: 1.1rem;
+        padding: 6px 16px;
+    }
+    
+    .user-email {
+        font-size: 0.9rem;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-button {
+        display: flex;
+    }
+    
+    nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background-color: white;
+        z-index: 10;
+        padding-top: 80px;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        transition: right 0.3s ease;
+    }
+    
+    nav.mobile-menu-open {
+        right: 0;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+        width: 100%;
+    }
+    
+    nav ul li {
+        width: 100%;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 0;
+    }
+    
+    .user-email {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .login-button, .logout-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .logo-text {
+        font-size: 1.5rem;
+    }
+    
+    header {
+        padding: 0 3%;
+    }
 }
 
 

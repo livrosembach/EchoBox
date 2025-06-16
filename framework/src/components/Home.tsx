@@ -16,6 +16,7 @@ const Home: React.FC<{}> = ({}) => {
     const [selectedCategory, setSelectedCategory] = useState<string>('all-categories');
     const [selectedStatus, setSelectedStatus] = useState<string>('all-status');
     const [selectedCompany, setSelectedCompany] = useState<string>('all-companies');
+    const [showFilters, setShowFilters] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -66,11 +67,9 @@ const Home: React.FC<{}> = ({}) => {
         setSelectedCompany(event.target.value);
     };
 
-        console.log("Search Term:", searchTerm);
-        console.log("Selected Category:", selectedCategory);
-        console.log("Selected Status:", selectedStatus);
-        console.log("Selected Company:", selectedCompany);
-
+    const toggleFilters = () => {
+        setShowFilters(!showFilters);
+    };
 
    return (
         <>
@@ -88,7 +87,11 @@ const Home: React.FC<{}> = ({}) => {
                     </span>
                 </div>
 
-                <div className="filters">
+                <button className="filter-toggle" onClick={toggleFilters}>
+                    <i className="fa-solid fa-filter"></i> Filtros
+                </button>
+
+                <div className={`filters ${showFilters ? 'show' : ''}`}>
                     <select
                         className="filter-dropdown"
                         value={selectedCategory}

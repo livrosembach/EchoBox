@@ -1,5 +1,5 @@
 .truncate-text {
-  max-width: 300px;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -12,13 +12,14 @@
   color: white;
   font-size: 12px;
   margin-right: 5px;
+  word-break: keep-all;
 }
 
 .feedback-form-modal .modal-content {
   max-width: 600px;
   width: 90%;
-  height: 80%;
-  overflow: scroll;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .feedback-form-modal textarea {
@@ -56,4 +57,67 @@
   min-height: 34px;
   display: flex;
   align-items: center;
+}
+
+/* Responsive form */
+.responsive-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .truncate-text {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .feedback-form-modal .modal-content {
+    width: 95%;
+    height: auto;
+    max-height: 85vh;
+  }
+  
+  .truncate-text {
+    max-width: 150px;
+  }
+  
+  .tag {
+    padding: 2px 6px;
+    font-size: 11px;
+  }
+  
+  .responsive-form {
+    gap: 10px;
+  }
+  
+  .responsive-form .form-group {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .truncate-text {
+    max-width: 100px;
+  }
+  
+  .feedback-form-modal form {
+    padding: 15px 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
 }

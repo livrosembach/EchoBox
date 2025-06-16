@@ -7,6 +7,7 @@ import { getCompanies } from '../controller/feedback/Company';
 import { useAdminGuard } from '../utils/AdminGuard';
 import UserAvatar from './UserAvatar';
 import '../css/CategoryManager.css'; // Reusing the same styling
+import Swal from 'sweetalert2';
 
 interface UserWithCompany extends UserData {
   companyname?: string;
@@ -103,12 +104,32 @@ const UserManager: React.FC = () => {
         // Refresh the user list from server
         await fetchUsers();
         setError(null);
+        Swal.fire({
+          title: 'Sucesso!',
+          text: 'Usuário excluído com sucesso!',
+          icon: 'success',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
       } else {
-        setError('Falha ao deletar usuário. Tente novamente.');
+        Swal.fire({
+          title: 'Erro',
+          text: 'Falha ao deletar usuário. Tente novamente.',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          confirmButtonColor: '#1575C5'
+        });
       }
     } catch (error) {
       console.error('Error deleting user:', error);
-      setError('Falha ao deletar usuário. Tente novamente.');
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao deletar usuário. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
     }
   };
 
@@ -125,7 +146,13 @@ const UserManager: React.FC = () => {
     
     // Validate password match for new users or when changing password
     if (formData.passwordUser && formData.passwordUser !== formData.confirmPassword) {
-      setError('As senhas não coincidem');
+      Swal.fire({
+        title: 'Erro de Validação',
+        text: 'As senhas não coincidem',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       return;
     }
     
@@ -151,13 +178,33 @@ const UserManager: React.FC = () => {
           await fetchUsers();
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Usuário atualizado com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
-          setError('Falha ao atualizar usuário. Tente novamente.');
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao atualizar usuário. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
         }
       } else {
         // Create new user - password is required for new users
         if (!formData.passwordUser) {
-          setError('Senha é obrigatória para novos usuários');
+          Swal.fire({
+            title: 'Erro de Validação',
+            text: 'Senha é obrigatória para novos usuários',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           return;
         }
         
@@ -168,13 +215,33 @@ const UserManager: React.FC = () => {
           await fetchUsers();
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Usuário criado com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
-          setError('Falha ao criar usuário. Tente novamente.');
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao criar usuário. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
         }
       }
     } catch (error) {
       console.error('Error saving user:', error);
-      setError('Falha ao salvar usuário. Tente novamente.');
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao salvar usuário. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
     }
   };
 
@@ -236,7 +303,7 @@ const UserManager: React.FC = () => {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='form-admin'>
               <div className="form-group">
                 <label htmlFor="emailUser">Email</label>
                 <input

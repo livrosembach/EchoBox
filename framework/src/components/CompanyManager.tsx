@@ -4,6 +4,7 @@ import { CompanyData } from '../interface/user/CompanyData';
 import { getCompanies, createCompany, updateCompany, deleteCompany } from '../controller/feedback/Company';
 import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing the same styling
+import Swal from 'sweetalert2';
 
 const CompanyManager: React.FC = () => {
   const { isAuthorized, isLoading: authLoading } = useAdminGuard();
@@ -32,6 +33,13 @@ const CompanyManager: React.FC = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching companies:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao carregar empresas. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to load companies. Please try again.');
     } finally {
       setLoading(false);
@@ -64,11 +72,33 @@ const CompanyManager: React.FC = () => {
       if (success) {
         setCompanies(companies.filter(company => company.idcompany !== id));
         setError(null);
+        Swal.fire({
+          title: 'Sucesso!',
+          text: 'Empresa excluída com sucesso!',
+          icon: 'success',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
       } else {
+        Swal.fire({
+          title: 'Erro',
+          text: 'Falha ao deletar empresa. Tente novamente.',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          confirmButtonColor: '#1575C5'
+        });
         setError('Failed to delete company. Please try again.');
       }
     } catch (error) {
       console.error('Error deleting company:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao deletar empresa. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to delete company. Please try again.');
     }
   };
@@ -100,7 +130,22 @@ const CompanyManager: React.FC = () => {
           ));
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Empresa atualizada com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao atualizar empresa. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Failed to update company. Please try again.');
         }
       } else {
@@ -110,12 +155,34 @@ const CompanyManager: React.FC = () => {
           setCompanies([...companies, newCompany]);
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Empresa criada com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao criar empresa. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Failed to create company. Please try again.');
         }
       }
     } catch (error) {
       console.error('Error saving company:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao salvar empresa. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to save company. Please try again.');
     }
   };
@@ -178,7 +245,7 @@ const CompanyManager: React.FC = () => {
                 <i className="fa-solid fa-times"></i>
               </button>
             </div>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='form-admin'>
               <div className="form-group">
                 <label htmlFor="nameCompany">Nome da Empresa:</label>
                 <input

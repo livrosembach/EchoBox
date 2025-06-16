@@ -4,6 +4,7 @@ import { CategoryData } from '../interface/feedback/CategoryData';
 import { getCategory, createCategory, updateCategory, deleteCategory } from '../controller/feedback/Category';
 import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css';
+import Swal from 'sweetalert2';
 
 const CategoryManager: React.FC = () => {
   const { isAuthorized, isLoading } = useAdminGuard();
@@ -39,6 +40,13 @@ const CategoryManager: React.FC = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao carregar categorias. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Falha ao carregar categorias. Tente novamente.');
     } finally {
       setLoading(false);
@@ -69,11 +77,33 @@ const CategoryManager: React.FC = () => {
       if (success) {
         setCategories(categories.filter(category => category.idcategory !== id));
         setError(null);
+        Swal.fire({
+          title: 'Sucesso!',
+          text: 'Categoria excluída com sucesso!',
+          icon: 'success',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
       } else {
+        Swal.fire({
+          title: 'Erro',
+          text: 'Falha ao deletar categoria. Ela pode estar em uso por feedbacks existentes.',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          confirmButtonColor: '#1575C5'
+        });
         setError('Falha ao deletar categoria. Ela pode estar em uso por feedbacks existentes.');
       }
     } catch (error) {
       console.error('Error deleting category:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao deletar categoria. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Falha ao deletar categoria. Tente novamente.');
     }
   };
@@ -103,7 +133,22 @@ const CategoryManager: React.FC = () => {
           ));
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Categoria atualizada com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao atualizar categoria. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Falha ao atualizar categoria. Tente novamente.');
         }
       } else {
@@ -117,12 +162,34 @@ const CategoryManager: React.FC = () => {
           setCategories([...categories, newCategory]);
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Categoria criada com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao criar categoria. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Falha ao criar categoria. Tente novamente.');
         }
       }
     } catch (error) {
       console.error('Error saving category:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao salvar categoria. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Falha ao salvar categoria. Tente novamente.');
     }
   };
@@ -180,7 +247,7 @@ const CategoryManager: React.FC = () => {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='form-admin'>
               <div className="form-group">
                 <label htmlFor="typeCategory">Nome da Categoria</label>
                 <input

@@ -14,6 +14,7 @@ import { getCurrentUser } from '../utils/Auth';
 import { useAdminGuard } from '../utils/AdminGuard';
 import '../css/CategoryManager.css'; // Reusing base styling
 import '../css/FeedbackManager.css'; // Custom styling for feedback manager
+import Swal from 'sweetalert2';
 
 interface FeedbackFormData {
   titleFeedback: string;
@@ -62,6 +63,13 @@ const FeedbackManager: React.FC = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching feedbacks:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao carregar feedbacks. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to load feedbacks. Please try again.');
     } finally {
       setLoading(false);
@@ -154,11 +162,25 @@ const FeedbackManager: React.FC = () => {
             setIsModalOpen(true);
           });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao carregar detalhes do feedback para edição.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError("Failed to load feedback details for editing");
         }
       })
       .catch(err => {
         console.error("Error fetching feedback details:", err);
+        Swal.fire({
+          title: 'Erro',
+          text: 'Falha ao carregar detalhes do feedback para edição.',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          confirmButtonColor: '#1575C5'
+        });
         setError("Failed to load feedback details for editing");
       });
   };
@@ -169,11 +191,33 @@ const FeedbackManager: React.FC = () => {
       if (success) {
         setFeedbacks(feedbacks.filter(feedback => feedback.idfeedback !== id));
         setError(null);
+        Swal.fire({
+          title: 'Sucesso!',
+          text: 'Feedback excluído com sucesso!',
+          icon: 'success',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
       } else {
+        Swal.fire({
+          title: 'Erro',
+          text: 'Falha ao excluir feedback. Tente novamente.',
+          icon: 'error',
+          confirmButtonText: 'Ok',
+          confirmButtonColor: '#1575C5'
+        });
         setError('Failed to delete feedback. Please try again.');
       }
     } catch (error) {
       console.error('Error deleting feedback:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao excluir feedback. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to delete feedback. Please try again.');
     }
   };
@@ -205,7 +249,22 @@ const FeedbackManager: React.FC = () => {
           fetchFeedbacks();
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Feedback atualizado com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao atualizar feedback. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Failed to update feedback. Please try again.');
         }
       } else {
@@ -225,12 +284,34 @@ const FeedbackManager: React.FC = () => {
           fetchFeedbacks();
           setIsModalOpen(false);
           setError(null);
+          Swal.fire({
+            title: 'Sucesso!',
+            text: 'Feedback criado com sucesso!',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+          });
         } else {
+          Swal.fire({
+            title: 'Erro',
+            text: 'Falha ao criar feedback. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#1575C5'
+          });
           setError('Failed to create feedback. Please try again.');
         }
       }
     } catch (error) {
       console.error('Error saving feedback:', error);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Falha ao salvar feedback. Tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#1575C5'
+      });
       setError('Failed to save feedback. Please try again.');
     }
   };
@@ -239,7 +320,8 @@ const FeedbackManager: React.FC = () => {
     {
       header: 'ID',
       accessor: 'idfeedback',
-      width: '10%'
+      width: '10%',
+      hideOnMobile: true
     },
     {
       header: 'Title',
@@ -278,7 +360,8 @@ const FeedbackManager: React.FC = () => {
       width: '40%',
       cell: (value: string) => (
         <div className="truncate-text">{value}</div>
-      )
+      ),
+      hideOnSmallMobile: true
     }
   ];
 
@@ -317,7 +400,7 @@ const FeedbackManager: React.FC = () => {
                 &times;
               </button>
             </div>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="responsive-form form-admin">
               <div className="form-group">
                 <label htmlFor="titleFeedback">Título:</label>
                 <input

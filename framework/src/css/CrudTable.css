@@ -11,6 +11,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .crud-table-header h2 {
@@ -96,6 +98,139 @@
   width: 100%;
   border-collapse: collapse;
   white-space: nowrap;
+}
+
+.crud-table th,
+.crud-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.crud-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+  position: sticky;
+  top: 0;
+}
+
+.crud-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.crud-table-error {
+  padding: 15px;
+  background-color: #ffebee;
+  color: #d32f2f;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #d32f2f;
+}
+
+.crud-table-loading {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+  font-size: 18px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 30px;
+  color: #888;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .crud-table-container {
+    padding: 15px;
+  }
+  
+  .crud-table th,
+  .crud-table td {
+    padding: 10px 12px;
+  }
+  
+  .crud-table-header h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .crud-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .crud-table-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .search-container {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .crud-table-header h2 {
+    font-size: 20px;
+  }
+  
+  .action-button {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 576px) {
+  .crud-table-container {
+    padding: 10px;
+  }
+  
+  .crud-table th,
+  .crud-table td {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  
+  .search-input {
+    height: 36px;
+    font-size: 14px;
+  }
+  
+  .action-button {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .crud-table-loading {
+    padding: 25px;
+    font-size: 16px;
+  }
+  
+  .hide-on-small-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide certain columns on mobile devices */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .crud-table-actions {
+    gap: 10px;
+  }
 }
 
 .crud-table th,

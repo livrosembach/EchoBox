@@ -10,15 +10,20 @@ const FeedbackTicket: React.FC<FeedbackData> = ({ idfeedback, titlefeedback, rev
         navigate(`/feedback/${idfeedback}`);
     };
 
+    // Truncate long feedback text for better UI
+    const truncatedReview = reviewfeedback && reviewfeedback.length > 250 
+        ? `${reviewfeedback.substring(0, 250)}...` 
+        : reviewfeedback;
+
     return (
         <div className="feedback" onClick={handleClick}>
             <h2 className="feedback-title"><i className="fa-solid fa-envelope"></i> {titlefeedback}</h2>
             <div className="feedback-tags">
-                <span className="tag" style={{ backgroundColor: colorcategory || '#CCCCCC' }}>{typecategory}</span>
-                <span className="tag" style={{ backgroundColor: colorstatus || '#007bff' }}>{typestatus}</span>
+                {typecategory && <span className="tag" style={{ backgroundColor: colorcategory || '#CCCCCC' }}>{typecategory}</span>}
+                {typestatus && <span className="tag" style={{ backgroundColor: colorstatus || '#007bff' }}>{typestatus}</span>}
             </div>
             <p className="feedback-description">
-                {reviewfeedback}
+                {truncatedReview}
             </p>
         </div>
     );

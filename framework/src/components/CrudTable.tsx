@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import '../css/CrudTable.css';
+import Swal from 'sweetalert2';
 
 interface Column {
   header: string;
   accessor: string;
   cell?: (value: any, row: any) => React.ReactNode;
   width?: string;
+  hideOnMobile?: boolean;
+  hideOnSmallMobile?: boolean;
 }
 
 interface CrudTableProps<T> {
@@ -130,7 +133,14 @@ const CrudTable = <T extends Record<string, any>>({
             <thead>
               <tr>
                 {columns.map((column) => (
-                  <th key={column.accessor} style={{ width: column.width }}>
+                  <th 
+                    key={column.accessor} 
+                    style={{ width: column.width }}
+                    className={`
+                      ${column.hideOnMobile ? 'hide-on-mobile' : ''}
+                      ${column.hideOnSmallMobile ? 'hide-on-small-mobile' : ''}
+                    `}
+                  >
                     {column.header}
                   </th>
                 ))}
@@ -150,7 +160,13 @@ const CrudTable = <T extends Record<string, any>>({
                 filteredData.map((item) => (
                   <tr key={item[idField]}>
                     {columns.map((column) => (
-                      <td key={`${item[idField]}-${column.accessor}`}>
+                      <td 
+                        key={`${item[idField]}-${column.accessor}`}
+                        className={`
+                          ${column.hideOnMobile ? 'hide-on-mobile' : ''}
+                          ${column.hideOnSmallMobile ? 'hide-on-small-mobile' : ''}
+                        `}
+                      >
                         {renderCellContent(item, column)}
                       </td>
                     ))}
@@ -170,9 +186,27 @@ const CrudTable = <T extends Record<string, any>>({
                           <button 
                             className="delete-button action-button"
                             onClick={() => {
-                              if (window.confirm('Are you sure you want to delete this item?')) {
-                                onDelete(item[idField]);
-                              }
+                              Swal.fire({
+                                title: 'Confirmação',
+                                text: 'Tem certeza que deseja excluir este item?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                                confirmButtonText: 'Sim, excluir!',
+                                cancelButtonText: 'Cancelar'
+                              }).then((result) => {
+                                if (result.isConfirmed) {
+                                  onDelete(item[idField]);
+                                  Swal.fire({
+                                    title: 'Excluído!',
+                                    text: 'O item foi excluído com sucesso.',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                  });
+                                }
+                              });
                             }}
                             title="Deletar"
                           >

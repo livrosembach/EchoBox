@@ -8,6 +8,7 @@ import UserAvatar from './UserAvatar';
 const Header: React.FC<{}> = ({}) => {
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const checkAuthStatus = () => {
@@ -36,6 +37,11 @@ const Header: React.FC<{}> = ({}) => {
         logout();
         setCurrentUser(null);
         setIsLoggedIn(false);
+        setMobileMenuOpen(false);
+    };
+
+    const toggleMobileMenu = () => {
+        setMobileMenuOpen(!mobileMenuOpen);
     };
 
     return (
@@ -44,13 +50,18 @@ const Header: React.FC<{}> = ({}) => {
                 <img src={logo} className="logo-img" alt="logo" />
                 <div className="logo-text">EchoBox</div>
             </div>
-            <nav>
+            
+            <div className="mobile-menu-button" onClick={toggleMobileMenu}>
+                <i className="fa-solid fa-bars fa-lg" style={{ color: "#0A0593" }}></i>
+            </div>
+            
+            <nav className={mobileMenuOpen ? 'mobile-menu-open' : ''}>
                 <ul>
-                    <li><a href="/home">Home</a></li>
-                    <li><a href="/send_feedback">Enviar Feedback</a></li>
+                    <li><a href="/home" onClick={() => setMobileMenuOpen(false)}>Home</a></li>
+                    <li><a href="/send_feedback" onClick={() => setMobileMenuOpen(false)}>Enviar Feedback</a></li>
                     {/* Only show Admin link for EchoBox company users (company ID 1) */}
                     {isLoggedIn && currentUser?.companyId === 1 && (
-                        <li><a href="/admin">Admin</a></li>
+                        <li><a href="/admin" onClick={() => setMobileMenuOpen(false)}>Admin</a></li>
                     )}
                     {isLoggedIn ? (
                         <>
@@ -65,7 +76,7 @@ const Header: React.FC<{}> = ({}) => {
                             <li><button className="logout-button" onClick={handleLogout}>Sair</button></li>
                         </>
                     ) : (
-                        <li><button className="login-button" onClick={() => { window.location.href = '/login'; }}>Entrar</button></li>
+                        <li><button className="login-button" onClick={() => { window.location.href = '/login'; setMobileMenuOpen(false); }}>Entrar</button></li>
                     )}
                 </ul>
             </nav>
