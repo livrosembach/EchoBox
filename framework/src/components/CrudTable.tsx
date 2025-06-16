@@ -90,7 +90,7 @@ const CrudTable = <T extends Record<string, any>>({
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Pesquisar..."
               value={searchTerm}
               onChange={handleSearch}
               className="search-input"
@@ -101,7 +101,7 @@ const CrudTable = <T extends Record<string, any>>({
             <button 
               className="refresh-button action-button" 
               onClick={onRefresh}
-              title="Refresh"
+              title="Atualizar"
             >
               <i className="fa-solid fa-arrows-rotate"></i>
             </button>
@@ -110,7 +110,7 @@ const CrudTable = <T extends Record<string, any>>({
             <button 
               className="add-button action-button" 
               onClick={onAdd}
-              title="Add New"
+              title="Adicionar"
             >
               <i className="fa-solid fa-plus"></i>
             </button>
@@ -123,7 +123,7 @@ const CrudTable = <T extends Record<string, any>>({
       <div className="crud-table-wrapper">
         {loading ? (
           <div className="crud-table-loading">
-            <i className="fa-solid fa-spinner fa-spin"></i> Loading...
+            <i className="fa-solid fa-spinner fa-spin"></i> Carregando...
           </div>
         ) : (
           <table className="crud-table">
@@ -135,7 +135,7 @@ const CrudTable = <T extends Record<string, any>>({
                   </th>
                 ))}
                 {(onEdit || onDelete || customActions) && (
-                  <th style={{ width: '150px' }}>Actions</th>
+                  <th style={{ width: '150px' }}>Ações</th>
                 )}
               </tr>
             </thead>
@@ -143,7 +143,7 @@ const CrudTable = <T extends Record<string, any>>({
               {filteredData.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length + (onEdit || onDelete || customActions ? 1 : 0)} className="no-data">
-                    No data available
+                    Nenhum dado disponível
                   </td>
                 </tr>
               ) : (
@@ -174,7 +174,7 @@ const CrudTable = <T extends Record<string, any>>({
                                 onDelete(item[idField]);
                               }
                             }}
-                            title="Delete"
+                            title="Deletar"
                           >
                             <i className="fa-solid fa-trash"></i>
                           </button>

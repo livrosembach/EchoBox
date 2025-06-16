@@ -17,6 +17,8 @@
 .feedback-form-modal .modal-content {
   max-width: 600px;
   width: 90%;
+  height: 80%;
+  overflow: scroll;
 }
 
 .feedback-form-modal textarea {

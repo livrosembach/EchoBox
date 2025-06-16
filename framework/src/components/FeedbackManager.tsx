@@ -293,7 +293,7 @@ const FeedbackManager: React.FC = () => {
   return (
     <div className="category-manager">
       <CrudTable
-        title="Feedback Management"
+        title="Gerenciamento de Feedback"
         data={feedbacks}
         columns={columns}
         loading={loading}
@@ -309,7 +309,7 @@ const FeedbackManager: React.FC = () => {
         <div className="modal-overlay feedback-form-modal">
           <div className="modal-content">
             <div className="modal-header">
-              <h2>{currentFeedback ? 'Edit Feedback' : 'Add Feedback'}</h2>
+              <h3>{currentFeedback ? 'Editar Feedback' : 'Adicionar Feedback'}</h3>
               <button 
                 className="close-button"
                 onClick={() => setIsModalOpen(false)}
@@ -319,7 +319,7 @@ const FeedbackManager: React.FC = () => {
             </div>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="titleFeedback">Title:</label>
+                <label htmlFor="titleFeedback">Título:</label>
                 <input
                   type="text"
                   id="titleFeedback"
@@ -334,7 +334,7 @@ const FeedbackManager: React.FC = () => {
               {!currentFeedback && (
                 <>
                   <div className="form-group">
-                    <label htmlFor="fk_feedback_idUser">User:</label>
+                    <label htmlFor="fk_feedback_idUser">Usuário:</label>
                     <select
                       id="fk_feedback_idUser"
                       name="fk_feedback_idUser"
@@ -342,7 +342,7 @@ const FeedbackManager: React.FC = () => {
                       onChange={handleInputChange}
                       required={!currentFeedback}
                     >
-                      <option value="">Select a user</option>
+                      <option value="">Escolha um usuário</option>
                       {users.map(user => (
                         <option key={user.idUser} value={user.idUser}>
                           {user.emailUser}
@@ -352,7 +352,7 @@ const FeedbackManager: React.FC = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="fk_feedback_idCompany">Company:</label>
+                    <label htmlFor="fk_feedback_idCompany">Empresa:</label>
                     <select
                       id="fk_feedback_idCompany"
                       name="fk_feedback_idCompany"
@@ -360,7 +360,7 @@ const FeedbackManager: React.FC = () => {
                       onChange={handleInputChange}
                       required={!currentFeedback}
                     >
-                      <option value="">Select a company</option>
+                      <option value="">Escolha uma empresa</option>
                       {companies.map(company => (
                         <option key={company.idcompany} value={company.idcompany}>
                           {company.namecompany}
@@ -375,14 +375,14 @@ const FeedbackManager: React.FC = () => {
               {currentFeedback && (
                 <>
                   <div className="form-group">
-                    <label>User:</label>
+                    <label>Usuário:</label>
                     <div className="readonly-field">
                       {users.find(u => u.idUser?.toString() === formData.fk_feedback_idUser)?.emailUser || 'Loading...'}
                     </div>
                   </div>
 
                   <div className="form-group">
-                    <label>Company:</label>
+                    <label>Empresa:</label>
                     <div className="readonly-field">
                       {companies.find(c => c.idcompany?.toString() === formData.fk_feedback_idCompany)?.namecompany || 'Loading...'}
                     </div>
@@ -391,7 +391,7 @@ const FeedbackManager: React.FC = () => {
               )}
 
               <div className="form-group">
-                <label htmlFor="fk_feedback_idCategory">Category:</label>
+                <label htmlFor="fk_feedback_idCategory">Categoria:</label>
                 <select
                   id="fk_feedback_idCategory"
                   name="fk_feedback_idCategory"
@@ -399,7 +399,7 @@ const FeedbackManager: React.FC = () => {
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="">Select a category</option>
+                  <option value="">Escolha uma categoria</option>
                   {categories.map(category => (
                     <option key={category.idcategory} value={category.idcategory}>
                       {category.typecategory}
@@ -417,7 +417,7 @@ const FeedbackManager: React.FC = () => {
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="">Select a status</option>
+                  <option value="">Escolha um status</option>
                   {statuses.map(status => (
                     <option key={status.idstatus} value={status.idstatus}>
                       {status.typestatus}
@@ -427,7 +427,7 @@ const FeedbackManager: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="reviewFeedback">Review:</label>
+                <label htmlFor="reviewFeedback">Comentário:</label>
                 <textarea
                   id="reviewFeedback"
                   name="reviewFeedback"
@@ -440,9 +440,20 @@ const FeedbackManager: React.FC = () => {
               
               {error && <div className="error-message">{error}</div>}
               
-              <div className="button-group">
-                <button type="button" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button type="submit">Save</button>
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="save-button"
+                >
+                  {currentFeedback ? 'Atualizar' : 'Criar'}
+                </button>
               </div>
             </form>
           </div>

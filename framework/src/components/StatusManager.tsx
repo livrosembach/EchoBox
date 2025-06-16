@@ -24,7 +24,7 @@ const StatusManager: React.FC = () => {
   }, [isAuthorized]);
 
   if (isLoading) {
-    return <div className="loading">Checking permissions...</div>;
+    return <div className="loading">Checando permissões...</div>;
   }
 
   if (!isAuthorized) {
@@ -134,11 +134,11 @@ const StatusManager: React.FC = () => {
       width: '80px'
     },
     {
-      header: 'Status Name',
+      header: 'Nome Status',
       accessor: 'typestatus'
     },
     {
-      header: 'Color',
+      header: 'Cor',
       accessor: 'colorstatus',
       cell: (value: string) => (
         <div className="color-cell">
@@ -155,7 +155,7 @@ const StatusManager: React.FC = () => {
   return (
     <div className="category-manager">
       <CrudTable
-        title="Status Management"
+        title="Gerenciamento de Status"
         data={statuses}
         columns={columns}
         loading={loading}
@@ -171,7 +171,7 @@ const StatusManager: React.FC = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>{currentStatus ? 'Edit Status' : 'Add New Status'}</h3>
+              <h3>{currentStatus ? 'Editar Status' : 'Adicionar Novo Status'}</h3>
               <button 
                 className="close-button"
                 onClick={() => setIsModalOpen(false)}
@@ -182,7 +182,7 @@ const StatusManager: React.FC = () => {
             
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="typeStatus">Status Name</label>
+                <label htmlFor="typeStatus">Nome do Status</label>
                 <input
                   type="text"
                   id="typeStatus"
@@ -194,7 +194,7 @@ const StatusManager: React.FC = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="colorStatus">Status Color</label>
+                <label htmlFor="colorStatus">Cor do Status</label>
                 <div className="color-input-container">
                   <input
                     type="color"
@@ -220,13 +220,13 @@ const StatusManager: React.FC = () => {
                   className="cancel-button"
                   onClick={() => setIsModalOpen(false)}
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   type="submit"
                   className="save-button"
                 >
-                  {currentStatus ? 'Update' : 'Create'}
+                  {currentStatus ? 'Atualizar' : 'Criar'}
                 </button>
               </div>
             </form>

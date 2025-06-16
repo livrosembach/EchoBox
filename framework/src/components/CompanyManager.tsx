@@ -127,7 +127,7 @@ const CompanyManager: React.FC = () => {
       width: '10%'
     },
     {
-      header: 'Name',
+      header: 'Nome',
       accessor: 'namecompany',
       width: '30%'
     },
@@ -154,7 +154,7 @@ const CompanyManager: React.FC = () => {
   return (
     <div className="category-manager">
       <CrudTable
-        title="Company Management"
+        title="Gerenciamento de Empresas"
         data={companies}
         columns={columns}
         loading={loading}
@@ -170,17 +170,17 @@ const CompanyManager: React.FC = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2>{currentCompany ? 'Edit Company' : 'Add Company'}</h2>
+              <h3>{currentCompany ? 'Editar Empresa' : 'Adicionar Nova Empresa'}</h3>
               <button 
                 className="close-button"
                 onClick={() => setIsModalOpen(false)}
               >
-                &times;
+                <i className="fa-solid fa-times"></i>
               </button>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="nameCompany">Company Name:</label>
+                <label htmlFor="nameCompany">Nome da Empresa:</label>
                 <input
                   type="text"
                   id="nameCompany"
@@ -214,10 +214,20 @@ const CompanyManager: React.FC = () => {
               </div>
               
               {error && <div className="error-message">{error}</div>}
-              
-              <div className="button-group">
-                <button type="button" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button type="submit">Save</button>
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="save-button"
+                >
+                  {currentCompany ? 'Atualizar' : 'Criar'}
+                </button>
               </div>
             </form>
           </div>
